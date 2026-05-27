@@ -96,49 +96,46 @@ export default async function handler(req, res) {
   try {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 3000,
-      tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 6 }],
+      max_tokens: 2000,
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 3 }],
       system: `You are a retail sale intelligence agent. Today's date is ${today}.
 
-The user gives you a retailer / brand name. You research:
-1. Any CURRENT active sale (check homepage, news, deal sites)
-2. HISTORICAL sale patterns over the past 1-2 years (monthly cadence)
-3. PREDICT when their next likely sale will be, based on patterns
+User gives you a brand name. Research efficiently — aim for 2-3 web searches total:
+1. CURRENT active sale (check brand site + recent deal coverage)
+2. HISTORICAL sale patterns (monthly cadence over past 1-2 years)
+3. PREDICT next likely sale based on patterns
 
-Search the web aggressively. Look at: the brand's own site, news coverage, deal sites (Slickdeals, RetailMeNot, dealnews), past sale announcements.
+Prioritize: brand's own site, deal aggregators (Slickdeals, RetailMeNot), recent news.
 
-Return ONLY raw JSON, no markdown, no backticks, no explanation:
+Return ONLY raw JSON, no markdown, no backticks:
 {
-  "name": "Brand Name (clean, properly capitalized)",
-  "tagline": "One short sentence describing their sale strategy",
+  "name": "Brand Name (properly capitalized)",
+  "tagline": "one short sentence on their sale strategy",
   "activeSale": {
-    "name": "string e.g. 'Memorial Day Sale'",
-    "discount": "string e.g. '40% off everything'",
-    "ends": "string e.g. 'Ends June 2'"
+    "name": "e.g. Memorial Day Sale",
+    "discount": "e.g. 40% off",
+    "ends": "e.g. Ends June 2"
   } or null if no active sale,
   "nextSale": {
     "name": "string",
-    "when": "string e.g. 'Mid-July'",
-    "discount": "string e.g. '30-40% off'"
+    "when": "e.g. Mid-July",
+    "discount": "e.g. 30-40% off"
   },
-  "bestSaleEver": "string e.g. 'Black Friday — 40% off everything'",
-  "lastSale": "string e.g. 'Black Friday 2025'",
   "saleCalendar": {
-    "Jan": "short label of typical sale in Jan, or empty string",
+    "Jan": "short label under 20 chars or empty",
     "Feb": "...", "Mar": "...", "Apr": "...", "May": "...", "Jun": "...",
     "Jul": "...", "Aug": "...", "Sep": "...", "Oct": "...", "Nov": "...", "Dec": "..."
   },
-  "patterns": ["4-6 bullets, 1-2 sentences each"],
-  "proTip": "best concrete advice, 2-3 sentences",
-  "shopUrl": "URL to the brand's sale or main page",
-  "nextEvent": "short label e.g. 'May 23' or 'Nov 2026'",
-  "avgDiscount": "string e.g. '25-30%'"
+  "patterns": ["3 short bullets, 1 sentence each"],
+  "proTip": "2 sentences max",
+  "shopUrl": "URL to brand's sale or main page",
+  "nextEvent": "short label e.g. May 23 or Nov 2026",
+  "avgDiscount": "e.g. 25-30%"
 }
 
-Keep saleCalendar labels SHORT (under 25 chars).
-Be honest — if a brand rarely has sales, leave most months empty.
-If you cannot find a brand by that name, return: {"error": "Brand not found"}`,
-      messages: [{ role: "user", content: `Research the sale patterns for: ${rawName}` }],
+Be honest — if a brand rarely discounts, leave most calendar months empty.
+If brand not found: {"error": "Brand not found"}`,
+      messages: [{ role: "user", content: `Research: ${rawName}` }],
     });
 
     const text = response.content
