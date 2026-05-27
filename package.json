@@ -1,0 +1,9 @@
+{
+  "name": "sale-radar",
+  "version": "1.0.0",
+  "description": "Track when premium brands go on sale",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0"
+  }
+}
