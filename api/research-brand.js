@@ -95,7 +95,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 3000,
       tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 6 }],
       system: `You are a retail sale intelligence agent. Today's date is ${today}.
