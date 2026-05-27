@@ -709,11 +709,11 @@
   /* === SALE CALENDAR === */
   .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
   }
-  @media (max-width: 540px) {
-    .calendar-grid { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 480px) {
+    .calendar-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   .month-cell {
     padding: 12px 8px;
@@ -724,6 +724,7 @@
     cursor: default;
     transition: transform 0.15s;
     min-height: 64px;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -751,6 +752,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 100%;
   }
   .calendar-legend {
     display: flex;
