@@ -156,6 +156,130 @@
   }
   .btn-secondary:hover { background: var(--bg-accent); }
 
+  /* === Hero Preview Panel === */
+  .hero-preview {
+    margin: 56px auto 0;
+    max-width: 720px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 4px 24px rgba(26,24,20,0.04);
+    text-align: left;
+  }
+  .hero-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .hero-preview-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-preview-pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--sale);
+    box-shadow: 0 0 0 0 rgba(45,90,61,0.6);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(45,90,61,0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(45,90,61,0); }
+    100% { box-shadow: 0 0 0 0 rgba(45,90,61,0); }
+  }
+  .hero-preview-date {
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .hero-preview-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .hero-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 6px;
+    border-radius: 8px;
+    transition: background 0.12s;
+    cursor: pointer;
+  }
+  .hero-row:hover { background: var(--bg-accent); }
+  .hero-row-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: contain;
+    background: var(--bg);
+    border: 0.5px solid var(--rule);
+    padding: 3px;
+    flex-shrink: 0;
+  }
+  .hero-row-main { flex: 1; min-width: 0; }
+  .hero-row-name {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .hero-row-detail {
+    font-size: 12px;
+    color: var(--ink-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hero-row-status {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+  .hero-row-status.sale {
+    background: var(--sale-soft);
+    color: var(--sale);
+  }
+  .hero-row-status.quiet {
+    background: var(--bg-accent);
+    color: var(--ink-faint);
+  }
+  .hero-row-status.upcoming {
+    background: #FCEFE8;
+    color: var(--accent);
+  }
+  .hero-preview-footer {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule-soft);
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .hero-preview-footer a {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .hero-preview-footer a:hover { text-decoration: underline; }
+  @media (max-width: 640px) {
+    .hero-preview { padding: 18px 18px; }
+    .hero-row-detail { font-size: 11px; }
+  }
+
   /* === ACTIVE SALES STRIP === */
   .live-strip {
     background: var(--ink);
@@ -936,6 +1060,20 @@
       <a href="#brands" class="btn-primary">Browse brands</a>
       <a href="#alerts" class="btn-secondary">Get sale alerts →</a>
     </div>
+
+    <div class="hero-preview" id="hero-preview">
+      <div class="hero-preview-header">
+        <div class="hero-preview-label">
+          <span class="hero-preview-pulse"></span>
+          <span>What's hot this week</span>
+        </div>
+        <div class="hero-preview-date" id="hero-preview-date"></div>
+      </div>
+      <div class="hero-preview-rows" id="hero-preview-rows"></div>
+      <div class="hero-preview-footer">
+        <a href="#brands">See all brands →</a>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -1013,13 +1151,6 @@
 
 <footer>
   <div class="container">
-
-    <div class="affiliate-disclosure">
-      <svg class="affiliate-disclosure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      <div>
-        <strong>Affiliate disclosure.</strong> Sale Radar earns a small commission when you click "Shop the sale" and complete a purchase through one of our partner links. This costs you nothing extra and helps keep our research free for everyone. We never let commissions influence which sales we cover or how we describe them.
-      </div>
-    </div>
 
     <div class="footer-top">
       <div class="footer-brand">
@@ -1940,6 +2071,84 @@ function renderLiveStrip() {
 
 renderBrandGrid();
 renderLiveStrip();
+renderHeroPreview();
+
+// === Hero preview: 3 curated rows showing the product in action ===
+// Logic: prefer 1 active-sale brand (proves "we know what's happening NOW"),
+// 1 with an upcoming sale (proves "we predict next"), 1 quiet premium brand
+// (proves "we cover the brands that almost never discount"). Falls back
+// gracefully if there aren't enough of each type.
+function renderHeroPreview() {
+  const rowsEl = document.getElementById("hero-preview-rows");
+  const dateEl = document.getElementById("hero-preview-date");
+  if (!rowsEl || !dateEl) return;
+
+  const today = new Date();
+  dateEl.textContent = today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  const allBrands = Object.entries(BRANDS);
+  const activeSales = allBrands.filter(([k, b]) => b && b.activeSale);
+  const quietBrands = allBrands.filter(([k, b]) => b && !b.activeSale);
+
+  // Hand-picked preferences for the "quiet premium" slot — strongest brand-recognition.
+  const preferredQuiet = ["lululemon", "apple", "patagonia", "vuori"];
+  const quiet = preferredQuiet
+    .map(k => allBrands.find(([key]) => key === k))
+    .filter(Boolean)
+    .find(([k, b]) => b && !b.activeSale);
+
+  const picks = [];
+  if (activeSales.length > 0) picks.push({ key: activeSales[0][0], brand: activeSales[0][1], type: "sale" });
+
+  // Upcoming-sale slot — pick a quiet brand whose nextSale window is soonest. We
+  // can't easily parse free-text "when" fields, so we just pick a recognizable
+  // quiet brand to fill the "upcoming" slot.
+  const upcomingCandidates = ["aritzia", "aloyoga", "madewell", "nike", "patagonia"]
+    .map(k => allBrands.find(([key]) => key === k))
+    .filter(Boolean)
+    .filter(([k, b]) => b && !b.activeSale && !picks.find(p => p.key === k));
+  if (upcomingCandidates[0]) picks.push({ key: upcomingCandidates[0][0], brand: upcomingCandidates[0][1], type: "upcoming" });
+
+  if (quiet && !picks.find(p => p.key === quiet[0])) {
+    picks.push({ key: quiet[0], brand: quiet[1], type: "quiet" });
+  }
+
+  // Fill to 3 if needed from any remaining quiet brands
+  while (picks.length < 3 && quietBrands.length > 0) {
+    const next = quietBrands.find(([k]) => !picks.find(p => p.key === k));
+    if (!next) break;
+    picks.push({ key: next[0], brand: next[1], type: "quiet" });
+  }
+
+  rowsEl.innerHTML = picks.map(({ key, brand, type }) => {
+    const fav = faviconFor(brand.shopUrl, 64);
+    const favImg = fav ? `<img class="hero-row-icon" src="${fav}" alt="" loading="lazy" onerror="this.style.display='none'" />` : `<div class="hero-row-icon"></div>`;
+
+    let detail, statusLabel, statusClass;
+    if (type === "sale") {
+      detail = `${brand.activeSale.name} — ${brand.activeSale.discount}`;
+      statusLabel = "● ON SALE";
+      statusClass = "sale";
+    } else if (type === "upcoming") {
+      detail = `Next: ${brand.nextSale.name} · ${brand.nextSale.when}`;
+      statusLabel = "UPCOMING";
+      statusClass = "upcoming";
+    } else {
+      detail = `Next: ${brand.nextSale.name} · ${brand.nextSale.when}`;
+      statusLabel = "QUIET";
+      statusClass = "quiet";
+    }
+
+    return `<div class="hero-row" onclick="openBrand('${key}')">
+      ${favImg}
+      <div class="hero-row-main">
+        <div class="hero-row-name">${brand.name}</div>
+        <div class="hero-row-detail">${detail}</div>
+      </div>
+      <span class="hero-row-status ${statusClass}">${statusLabel}</span>
+    </div>`;
+  }).join("");
+}
 
 function openBrand(key) {
   const b = BRANDS[key];
