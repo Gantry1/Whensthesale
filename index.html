@@ -2000,6 +2000,57 @@ const CATEGORIES = {
 
 let activeCategory = "top";
 
+// === Self-computing "next event" ===
+// Looks at a brand's saleCalendar and returns the next future month with a sale.
+// This keeps card data accurate as time passes, instead of relying on hardcoded
+// strings like "May 23" that go stale the moment Memorial Day ends.
+function getNextEvent(brandKey, brand) {
+  // Active sale takes precedence — no need to predict the next one
+  if (brand.activeSale) {
+    return {
+      shortLabel: "Now",
+      saleName: brand.activeSale.name,
+      detail: brand.activeSale.ends || "Active now"
+    };
+  }
+
+  const calendar = SALE_CALENDARS[brandKey];
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentDay = today.getDate();
+  const currentYear = today.getFullYear();
+
+  // If we're past day 20 of this month, assume any sale in this month has either
+  // happened or won't, and skip to next month. (Sales typically anchor to early/mid-month.)
+  const startMonth = currentDay < 20 ? currentMonth : currentMonth + 1;
+
+  if (calendar) {
+    for (let i = 0; i < 12; i++) {
+      const offset = startMonth + i;
+      const monthIndex = ((offset % 12) + 12) % 12;
+      const monthKey = months[monthIndex];
+      const sale = calendar[monthKey];
+      if (sale && sale.trim() !== "") {
+        const wrapsToNextYear = offset >= 12;
+        const yearLabel = wrapsToNextYear ? ` ${currentYear + 1}` : "";
+        return {
+          shortLabel: `${monthKey}${yearLabel}`,
+          saleName: sale,
+          detail: `${sale}`
+        };
+      }
+    }
+  }
+
+  // Fallback if no calendar data is found
+  return {
+    shortLabel: brand.nextEvent || "—",
+    saleName: brand.nextSale ? brand.nextSale.name : "—",
+    detail: brand.nextSale ? `${brand.nextSale.name} · ${brand.nextSale.when}` : ""
+  };
+}
+
 function renderBrandGrid() {
   const grid = document.getElementById("brand-grid");
   const keys = CATEGORIES[activeCategory] || [];
@@ -2011,6 +2062,13 @@ function renderBrandGrid() {
     const faviconImg = favicon
       ? `<img class="brand-favicon" src="${favicon}" alt="" loading="lazy" onerror="this.style.display='none'" />`
       : "";
+    const next = getNextEvent(key, b);
+    const primaryLine = isActive
+      ? `${b.activeSale.name} — ${b.activeSale.discount}`
+      : `Next: ${next.saleName}`;
+    const metaLine = isActive
+      ? (b.activeSale.ends || "")
+      : next.shortLabel;
     return `
     <article class="brand-card ${isActive ? "active-sale" : ""}" data-name="${b.name.toLowerCase()} ${key}" onclick="openBrand('${key}')">
       <div class="brand-header">
@@ -2019,18 +2077,8 @@ function renderBrandGrid() {
           ${isActive ? "● On sale" : "Quiet"}
         </span>
       </div>
-      <p class="brand-sale-info">${isActive ? b.activeSale.name + " — " + b.activeSale.discount : "Next: " + b.nextSale.name}</p>
-      <p class="brand-meta">${isActive ? (b.activeSale.ends || "") : b.nextSale.when}</p>
-      <div class="brand-stats">
-        <div>
-          <p class="stat-label">Next event</p>
-          <p class="stat-value">${b.nextEvent}</p>
-        </div>
-        <div>
-          <p class="stat-label">Avg discount</p>
-          <p class="stat-value">${b.avgDiscount}</p>
-        </div>
-      </div>
+      <p class="brand-sale-info">${primaryLine}</p>
+      <p class="brand-meta">${metaLine}</p>
     </article>`;
   }).join("");
 }
@@ -2130,11 +2178,13 @@ function renderHeroPreview() {
       statusLabel = "● ON SALE";
       statusClass = "sale";
     } else if (type === "upcoming") {
-      detail = `Next: ${brand.nextSale.name} · ${brand.nextSale.when}`;
+      const next = getNextEvent(key, brand);
+      detail = `Next: ${next.saleName} · ${next.shortLabel}`;
       statusLabel = "UPCOMING";
       statusClass = "upcoming";
     } else {
-      detail = `Next: ${brand.nextSale.name} · ${brand.nextSale.when}`;
+      const next = getNextEvent(key, brand);
+      detail = `Next: ${next.saleName} · ${next.shortLabel}`;
       statusLabel = "QUIET";
       statusClass = "quiet";
     }
