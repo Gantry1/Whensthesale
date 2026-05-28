@@ -245,6 +245,28 @@
     font-size: 22px;
     font-weight: 400;
     letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .brand-favicon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    object-fit: contain;
+    background: var(--bg);
+    border: 0.5px solid var(--rule);
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .brand-favicon.modal-favicon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    padding: 4px;
+    margin-right: 14px;
+    vertical-align: -8px;
   }
   .brand-status {
     font-size: 11px;
@@ -1726,6 +1748,19 @@ const BRANDS = {
   }
 };
 
+// === Favicon helper ===
+// Uses Google's public favicon service to fetch whatever favicon the brand
+// itself publishes on their own site (same approach browsers use for bookmarks).
+function faviconFor(shopUrl, size = 64) {
+  if (!shopUrl) return "";
+  try {
+    const host = new URL(shopUrl).hostname;
+    return `https://www.google.com/s2/favicons?sz=${size}&domain=${host}`;
+  } catch (e) {
+    return "";
+  }
+}
+
 // === Category groupings for the homepage grid ===
 // The full BRANDS object stays intact for search & live lookups.
 // These arrays decide which subset shows in the visible grid per category.
@@ -1745,10 +1780,14 @@ function renderBrandGrid() {
     const b = BRANDS[key];
     if (!b) return "";
     const isActive = b.activeSale !== null;
+    const favicon = faviconFor(b.shopUrl, 64);
+    const faviconImg = favicon
+      ? `<img class="brand-favicon" src="${favicon}" alt="" loading="lazy" onerror="this.style.display='none'" />`
+      : "";
     return `
     <article class="brand-card ${isActive ? "active-sale" : ""}" data-name="${b.name.toLowerCase()} ${key}" onclick="openBrand('${key}')">
       <div class="brand-header">
-        <div class="brand-name">${b.name}</div>
+        <div class="brand-name">${faviconImg}<span>${b.name}</span></div>
         <span class="brand-status ${isActive ? "status-sale" : "status-quiet"}">
           ${isActive ? "● On sale" : "Quiet"}
         </span>
@@ -1784,10 +1823,14 @@ function openBrand(key) {
   const modal = document.getElementById("modal");
   const body = document.getElementById("modal-body");
   const currentMonth = new Date().getMonth();
+  const modalFavicon = faviconFor(b.shopUrl, 128);
+  const modalFaviconImg = modalFavicon
+    ? `<img class="brand-favicon modal-favicon" src="${modalFavicon}" alt="" onerror="this.style.display='none'" />`
+    : "";
   body.innerHTML = `
     <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
     <p class="modal-eyebrow">Brand intelligence</p>
-    <h2>${b.name}</h2>
+    <h2>${modalFaviconImg}${b.name}</h2>
     <p style="font-size:16px; color:var(--ink-soft); margin-bottom:32px; line-height:1.6;">${b.tagline}</p>
 
     ${b.activeSale ? `
