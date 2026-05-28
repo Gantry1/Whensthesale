@@ -1,5 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
 
+// Allow this function to run up to 35s on Vercel (longer than our 30s internal
+// abort, so our graceful timeout fires first instead of Vercel hard-killing it).
+export const config = { maxDuration: 35 };
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // === In-memory rate limit + cache (resets when serverless instance recycles) ===
@@ -8,7 +12,7 @@ const rateLimitMap = new Map();   // IP -> { count, resetAt }
 const cache = new Map();           // brandKey -> { data, expiresAt }
 
 const RATE_LIMIT_PER_HOUR = 10;     // max research calls per IP per hour
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // cache results 24h
+const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // cache results 1 week
 const ALLOWED_ORIGINS = [
   // Add your Vercel URL here once deployed, e.g. "https://sale-radar-xxx.vercel.app"
   // Add your custom domain when you have one
@@ -94,17 +98,25 @@ export default async function handler(req, res) {
   const today = new Date().toISOString().slice(0, 10);
   const startTime = Date.now();
 
+  // Hard timeout: abort the call if it runs longer than 30s so a runaway
+  // agentic loop can't burn 90+ seconds and a pile of tokens.
+  const TIMEOUT_MS = 30000;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2000,
-      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 2 }],
+    const response = await anthropic.messages.create(
+      {
+        model: "claude-sonnet-4-6",
+        max_tokens: 2000,
+        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 2 }],
       system: `You are a retail sale intelligence agent. Today's date is ${today}.
 
-User gives you a brand name. Research efficiently — aim for 2-3 web searches total:
-1. CURRENT active sale (check brand site + recent deal coverage)
-2. HISTORICAL sale patterns (monthly cadence over past 1-2 years)
-3. PREDICT next likely sale based on patterns
+CRITICAL SEARCH LIMIT: You may run AT MOST 2 web searches total. After the 2nd search returns, you MUST immediately write the final JSON using only the information you have gathered. Do NOT run a 3rd search under any circumstances, even if information feels incomplete. Make your 2 searches count by using broad, high-yield queries.
+
+User gives you a brand name. With your 2 searches:
+1. First search: current sale + recent sale history (one combined query)
+2. Second search (only if needed): fill the biggest gap
 
 Prioritize: brand's own site, deal aggregators (Slickdeals, RetailMeNot), recent news.
 
@@ -135,9 +147,13 @@ Return ONLY raw JSON, no markdown, no backticks:
 
 For saleMonths: ONLY include months that actually have a sale. Use 3-letter month names (Jan, Feb, Mar...). Keep each label under 20 chars. A brand with 3 sale months returns 3 entries — do NOT pad with empty months.
 Be honest — if a brand rarely discounts, return just 1-2 entries (e.g. only Black Friday).
-If brand not found: {"error": "Brand not found"}`,
+If you cannot find a brand after your searches, return: {"error": "Brand not found"}
+
+REMINDER: Maximum 2 searches. After the 2nd, write the JSON immediately with whatever you have.`,
       messages: [{ role: "user", content: `Research: ${rawName}` }],
-    });
+      },
+      { signal: controller.signal }
+    );
 
     const text = response.content
       .filter((b) => b.type === "text")
@@ -171,11 +187,18 @@ If brand not found: {"error": "Brand not found"}`,
     cache.set(name, { data: parsed, expiresAt: Date.now() + CACHE_TTL_MS });
 
     res.setHeader("X-Cache", "MISS");
-    res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=86400");
+    res.setHeader("Cache-Control", "public, s-maxage=604800, stale-while-revalidate=604800");
     res.status(200).json(parsed);
   } catch (err) {
-    console.error("Research error:", err);
-    // Don't leak internal error details to the client
-    res.status(500).json({ error: "Research failed. Try again later." });
+    const elapsedSec = ((Date.now() - startTime) / 1000).toFixed(1);
+    if (err.name === "AbortError" || controller.signal.aborted) {
+      console.error(`[research] TIMEOUT brand="${rawName}" elapsed=${elapsedSec}s (aborted at ${TIMEOUT_MS / 1000}s)`);
+      res.status(504).json({ error: "Research took too long. Please try again." });
+    } else {
+      console.error(`[research] ERROR brand="${rawName}" elapsed=${elapsedSec}s msg=${err.message}`);
+      res.status(500).json({ error: "Research failed. Try again later." });
+    }
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
