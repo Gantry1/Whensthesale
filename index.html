@@ -39,6 +39,7 @@
   a { color: inherit; text-decoration: none; }
   button { font-family: inherit; cursor: pointer; border: none; background: none; }
   img { display: block; max-width: 100%; }
+  em { font-style: normal; font-weight: 600; color: var(--accent); }
 
   .container { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
   @media (max-width: 640px) { .container { padding: 0 20px; } }
@@ -61,14 +62,12 @@
   .logo {
     font-family: var(--serif);
     font-size: 22px;
-    font-weight: 400;
-    font-style: italic;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: -0.015em;
   }
   .logo::before {
     content: '◐';
     margin-right: 8px;
-    font-style: normal;
     color: var(--accent);
   }
   .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--ink-soft); }
@@ -112,9 +111,9 @@
     margin-right: auto;
   }
   .hero h1 em {
-    font-style: italic;
+    font-style: normal;
     color: var(--accent);
-    font-weight: 400;
+    font-weight: 600;
   }
   .hero p {
     font-size: 18px;
@@ -199,8 +198,9 @@
     line-height: 1.1;
   }
   .section-header h2 em {
-    font-style: italic;
+    font-style: normal;
     color: var(--accent);
+    font-weight: 600;
   }
   .section-header p {
     color: var(--ink-soft);
@@ -233,7 +233,7 @@
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(26,24,20,0.06);
   }
-  .brand-card.active-sale { border: 1px solid var(--sale); background: linear-gradient(180deg, var(--sale-soft) 0%, var(--bg-card) 60%); }
+  .brand-card.active-sale { border: 2px solid var(--sale); padding: 27px; background: linear-gradient(180deg, var(--sale-soft) 0%, var(--bg-card) 60%); }
   .brand-header {
     display: flex;
     align-items: flex-start;
@@ -472,9 +472,8 @@
   .tip-box .text {
     font-family: var(--serif);
     font-size: 18px;
-    font-weight: 300;
-    line-height: 1.5;
-    font-style: italic;
+    font-weight: 400;
+    line-height: 1.55;
   }
   .shop-btn {
     background: var(--accent);
@@ -534,8 +533,9 @@
     z-index: 1;
   }
   .alerts-section h2 em {
-    font-style: italic;
+    font-style: normal;
     color: #E8B4A6;
+    font-weight: 600;
   }
   .alerts-section p {
     font-size: 17px;
