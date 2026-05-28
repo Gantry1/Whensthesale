@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sale Radar — Know exactly when premium brands go on sale</title>
 <meta name="description" content="Track when Lululemon, Apple, Nike, Patagonia, and other premium brands actually go on sale. Get alerts when prices drop." />
+
+<!-- Site favicon: oxblood half-moon mark on cream. Inline SVG = no extra file needed. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F4EE'/%3E%3Cpath d='M32 14a18 18 0 0 0 0 36 18 18 0 0 1 0-36z' fill='%236B2C20'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%236B2C20' stroke-width='3'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F7F4EE'/%3E%3Cpath d='M32 14a18 18 0 0 0 0 36 18 18 0 0 1 0-36z' fill='%236B2C20'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%236B2C20' stroke-width='3'/%3E%3C/svg%3E" />
+<meta name="theme-color" content="#F7F4EE" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -827,27 +833,83 @@
   /* === FOOTER === */
   footer {
     border-top: 1px solid var(--rule);
-    padding: 40px 0 60px;
+    padding: 56px 0 40px;
     margin-top: 40px;
   }
-  footer .container {
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 720px) {
+    .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  }
+  .footer-brand .logo {
+    margin-bottom: 12px;
+    display: inline-flex;
+  }
+  .footer-brand p {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 280px;
+  }
+  .footer-col h4 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+  }
+  .footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .footer-col li { margin-bottom: 8px; }
+  .footer-col a {
+    font-size: 14px;
+    color: var(--ink-soft);
+    transition: color 0.15s;
+  }
+  .footer-col a:hover { color: var(--ink); }
+
+  .affiliate-disclosure {
+    background: var(--bg-accent);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .affiliate-disclosure strong { color: var(--ink); font-weight: 600; }
+  .affiliate-disclosure-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    color: var(--accent);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 20px;
-  }
-  .footer-meta {
-    font-size: 13px;
+    gap: 12px;
+    font-size: 12px;
     color: var(--ink-faint);
   }
-  .footer-links {
-    display: flex;
-    gap: 24px;
-    font-size: 13px;
-    color: var(--ink-soft);
-  }
-  .footer-links a:hover { color: var(--ink); }
+  .footer-bottom a { color: var(--ink-soft); }
+  .footer-bottom a:hover { color: var(--ink); }
 
 </style>
 </head>
@@ -877,15 +939,8 @@
   </div>
 </header>
 
-<div class="live-strip">
-  <div class="live-strip-inner">
-    <span><span class="live-dot"></span>Live · Patagonia Past-Season Sale — up to 40% off</span>
-    <span><span class="live-dot"></span>Live · Alo Yoga Aloversary — 30% off sitewide</span>
-    <span><span class="live-dot"></span>Live · Apple Education Pricing — save $200 on Mac</span>
-    <span><span class="live-dot"></span>Live · Patagonia Past-Season Sale — up to 40% off</span>
-    <span><span class="live-dot"></span>Live · Alo Yoga Aloversary — 30% off sitewide</span>
-    <span><span class="live-dot"></span>Live · Apple Education Pricing — save $200 on Mac</span>
-  </div>
+<div class="live-strip" id="live-strip" style="display:none">
+  <div class="live-strip-inner" id="live-strip-inner"></div>
 </div>
 
 <section id="brands">
@@ -958,12 +1013,53 @@
 
 <footer>
   <div class="container">
-    <div class="footer-meta">© 2026 Sale Radar · Some links may be affiliate. We earn commission at no cost to you.</div>
-    <div class="footer-links">
-      <a href="#">About</a>
-      <a href="#">Contact</a>
-      <a href="#">Privacy</a>
+
+    <div class="affiliate-disclosure">
+      <svg class="affiliate-disclosure-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <div>
+        <strong>Affiliate disclosure.</strong> Sale Radar earns a small commission when you click "Shop the sale" and complete a purchase through one of our partner links. This costs you nothing extra and helps keep our research free for everyone. We never let commissions influence which sales we cover or how we describe them.
+      </div>
     </div>
+
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="logo">Sale Radar</a>
+        <p>Premium sale intelligence for premium shoppers. Track when Lululemon, Apple, Patagonia and 30+ other brands actually go on sale.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Sale Radar</h4>
+        <ul>
+          <li><a href="#brands">Browse brands</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#alerts">Get alerts</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="mailto:hello@whensthesale.com">Email us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/privacy">Privacy</a></li>
+          <li><a href="/terms">Terms</a></li>
+          <li><a href="/disclosure">Affiliate disclosure</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Sale Radar. All rights reserved.</span>
+      <span>Sale data is researched and curated — actual prices and availability may vary. Always confirm with the retailer.</span>
+    </div>
+
   </div>
 </footer>
 
@@ -1816,7 +1912,34 @@ function setCategory(cat) {
   renderBrandGrid();
 }
 
+// === Live ticker: shows ONLY brands with a real active sale right now ===
+// Pulls from BRANDS dynamically — so when you flip a brand's activeSale to
+// null, it disappears from the ticker automatically. Honest by construction.
+function renderLiveStrip() {
+  const strip = document.getElementById("live-strip");
+  const inner = document.getElementById("live-strip-inner");
+  if (!strip || !inner) return;
+
+  const active = Object.values(BRANDS).filter(b => b && b.activeSale);
+  if (active.length === 0) {
+    strip.style.display = "none";
+    return;
+  }
+
+  // Build one item per active sale, then duplicate the list so the marquee
+  // loops seamlessly without a visible gap.
+  const items = active.map(b => {
+    const disc = b.activeSale.discount || "";
+    const name = b.activeSale.name || "Sale";
+    return `<span><span class="live-dot"></span>Live · ${b.name} ${name} — ${disc}</span>`;
+  });
+
+  inner.innerHTML = [...items, ...items, ...items].join("");
+  strip.style.display = "block";
+}
+
 renderBrandGrid();
+renderLiveStrip();
 
 function openBrand(key) {
   const b = BRANDS[key];
