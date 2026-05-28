@@ -92,12 +92,13 @@ export default async function handler(req, res) {
   }
 
   const today = new Date().toISOString().slice(0, 10);
+  const startTime = Date.now();
 
   try {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2000,
-      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 3 }],
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 2 }],
       system: `You are a retail sale intelligence agent. Today's date is ${today}.
 
 User gives you a brand name. Research efficiently — aim for 2-3 web searches total:
@@ -121,11 +122,10 @@ Return ONLY raw JSON, no markdown, no backticks:
     "when": "e.g. Mid-July",
     "discount": "e.g. 30-40% off"
   },
-  "saleCalendar": {
-    "Jan": "short label under 20 chars or empty",
-    "Feb": "...", "Mar": "...", "Apr": "...", "May": "...", "Jun": "...",
-    "Jul": "...", "Aug": "...", "Sep": "...", "Oct": "...", "Nov": "...", "Dec": "..."
-  },
+  "saleMonths": [
+    { "month": "Feb", "label": "Winter Sale 40%" },
+    { "month": "Nov", "label": "Black Friday" }
+  ],
   "patterns": ["3 short bullets, 1 sentence each"],
   "proTip": "2 sentences max",
   "shopUrl": "URL to brand's sale or main page",
@@ -133,7 +133,8 @@ Return ONLY raw JSON, no markdown, no backticks:
   "avgDiscount": "e.g. 25-30%"
 }
 
-Be honest — if a brand rarely discounts, leave most calendar months empty.
+For saleMonths: ONLY include months that actually have a sale. Use 3-letter month names (Jan, Feb, Mar...). Keep each label under 20 chars. A brand with 3 sale months returns 3 entries — do NOT pad with empty months.
+Be honest — if a brand rarely discounts, return just 1-2 entries (e.g. only Black Friday).
 If brand not found: {"error": "Brand not found"}`,
       messages: [{ role: "user", content: `Research: ${rawName}` }],
     });
@@ -142,6 +143,17 @@ If brand not found: {"error": "Brand not found"}`,
       .filter((b) => b.type === "text")
       .map((b) => b.text)
       .join("");
+
+    // --- Timing & search-count diagnostics (visible in Vercel logs) ---
+    const elapsedSec = ((Date.now() - startTime) / 1000).toFixed(1);
+    const searchCount = response.content.filter(
+      (b) => b.type === "server_tool_use" || b.type === "web_search_tool_result"
+    ).length;
+    console.log(
+      `[research] brand="${rawName}" elapsed=${elapsedSec}s searchBlocks=${searchCount} ` +
+      `inputTokens=${response.usage?.input_tokens ?? "?"} outputTokens=${response.usage?.output_tokens ?? "?"} ` +
+      `stopReason=${response.stop_reason}`
+    );
 
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) {
