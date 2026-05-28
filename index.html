@@ -657,6 +657,38 @@
     color: var(--ink-faint);
     margin-top: 14px;
   }
+  .category-filters {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 36px 0 28px;
+  }
+  .cat-btn {
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 100px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .cat-btn:hover {
+    background: var(--bg-accent);
+    color: var(--ink);
+  }
+  .cat-btn.active {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  .cat-btn.active:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
   .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -838,7 +870,7 @@
   <div class="container">
     <div class="section-header">
       <h2>Search <em>any premium brand</em></h2>
-      <p>Tracking 8 popular brands below. Search any other brand and we'll research it live — discounts, patterns, and the 12-month calendar.</p>
+      <p>Browse our most-tracked brands by category — or search any brand and we'll research it live.</p>
     </div>
 
     <div class="search-wrap">
@@ -850,7 +882,12 @@
       <p class="search-hint">Try: <em>"Allbirds"</em>, <em>"Theory"</em>, <em>"Mejuri"</em> — we'll research live</p>
     </div>
 
-    <p style="text-align:center; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:24px;">Popular brands</p>
+    <div class="category-filters" id="category-filters">
+      <button class="cat-btn active" data-cat="top" onclick="setCategory('top')">Top 10 Brands</button>
+      <button class="cat-btn" data-cat="fashion" onclick="setCategory('fashion')">Fashion</button>
+      <button class="cat-btn" data-cat="tech" onclick="setCategory('tech')">Tech</button>
+      <button class="cat-btn" data-cat="beauty" onclick="setCategory('beauty')">Beauty</button>
+    </div>
 
     <div class="brand-grid" id="brand-grid"></div>
   </div>
@@ -956,6 +993,144 @@ const SALE_CALENDARS = {
     Jan: "", Feb: "", Mar: "", Apr: "", May: "", Jun: "", Jul: "",
     Aug: "Outlet refresh", Sep: "", Oct: "",
     Nov: "Black Friday 20–25%", Dec: ""
+  },
+  madewell: {
+    Jan: "Winter sale 40%", Feb: "Flash sales", Mar: "Spring 30%", Apr: "Friends & Family",
+    May: "Memorial Day 30%", Jun: "Summer kickoff", Jul: "Summer sale 50%", Aug: "BTS 30%",
+    Sep: "Fall preview", Oct: "Friends & Family",
+    Nov: "Black Friday 40%", Dec: "Cyber Week 40%"
+  },
+  jcrew: {
+    Jan: "Winter clearance 60%", Feb: "Presidents Day 40%", Mar: "Spring 30%", Apr: "Easter 40%",
+    May: "Memorial Day 40%", Jun: "Friends & Family 40%", Jul: "Summer 50%", Aug: "BTS 30%",
+    Sep: "Labor Day 40%", Oct: "Friends & Family 40%",
+    Nov: "Black Friday 40%", Dec: "Cyber Week + holiday"
+  },
+  anthropologie: {
+    Jan: "Winter clearance", Feb: "Tagged sale +50%", Mar: "Spring picks", Apr: "Earth Day home",
+    May: "Memorial Day", Jun: "Friends & Family", Jul: "Mid-summer sale", Aug: "EOS home 30%",
+    Sep: "Labor Day", Oct: "Friends & Family",
+    Nov: "Black Friday 30%+", Dec: "Sitewide stack"
+  },
+  reformation: {
+    Jan: "End-of-season 40%", Feb: "", Mar: "Spring teaser", Apr: "",
+    May: "Memorial Day 25%", Jun: "", Jul: "Summer sale 30%", Aug: "EOS summer 40%",
+    Sep: "", Oct: "",
+    Nov: "Black Friday 25%", Dec: "Holiday continued"
+  },
+  everlane: {
+    Jan: "Choose What You Pay", Feb: "", Mar: "Spring restock", Apr: "",
+    May: "Memorial Day", Jun: "", Jul: "Summer sale 30%", Aug: "EOS summer",
+    Sep: "", Oct: "",
+    Nov: "Black Friday 30%", Dec: "Cyber + holiday"
+  },
+  theory: {
+    Jan: "Winter sale 50%", Feb: "", Mar: "Friends & Family 25%", Apr: "Spring continued",
+    May: "Memorial Day", Jun: "Summer sale 40%", Jul: "Mid-summer 50%", Aug: "EOS 60%",
+    Sep: "", Oct: "Friends & Family",
+    Nov: "Black Friday 25–30%", Dec: "Holiday markdowns"
+  },
+  bananarepublic: {
+    Jan: "Winter clearance 60%", Feb: "Presidents Day 40%", Mar: "Spring 30%", Apr: "Easter 40%",
+    May: "Memorial Day 60%", Jun: "Father's Day 40%", Jul: "July 4 50%", Aug: "EOS 60%",
+    Sep: "Labor Day 40%", Oct: "Friends & Family 40%",
+    Nov: "Black Friday 40%", Dec: "Cyber Week 40%"
+  },
+  freepeople: {
+    Jan: "Winter sale", Feb: "Flash sales", Mar: "Spring picks", Apr: "",
+    May: "Memorial Day", Jun: "Summer kickoff", Jul: "Summer sale 50%", Aug: "EOS summer",
+    Sep: "Fall preview", Oct: "Friends & Family",
+    Nov: "Black Friday 25%+", Dec: "Cyber + holiday"
+  },
+  adidas: {
+    Jan: "EOS clearance 50%", Feb: "Presidents Day", Mar: "", Apr: "",
+    May: "Memorial Day 30%", Jun: "Member week 25%", Jul: "July 4 + summer 40%", Aug: "BTS 30%",
+    Sep: "Labor Day 25%", Oct: "Member days",
+    Nov: "Black Friday 50%", Dec: "Cyber Week 50%"
+  },
+  hoka: {
+    Jan: "Winter clearance", Feb: "", Mar: "", Apr: "",
+    May: "Memorial Day select", Jun: "", Jul: "Summer past-season", Aug: "",
+    Sep: "Labor Day", Oct: "",
+    Nov: "Black Friday 25%", Dec: "Cyber Week"
+  },
+  newbalance: {
+    Jan: "Winter clearance 40%", Feb: "", Mar: "", Apr: "",
+    May: "Memorial Day 25%", Jun: "Member event", Jul: "July 4 30%", Aug: "BTS",
+    Sep: "Labor Day", Oct: "",
+    Nov: "Black Friday 25–40%", Dec: "Cyber Week 25%"
+  },
+  athleta: {
+    Jan: "Winter sale 60%", Feb: "Mid-season", Mar: "Spring 25%", Apr: "Earth Day",
+    May: "Memorial Day 30%", Jun: "Summer sale", Jul: "July 4 + summer 60%", Aug: "EOS 60%",
+    Sep: "Labor Day 25%", Oct: "Friends & Family",
+    Nov: "Black Friday 30–60%", Dec: "Cyber + holiday"
+  },
+  coach: {
+    Jan: "Winter clearance", Feb: "", Mar: "Spring restock", Apr: "",
+    May: "Memorial Day 25%", Jun: "Father's Day", Jul: "Summer sale 50%", Aug: "EOS",
+    Sep: "Labor Day", Oct: "",
+    Nov: "Black Friday 30%+", Dec: "Cyber + holiday"
+  },
+  toryburch: {
+    Jan: "Winter Promo Event 30%", Feb: "", Mar: "", Apr: "",
+    May: "Memorial Day", Jun: "Semi-Annual Sale", Jul: "Semi-Annual cont.", Aug: "EOS clearance",
+    Sep: "", Oct: "",
+    Nov: "Black Friday 30%", Dec: "Cyber + holiday"
+  },
+  katespade: {
+    Jan: "Winter clearance", Feb: "", Mar: "Spring sale", Apr: "Surprise sale 30%",
+    May: "Memorial Day", Jun: "Surprise sale", Jul: "July 4 + Surprise", Aug: "EOS",
+    Sep: "Labor Day", Oct: "",
+    Nov: "Black Friday 30%+", Dec: "Cyber + holiday"
+  },
+  levis: {
+    Jan: "Winter clearance 40%", Feb: "Presidents Day", Mar: "", Apr: "",
+    May: "Memorial Day 30%", Jun: "Father's Day", Jul: "July 4 + summer 40%", Aug: "BTS 30%",
+    Sep: "Labor Day", Oct: "Member access",
+    Nov: "Black Friday 40%", Dec: "Cyber Week 30%"
+  },
+  westelm: {
+    Jan: "Winter sale 60%", Feb: "Presidents Day", Mar: "Spring refresh", Apr: "Earth Day",
+    May: "Memorial Day 30%", Jun: "Friends & Family", Jul: "July 4 + summer 50%", Aug: "EOS clearance",
+    Sep: "Labor Day 30%", Oct: "Fall refresh",
+    Nov: "Black Friday 40%", Dec: "Cyber Week 40%"
+  },
+  brooklinen: {
+    Jan: "Winter sale 25%", Feb: "Presidents Day", Mar: "", Apr: "",
+    May: "Memorial Day 25%", Jun: "Anniversary Sale 25%", Jul: "July 4 25%", Aug: "",
+    Sep: "Labor Day 25%", Oct: "",
+    Nov: "Black Friday 25%", Dec: "Cyber + holiday"
+  },
+  dyson: {
+    Jan: "", Feb: "Refurb appears", Mar: "", Apr: "",
+    May: "Memorial Day select", Jun: "", Jul: "", Aug: "",
+    Sep: "", Oct: "",
+    Nov: "Black Friday $100+ off", Dec: "Cyber Week"
+  },
+  bose: {
+    Jan: "Winter clearance", Feb: "Presidents Day", Mar: "", Apr: "",
+    May: "Memorial Day", Jun: "Father's Day", Jul: "July 4 sale", Aug: "BTS",
+    Sep: "Labor Day", Oct: "",
+    Nov: "Black Friday 25–40%", Dec: "Cyber + holiday"
+  },
+  sephora: {
+    Jan: "", Feb: "", Mar: "", Apr: "Spring Savings 20%",
+    May: "", Jun: "", Jul: "", Aug: "",
+    Sep: "", Oct: "Holiday Savings 20%",
+    Nov: "Black Friday + Cyber", Dec: "Holiday continued"
+  },
+  glossier: {
+    Jan: "Winter sale 20%", Feb: "", Mar: "", Apr: "",
+    May: "Memorial Day", Jun: "Anniversary sale", Jul: "Summer sale 20%", Aug: "",
+    Sep: "", Oct: "",
+    Nov: "Black Friday 20–25%", Dec: "Cyber + holiday"
+  },
+  mejuri: {
+    Jan: "End of year cont.", Feb: "", Mar: "", Apr: "",
+    May: "Memorial Day select", Jun: "", Jul: "Summer sale 20%", Aug: "",
+    Sep: "", Oct: "",
+    Nov: "Black Friday 20%", Dec: "Year-End event"
   }
 };
 
@@ -1111,13 +1286,466 @@ const BRANDS = {
     shopUrl: "https://www.on-running.com/en-us/sale",
     nextEvent: "Nov 2026",
     avgDiscount: "20–25%"
+  },
+  madewell: {
+    name: "Madewell",
+    tagline: "Sales nearly every week — patience always pays",
+    activeSale: null,
+    nextSale: { name: "Summer Sale", when: "Mid-July", discount: "Up to 50% off select" },
+    bestSaleEver: "Black Friday + Cyber Week — 40% off everything",
+    lastSale: "Black Friday 2025 — 40% off",
+    patterns: [
+      "Madewell runs promos almost every week — there's rarely a stretch without 25–30% off codes",
+      "Friends & Family events (April and October) hit 30% off including new arrivals",
+      "Black Friday + Cyber Week is the biggest moment: 40% off everything with promo code LETSGO",
+      "Email subscribers get early access and exclusive 'just for you' codes",
+      "The sale section regularly stacks with an additional 30–40% off — 'sale on sale' is the move"
+    ],
+    proTip: "Never buy at full price. There's a promo nearly every week, and if you sign up for emails, your first order gets 15% off automatically. For big purchases, wait for Friends & Family or Black Friday.",
+    shopUrl: "https://www.madewell.com/madewell-sale",
+    nextEvent: "Jul 2026",
+    avgDiscount: "25–40%"
+  },
+  jcrew: {
+    name: "J.Crew",
+    tagline: "Always-on promos — buying at full price is the rookie move",
+    activeSale: null,
+    nextSale: { name: "Friends & Family", when: "Mid-June", discount: "40% off everything" },
+    bestSaleEver: "Friends & Family + Black Friday — 40% off including new arrivals",
+    lastSale: "Spring promo, April 2026",
+    patterns: [
+      "J.Crew runs a 30%+ off promo almost every week — full-price purchases are basically never necessary",
+      "Friends & Family events (twice yearly: spring + fall) are the only times new arrivals go 40% off",
+      "Sale-on-sale events regularly stack 'extra 60% off sale' on top of marked-down items",
+      "Black Friday + Cyber Week match Friends & Family — 40% off plus free shipping",
+      "Email subscribers get earlier promo code access (usually 24 hours)"
+    ],
+    proTip: "Wait for a code — there's always one within a week. For new arrivals you really want, the only sub-full-price option is Friends & Family. For everything else, stack a promo code on the sale section.",
+    shopUrl: "https://www.jcrew.com/c/sale",
+    nextEvent: "Jun 2026",
+    avgDiscount: "30–40%"
+  },
+  anthropologie: {
+    name: "Anthropologie",
+    tagline: "Targeted category sales — rarely sitewide, often deep",
+    activeSale: null,
+    nextSale: { name: "Tagged Sale", when: "Periodic flash events", discount: "Extra 50% off sale" },
+    bestSaleEver: "Tagged Sale + Cyber Week stacks — 70%+ off final price",
+    lastSale: "Winter Tagged Sale, Jan 2026",
+    patterns: [
+      "Anthropologie rarely does sitewide discounts — they promote categories instead (home, dresses, etc.)",
+      "Their signature move is 'Tagged Sale': extra 30–50% off already-reduced items, multiple times per year",
+      "Home and furniture events (Earth Day, end of summer) regularly hit 40%+ off",
+      "Black Friday + Cyber Week stack a sitewide tier discount on top of sale section",
+      "AnthroPerks members get early access to all major sales (free to join)"
+    ],
+    proTip: "Sign up for AnthroPerks (free) for early sale access. Track items in your wishlist — they ping you when an item drops into sale. The sweet spot is catching a 'sale-on-sale' tagged event, where final prices often hit 60%+ off.",
+    shopUrl: "https://www.anthropologie.com/sale",
+    nextEvent: "Spring tagged event",
+    avgDiscount: "30–50%"
+  },
+  reformation: {
+    name: "Reformation",
+    tagline: "Sustainable premium — sales are rarer, but real when they happen",
+    activeSale: null,
+    nextSale: { name: "Summer Sale", when: "Mid-July through August", discount: "Up to 40% off select" },
+    bestSaleEver: "End-of-season events (Jan + Aug) — up to 50% off",
+    lastSale: "Black Friday 2025 — 25% off",
+    patterns: [
+      "Reformation discounts past-season only — current styles stay full price",
+      "Two main seasonal sales: end-of-winter (January) and end-of-summer (August)",
+      "Black Friday is more modest than peers (typically 25%, not 40%+)",
+      "Sale items occasionally get 'extra 25% off' stacked promos via email",
+      "Sign up for emails — first order gets a 15% off code"
+    ],
+    proTip: "Don't expect aggressive sitewide sales. Your two best windows are end-of-winter and end-of-summer, when past-season styles hit 40–50% off. Otherwise, focus on the sale section and watch for stacked email promos.",
+    shopUrl: "https://www.thereformation.com/sale",
+    nextEvent: "Jul 2026",
+    avgDiscount: "25–40%"
+  },
+  everlane: {
+    name: "Everlane",
+    tagline: "Minimalist premium with the unique 'Choose What You Pay' model",
+    activeSale: null,
+    nextSale: { name: "Choose What You Pay refresh", when: "Periodic, mostly seasonal", discount: "3 transparent price tiers" },
+    bestSaleEver: "Black Friday + Cyber Week — 30% off sitewide",
+    lastSale: "Black Friday 2025 — 30% off",
+    patterns: [
+      "Everlane's signature 'Choose What You Pay' lets you pick from 3 transparent price tiers on past-season items",
+      "Sitewide sales are rare — Black Friday is the main moment (30% off)",
+      "Summer Sale (July) and End-of-Season events offer 30%+ off select",
+      "Email signup gets you $25 off your first order over $100",
+      "Their transparent pricing means baseline markups are already lower — discounts are 'true' discounts, not inflated MSRP"
+    ],
+    proTip: "Sign up for the email list to unlock $25 off your first $100+ order — that's the most reliable Everlane discount. Otherwise, plan major purchases around Black Friday or watch the 'Choose What You Pay' section.",
+    shopUrl: "https://www.everlane.com/collections/womens-sale",
+    nextEvent: "Nov 2026",
+    avgDiscount: "20–30%"
+  },
+  theory: {
+    name: "Theory",
+    tagline: "Premium workwear — sales are predictable and worth the wait",
+    activeSale: null,
+    nextSale: { name: "Friends & Family", when: "Late March / Early April", discount: "25% off full price" },
+    bestSaleEver: "End-of-Season — 60–70% off clearance",
+    lastSale: "Winter Sale, Jan 2026",
+    patterns: [
+      "Theory's Friends & Family Sale (late March/early April) is the year's most reliable discount on full-price items — 25% off",
+      "End-of-season clearance hits up to 60–70% off — twice yearly (June/July and December/January)",
+      "Memorial Day, July 4, and Labor Day all bring 20–30% off site-wide promos",
+      "Theory Outlet stores and Last Call sections run year-round at 50%+ off retired styles",
+      "Wholesale partners (Nordstrom, Bloomingdale's, Saks Off 5th) frequently match or beat Theory's own sales"
+    ],
+    proTip: "If you want full-price workwear at a discount, Friends & Family in spring is your single best window. For deeper savings, wait for end-of-summer or end-of-winter clearance — that's when 60% off appears.",
+    shopUrl: "https://www.theory.com/sale",
+    nextEvent: "Mar 2026",
+    avgDiscount: "25–40%"
+  },
+  bananarepublic: {
+    name: "Banana Republic",
+    tagline: "Sales nearly year-round — 30–40% off is the baseline",
+    activeSale: null,
+    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "Up to 60% off + extra 20%" },
+    bestSaleEver: "Black Friday — 40% off everything (no exclusions)",
+    lastSale: "Spring promo, April 2026",
+    patterns: [
+      "Banana Republic runs sales nearly year-round — discounts of 30–40% are the baseline, not the exception",
+      "Best deal of the year: Black Friday at 40% off ALL full-price items (no exclusions)",
+      "Friends & Family events (Oct + Feb) match Black Friday pricing at 40% off",
+      "BR Factory typically goes 60% off + extra 20% on top during major holidays",
+      "New email subscribers get 15% off their first order"
+    ],
+    proTip: "Never pay full price. Wait a week or two and there's always a 30% off code. For big purchases, time them for Black Friday or Memorial Day weekend — only times you'll see 40%+ off without exclusions.",
+    shopUrl: "https://bananarepublic.gap.com/browse/sale.do",
+    nextEvent: "May 23",
+    avgDiscount: "30–40%"
+  },
+  freepeople: {
+    name: "Free People",
+    tagline: "Boho premium with surprisingly deep seasonal clearances",
+    activeSale: null,
+    nextSale: { name: "Summer Sale", when: "Mid-July", discount: "Up to 50% off select" },
+    bestSaleEver: "End-of-Season + Black Friday — up to 60%+ off",
+    lastSale: "Black Friday 2025 — 25% off select",
+    patterns: [
+      "Free People's biggest discounts come at end-of-season — Jan/Feb for winter and July/Aug for summer",
+      "Sale section regularly drops 50%+ off past-season styles year-round",
+      "Friends & Family events (October) hit 25–30% off including some new arrivals",
+      "FP Movement (their activewear line) follows similar patterns but with smaller discounts",
+      "Sister to Anthropologie — both share AnthroPerks loyalty program for early sale access"
+    ],
+    proTip: "Sign up for AnthroPerks (free) for early sale access at Free People too. The 'Sale' section regularly hits 50%+ off — that's the best year-round value, not the sitewide events.",
+    shopUrl: "https://www.freepeople.com/sale/",
+    nextEvent: "Jul 2026",
+    avgDiscount: "30–50%"
+  },
+  adidas: {
+    name: "Adidas",
+    tagline: "Aggressive sales vs Nike — frequent and often sitewide",
+    activeSale: null,
+    nextSale: { name: "Memorial Day Sale", when: "May 23–26", discount: "30% off sitewide" },
+    bestSaleEver: "Black Friday — 50% off sitewide + clearance",
+    lastSale: "Member Week, April 2026",
+    patterns: [
+      "Adidas runs major sitewide sales 6+ times per year — far more aggressive than Nike",
+      "Member-only events (free signup) drop monthly with 25–30% off",
+      "Black Friday + Cyber Week consistently hits 50% off sitewide — the year's deepest",
+      "End-of-season clearance refreshes twice yearly with up to 60%+ off",
+      "Outlet store regularly carries current-season styles at 30–40% off"
+    ],
+    proTip: "Join adiClub (free) — member sales are the most reliable discount channel. For big purchases, Black Friday is unbeatable. For sneakers specifically, the Outlet section often has the same models still in current rotation.",
+    shopUrl: "https://www.adidas.com/us/sale",
+    nextEvent: "May 23",
+    avgDiscount: "30–50%"
+  },
+  hoka: {
+    name: "Hoka",
+    tagline: "Performance running shoes — sales are rare, focused, and worth waiting for",
+    activeSale: null,
+    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "Select styles 25% off" },
+    bestSaleEver: "Black Friday — 25%+ off select",
+    lastSale: "Black Friday 2025",
+    patterns: [
+      "Hoka rarely discounts current-release shoes — sales focus on past-season colorways and styles",
+      "Sitewide sales are rare — most discounts target specific holiday weekends",
+      "Black Friday is the main public sale event, with 20–25% off select styles",
+      "Authorized retailers (Zappos, REI, DSW, Nordstrom) frequently have better Hoka deals than Hoka itself",
+      "REI Member Sales (March + November) regularly include Hoka at 20%+ off"
+    ],
+    proTip: "Hoka.com itself rarely runs aggressive sales. The smart move: check Zappos, REI, and DSW — they often have the same models 20–25% off when Hoka.com is full price. REI Member Sale (twice yearly) is the underrated window.",
+    shopUrl: "https://www.hoka.com/sale.html",
+    nextEvent: "May 23",
+    avgDiscount: "20–25%"
+  },
+  newbalance: {
+    name: "New Balance",
+    tagline: "Premium sneakers with surprisingly accessible sales",
+    activeSale: null,
+    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "Up to 25% off select" },
+    bestSaleEver: "Black Friday — 25–40% off including some current styles",
+    lastSale: "Spring promo, April 2026",
+    patterns: [
+      "New Balance discounts more aggressively than Nike or Hoka — Black Friday regularly hits 25–40% off",
+      "Hyped 'Grey Days' styles and recent collabs almost never go on sale",
+      "End-of-season clearance (Jan + July) often offers 40%+ off",
+      "Email signup gets a 10% off code on first order",
+      "Joe's New Balance Outlet (separate site) carries past-season styles at 30–50% off year-round"
+    ],
+    proTip: "Beyond newbalance.com, check Joe's New Balance Outlet for ongoing 30–50% off past-season models. For current styles, Black Friday is the most reliable sitewide moment.",
+    shopUrl: "https://www.newbalance.com/sale/",
+    nextEvent: "May 23",
+    avgDiscount: "25–35%"
+  },
+  athleta: {
+    name: "Athleta",
+    tagline: "Gap's premium activewear — frequent sales, very accessible",
+    activeSale: null,
+    nextSale: { name: "Memorial Day", when: "Late May", discount: "30%+ off select" },
+    bestSaleEver: "End-of-Summer + Black Friday — 60%+ off clearance",
+    lastSale: "Spring promo, April 2026",
+    patterns: [
+      "Athleta is the Lululemon alternative that actually goes on sale — frequently",
+      "Sale section runs year-round with 30–60% off past-season styles",
+      "End-of-Summer (August) and End-of-Winter (January) are the deepest clearance moments",
+      "Black Friday is the biggest sitewide event — 30%+ off including new arrivals",
+      "Athleta Rewards (free) members get early access and exclusive coupons"
+    ],
+    proTip: "If you like Lululemon-style fits but won't wait until Black Friday for a discount, Athleta is your move. Their sale section regularly hits 50–60% off, and Athleta Rewards (free) gives you 24-hour early sale access.",
+    shopUrl: "https://athleta.gap.com/browse/sale.do",
+    nextEvent: "May 23",
+    avgDiscount: "30–50%"
+  },
+  coach: {
+    name: "Coach",
+    tagline: "Don't shop Coach — shop Coach Outlet",
+    activeSale: { name: "Coach Outlet Sale", discount: "Up to 70% off + extra 15%", ends: "Refreshes constantly" },
+    nextSale: { name: "Coach Memorial Day", when: "Late May", discount: "Up to 25% off" },
+    bestSaleEver: "Coach Outlet Black Friday — 70%+ off + free shipping",
+    lastSale: "Black Friday 2025",
+    patterns: [
+      "Coach.com (full-price) rarely runs sitewide sales — modest 25% events on holidays only",
+      "Coach Outlet (separate site) runs 50–70% off year-round — totally different product line, same brand quality",
+      "Coach Outlet stacks 'extra 15% off' codes on top of marked prices regularly",
+      "Major holidays (Memorial Day, July 4, Black Friday) deepen Outlet discounts to 70%+ off",
+      "Coach Insider (free) members get early access and exclusive Outlet coupons"
+    ],
+    proTip: "Never shop Coach.com at full price — shop Coach Outlet instead. The bags are made for outlet (slightly different from main line) but the quality is the same and prices are 50–70% lower. Sign up for Coach Insider for stackable extra-off codes.",
+    shopUrl: "https://www.coachoutlet.com/shop/sale",
+    nextEvent: "Active now",
+    avgDiscount: "50–70%"
+  },
+  toryburch: {
+    name: "Tory Burch",
+    tagline: "Two big sale events per year — Semi-Annual is the unmissable one",
+    activeSale: null,
+    nextSale: { name: "Semi-Annual Sale", when: "Mid-June through July", discount: "Up to 60% off select" },
+    bestSaleEver: "Semi-Annual + Winter Promo Event — up to 60%+ off",
+    lastSale: "Winter Promo Event, Jan 2026",
+    patterns: [
+      "Two flagship events: Semi-Annual Sale (June/July) and Winter Promo Event (January)",
+      "Both events discount past-season styles 30–60% off — deepest on bags and shoes",
+      "Outside the two big events, Tory Burch protects pricing aggressively",
+      "Tory Burch Outlet (separate site) runs year-round at 40–60% off retired styles",
+      "Email signup gets early access to both major sales (24-hour head start)"
+    ],
+    proTip: "Plan Tory Burch purchases around June/July (Semi-Annual) or January (Winter Promo) — those are basically the only times you'll see significant discounts on the main site. Otherwise, the Outlet has year-round 40–60% off.",
+    shopUrl: "https://www.toryburch.com/sale/",
+    nextEvent: "Jun 2026",
+    avgDiscount: "30–50%"
+  },
+  katespade: {
+    name: "Kate Spade",
+    tagline: "Surprise Sale events are the real prize — short and deep",
+    activeSale: null,
+    nextSale: { name: "Surprise Sale", when: "Periodic flash, ~monthly", discount: "Extra 30% off sale + free shipping" },
+    bestSaleEver: "Kate Spade Outlet Black Friday — 70%+ off",
+    lastSale: "April Surprise Sale",
+    patterns: [
+      "Kate Spade's 'Surprise Sale' events appear roughly monthly — flash promos with extra 30% off sale section",
+      "Kate Spade Outlet (separate site) runs 50–70% off year-round on outlet-line items",
+      "Holiday weekends (Memorial Day, July 4, Black Friday) deepen Outlet promos with stackable codes",
+      "Email subscribers get earliest notice of Surprise Sale events — usually 12-24 hours ahead",
+      "Sister brand to Coach (both owned by Tapestry) — sale patterns mirror each other"
+    ],
+    proTip: "Sign up for emails to catch Surprise Sales — they're flash events that get announced day-of and last 24–48 hours. For everyday savings, Kate Spade Outlet runs 50–70% off year-round on a wide outlet-line selection.",
+    shopUrl: "https://www.katespadeoutlet.com/shop/sale",
+    nextEvent: "Next Surprise Sale",
+    avgDiscount: "30–50%"
+  },
+  levis: {
+    name: "Levi's",
+    tagline: "Frequent promos year-round — Red Tab members get the best deals",
+    activeSale: null,
+    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "30% off + extra promos" },
+    bestSaleEver: "Black Friday — 40% off sitewide",
+    lastSale: "Spring promo, April 2026",
+    patterns: [
+      "Levi's runs promos virtually every week — 25–30% off codes are routine",
+      "Red Tab Members (free signup) get exclusive early sale access and member-only codes",
+      "Black Friday + Cyber Week is the year's biggest sitewide event — 40% off",
+      "Outlet section runs 30–50% off past-season denim year-round",
+      "Wholesale partners (Macy's, Nordstrom, Amazon) frequently match or beat Levi's own sales"
+    ],
+    proTip: "Don't pay full price. Join Red Tab Members (free) for member-only codes, and check Macy's or Amazon — they often have the same 501s, 511s, etc. at 30–40% off when Levi.com is full price.",
+    shopUrl: "https://www.levi.com/US/en_US/clothing/sale",
+    nextEvent: "May 23",
+    avgDiscount: "25–40%"
+  },
+  westelm: {
+    name: "West Elm",
+    tagline: "Furniture sales nearly every weekend — patience is everything",
+    activeSale: null,
+    nextSale: { name: "Memorial Day", when: "Late May", discount: "Up to 30% off select" },
+    bestSaleEver: "Black Friday — 40% off sitewide + free shipping",
+    lastSale: "Spring promo, April 2026",
+    patterns: [
+      "West Elm runs sitewide promos almost every weekend — 20–30% off select is the baseline",
+      "Major holidays (Memorial Day, July 4, Labor Day, Black Friday) all bring deeper sitewide discounts",
+      "Black Friday + Cyber Week is the year's biggest event — 30–40% off sitewide",
+      "Open Box and Floor Sample sections offer 40–60% off year-round on perfect-condition items",
+      "Pottery Barn / Williams Sonoma Rewards (free) program covers West Elm too — earn back 5% per purchase"
+    ],
+    proTip: "Never buy West Elm furniture at full price — there's a sitewide sale almost every weekend. For the deepest savings, target Memorial Day, July 4, Labor Day, or Black Friday. The Open Box section has year-round 40–60% off on returned/floor sample items.",
+    shopUrl: "https://www.westelm.com/shop/sale/",
+    nextEvent: "May 23",
+    avgDiscount: "25–40%"
+  },
+  brooklinen: {
+    name: "Brooklinen",
+    tagline: "Premium bedding with predictable, holiday-anchored sales",
+    activeSale: null,
+    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "25% off sitewide" },
+    bestSaleEver: "Anniversary Sale + Black Friday — 25%+ off",
+    lastSale: "Spring promo, April 2026",
+    patterns: [
+      "Brooklinen runs major promos roughly every 6–8 weeks — tied to holidays + Anniversary",
+      "Anniversary Sale (typically June) is one of the biggest events — 25% off sitewide",
+      "Memorial Day, July 4, Labor Day, Black Friday all bring 25% off sitewide promos",
+      "Email signup unlocks a 10% off code on first order — easiest entry-level discount",
+      "Bundle deals (sheet sets + duvet covers, etc.) consistently offer better per-item value than buying separately"
+    ],
+    proTip: "Sign up for emails (10% off) and plan major bedding purchases around Memorial Day, the June Anniversary Sale, or Black Friday — those bring 25% off sitewide. Bundles always beat à la carte.",
+    shopUrl: "https://www.brooklinen.com/collections/sale",
+    nextEvent: "May 23",
+    avgDiscount: "15–25%"
+  },
+  dyson: {
+    name: "Dyson",
+    tagline: "Rarely on sale — Black Friday is essentially the only window",
+    activeSale: null,
+    nextSale: { name: "Black Friday", when: "Late November", discount: "$100–200 off select" },
+    bestSaleEver: "Black Friday + Cyber Week — $100–200 off select models",
+    lastSale: "Black Friday 2025",
+    patterns: [
+      "Dyson protects pricing aggressively — sitewide sales are essentially non-existent",
+      "Black Friday + Cyber Week is the ONE reliable window — $100–200 off select hair tools and vacuums",
+      "Refurbished section (dyson.com/owners/refurbished) offers 20–25% off with full warranty — underrated",
+      "Authorized retailers (Best Buy, Target, Costco) occasionally beat Dyson's own pricing on holidays",
+      "Dyson Direct trade-in program offers up to $100 credit when upgrading an old Dyson"
+    ],
+    proTip: "Don't expect aggressive Dyson sales — Black Friday is the one real window. For year-round savings, check the Refurbished section (full warranty, 20–25% off) or look at Costco/Best Buy on major holidays — they sometimes undercut Dyson's own pricing.",
+    shopUrl: "https://www.dyson.com/sale",
+    nextEvent: "Nov 2026",
+    avgDiscount: "10–20%"
+  },
+  bose: {
+    name: "Bose",
+    tagline: "Premium audio — sales are predictable but discounts stay measured",
+    activeSale: null,
+    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "$50–100 off select" },
+    bestSaleEver: "Black Friday + Cyber Week — 25–40% off select",
+    lastSale: "Spring sale, April 2026",
+    patterns: [
+      "Bose runs holiday-anchored sales 5–6 times per year — Memorial Day, July 4, Labor Day, Black Friday",
+      "Discounts stay measured: $50–100 off headphones, $100+ off premium speakers (rarely percentage-based)",
+      "Black Friday + Cyber Week is the year's biggest — sometimes hits 30–40% off select",
+      "Bose Refurbished store offers 15–25% off with full warranty",
+      "Best Buy and Amazon frequently match or beat Bose.com pricing during holidays"
+    ],
+    proTip: "Check Best Buy and Amazon before committing to Bose.com — they often match or beat the same sale price with faster shipping. The Refurbished store is your year-round value play, 15–25% off with full warranty.",
+    shopUrl: "https://www.bose.com/c/sale",
+    nextEvent: "May 23",
+    avgDiscount: "15–30%"
+  },
+  sephora: {
+    name: "Sephora",
+    tagline: "Tiered sales for Beauty Insiders — Rouge gets the deepest discounts",
+    activeSale: null,
+    nextSale: { name: "Spring Savings Event", when: "Mid-April", discount: "10–20% off (tiered by Insider level)" },
+    bestSaleEver: "Holiday Savings Event (October) — 20% off Rouge, 15% VIB, 10% Insider",
+    lastSale: "Spring Savings Event, April 2026",
+    patterns: [
+      "Sephora runs only TWO major sale events per year: Spring Savings (April) and Holiday Savings (October/November)",
+      "Discounts are tiered by Beauty Insider status — Rouge ($1000+/yr) gets 20%, VIB gets 15%, Insider gets 10%",
+      "Rouge members get the longest early access window (1+ week) and exclusive perks",
+      "Outside the two big events, Sephora rarely discounts — focus is on free shipping promos and gift-with-purchase",
+      "Beauty Insider (free) is essential — even base-tier members get the 10% off sale events"
+    ],
+    proTip: "Time big beauty stockups for the Spring Savings (April) or Holiday Savings (October) events — those are essentially the only Sephora sales. Sign up for Beauty Insider (free) — even base-tier gets 10% off during the events.",
+    shopUrl: "https://www.sephora.com/sale",
+    nextEvent: "Oct 2026",
+    avgDiscount: "10–20%"
+  },
+  glossier: {
+    name: "Glossier",
+    tagline: "Famously rare sales — Black Friday is the one real moment",
+    activeSale: null,
+    nextSale: { name: "Black Friday", when: "Late November", discount: "20–25% off sitewide" },
+    bestSaleEver: "Black Friday — 20–25% off sitewide",
+    lastSale: "Black Friday 2025 — 20% off sitewide",
+    patterns: [
+      "Glossier intentionally keeps full pricing — sitewide sales are rare events",
+      "Black Friday + Cyber Week is the one major annual event — 20–25% off sitewide",
+      "Anniversary sale (around June, varies yearly) sometimes drops 20% off sitewide",
+      "Sets and bundles offer better per-item value than à la carte year-round",
+      "Email signup gets 10% off your first order — best baseline discount"
+    ],
+    proTip: "Glossier rarely discounts — your two real moments are Black Friday and the Anniversary Sale (timing varies, watch email). Otherwise, the bundles and sets save 15–20% vs buying products individually.",
+    shopUrl: "https://www.glossier.com/collections/sale",
+    nextEvent: "Nov 2026",
+    avgDiscount: "20%"
+  },
+  mejuri: {
+    name: "Mejuri",
+    tagline: "Fine jewelry that almost never discounts — but when it does, it counts",
+    activeSale: null,
+    nextSale: { name: "Year-End Event", when: "Late December", discount: "20% off select" },
+    bestSaleEver: "Year-End Event + Summer Sale — 20%+ off select fine jewelry",
+    lastSale: "Year-End Event, Dec 2025",
+    patterns: [
+      "Mejuri protects pricing aggressively — fine jewelry sales are rare events",
+      "Two main sale windows: Summer Sale (July, sometimes called 'Sundae Funday') and Year-End Event (late December)",
+      "Black Friday discounts are modest (20% off select) — not sitewide",
+      "Mejuri Plus membership ($60/yr) gives 15% off everything year-round + free shipping",
+      "Email signup gets you 10% off your first order"
+    ],
+    proTip: "If you shop Mejuri more than 2–3x per year, the Plus membership ($60/yr) pays for itself with 15% off everything plus free shipping. Otherwise, the Summer Sale (July) and Year-End Event (December) are your best windows for fine jewelry discounts.",
+    shopUrl: "https://mejuri.com/shop/t/sale",
+    nextEvent: "Jul 2026",
+    avgDiscount: "15–20%"
   }
 };
 
-const grid = document.getElementById("brand-grid");
-grid.innerHTML = Object.entries(BRANDS).map(([key, b]) => {
-  const isActive = b.activeSale !== null;
-  return `
+// === Category groupings for the homepage grid ===
+// The full BRANDS object stays intact for search & live lookups.
+// These arrays decide which subset shows in the visible grid per category.
+const CATEGORIES = {
+  top: ["lululemon", "apple", "dyson", "patagonia", "nike", "aritzia", "vuori", "aloyoga", "onrunning", "sephora"],
+  fashion: ["lululemon", "aritzia", "madewell", "jcrew", "anthropologie", "reformation", "everlane", "theory", "bananarepublic", "freepeople", "vuori", "aloyoga", "athleta", "coach", "toryburch", "katespade", "levis"],
+  tech: ["apple", "dyson", "bose"],
+  beauty: ["sephora", "glossier", "mejuri"],
+};
+
+let activeCategory = "top";
+
+function renderBrandGrid() {
+  const grid = document.getElementById("brand-grid");
+  const keys = CATEGORIES[activeCategory] || [];
+  grid.innerHTML = keys.map(key => {
+    const b = BRANDS[key];
+    if (!b) return "";
+    const isActive = b.activeSale !== null;
+    return `
     <article class="brand-card ${isActive ? "active-sale" : ""}" data-name="${b.name.toLowerCase()} ${key}" onclick="openBrand('${key}')">
       <div class="brand-header">
         <div class="brand-name">${b.name}</div>
@@ -1138,7 +1766,18 @@ grid.innerHTML = Object.entries(BRANDS).map(([key, b]) => {
         </div>
       </div>
     </article>`;
-}).join("");
+  }).join("");
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  document.querySelectorAll(".cat-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.cat === cat);
+  });
+  renderBrandGrid();
+}
+
+renderBrandGrid();
 
 function openBrand(key) {
   const b = BRANDS[key];
