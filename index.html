@@ -1260,9 +1260,9 @@ function showResearchLoading(brandName) {
     <h2>${brandName}</h2>
     <div class="research-loading">
       <div class="research-spinner"></div>
-      <p class="research-step active" id="step-1">Searching the web for current sales...</p>
-      <p class="research-step" id="step-2">Looking up historical sale patterns</p>
-      <p class="research-step" id="step-3">Building the 12-month calendar</p>
+      <p class="research-step active" id="step-1">Searching the web for sales...</p>
+      <p class="research-step" id="step-2">Reading deal sites and brand pages</p>
+      <p class="research-step" id="step-3">Compiling the sale intelligence</p>
     </div>
   `;
   modal.classList.add("open");
@@ -1307,19 +1307,34 @@ async function researchBrand(brandName, slug) {
 
     if (!data || !data.name) throw new Error("Empty result from research");
 
+    // Build the 12-month calendar from the compact saleMonths array.
+    // (Falls back to the old saleCalendar object format if present.)
+    const MONTH_KEYS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    let calendar = {};
+    MONTH_KEYS.forEach(m => { calendar[m] = ""; });
+    if (Array.isArray(data.saleMonths)) {
+      data.saleMonths.forEach(entry => {
+        if (entry && entry.month) {
+          const key = entry.month.slice(0, 3);
+          const matched = MONTH_KEYS.find(m => m.toLowerCase() === key.toLowerCase());
+          if (matched) calendar[matched] = entry.label || "Sale";
+        }
+      });
+    } else if (data.saleCalendar && typeof data.saleCalendar === "object") {
+      calendar = data.saleCalendar;
+    }
+
     const brand = {
       name: data.name,
       tagline: data.tagline || "",
       activeSale: data.activeSale || null,
       nextSale: data.nextSale || { name: "Unknown", when: "Unknown", discount: "" },
-      bestSaleEver: data.bestSaleEver || "",
-      lastSale: data.lastSale || "",
       patterns: data.patterns || [],
       proTip: data.proTip || "",
       shopUrl: data.shopUrl || "#",
       nextEvent: data.nextEvent || "",
       avgDiscount: data.avgDiscount || "",
-      _calendar: data.saleCalendar || {},
+      _calendar: calendar,
     };
 
     BRANDS[slug] = brand;
