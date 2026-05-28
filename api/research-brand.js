@@ -109,16 +109,16 @@ export default async function handler(req, res) {
       {
         model: "claude-sonnet-4-6",
         max_tokens: 2000,
-        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 2 }],
+        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 1 }],
       system: `You are a retail sale intelligence agent. Today's date is ${today}.
 
-CRITICAL SEARCH LIMIT: You may run AT MOST 2 web searches total. After the 2nd search returns, you MUST immediately write the final JSON using only the information you have gathered. Do NOT run a 3rd search under any circumstances, even if information feels incomplete. Make your 2 searches count by using broad, high-yield queries.
+CRITICAL SEARCH LIMIT: You may run AT MOST 1 web search. After it returns, you MUST immediately write the final JSON using only the information you have gathered. Do NOT run a 2nd search under any circumstances, even if information feels incomplete. Make your single search count by using ONE broad, high-yield query that captures both current sale status AND historical sale patterns at once.
 
-User gives you a brand name. With your 2 searches:
-1. First search: current sale + recent sale history (one combined query)
-2. Second search (only if needed): fill the biggest gap
+Good single-query examples:
+- "[brand name] sale history 2024 2025 black friday memorial day"
+- "[brand name] current promo and past year sales"
 
-Prioritize: brand's own site, deal aggregators (Slickdeals, RetailMeNot), recent news.
+Prioritize results from: brand's own site, deal aggregators (Slickdeals, RetailMeNot), recent news.
 
 Return ONLY raw JSON, no markdown, no backticks:
 {
@@ -147,9 +147,9 @@ Return ONLY raw JSON, no markdown, no backticks:
 
 For saleMonths: ONLY include months that actually have a sale. Use 3-letter month names (Jan, Feb, Mar...). Keep each label under 20 chars. A brand with 3 sale months returns 3 entries — do NOT pad with empty months.
 Be honest — if a brand rarely discounts, return just 1-2 entries (e.g. only Black Friday).
-If you cannot find a brand after your searches, return: {"error": "Brand not found"}
+If you cannot find a brand after your one search, return: {"error": "Brand not found"}
 
-REMINDER: Maximum 2 searches. After the 2nd, write the JSON immediately with whatever you have.`,
+REMINDER: Exactly 1 search. After it returns, write the JSON immediately.`,
       messages: [{ role: "user", content: `Research: ${rawName}` }],
       },
       { signal: controller.signal }
