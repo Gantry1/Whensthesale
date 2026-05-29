@@ -135,8 +135,8 @@ Return ONLY raw JSON, no markdown, no backticks:
     "discount": "e.g. 30-40% off"
   },
   "saleMonths": [
-    { "month": "Feb", "label": "Winter Sale 40%" },
-    { "month": "Nov", "label": "Black Friday" }
+    { "month": "Feb", "label": "Winter Sale", "discount": "40%" },
+    { "month": "Nov", "label": "Black Friday", "discount": "30%" }
   ],
   "patterns": ["3 short bullets, 1 sentence each"],
   "proTip": "2 sentences max",
@@ -145,8 +145,8 @@ Return ONLY raw JSON, no markdown, no backticks:
   "avgDiscount": "e.g. 25-30%"
 }
 
-For saleMonths: ONLY include months that actually have a sale. Use 3-letter month names (Jan, Feb, Mar...). Keep each label under 20 chars. A brand with 3 sale months returns 3 entries — do NOT pad with empty months.
-Be honest — if a brand rarely discounts, return just 1-2 entries (e.g. only Black Friday).
+For saleMonths: ONLY include months where the brand runs a STOREWIDE (or near-storewide) sale of 10% OR MORE — OR a signature annual event shoppers actively watch for (e.g., Aloversary, Apple Back-to-School bundle, Patagonia Past-Season Sale). EXCLUDE: category-only sales (e.g. "spring dresses 20% off"), outlet-only events, vague promotions ("spring picks"), and small flash sales under 10%. Use 3-letter month names (Jan, Feb, Mar...). Keep label under 20 chars. Discount should be a short string like "30%", "40%", "$100 off", or "Free gift". A brand with 2 storewide events returns 2 entries — do NOT pad with empty or weak entries.
+Be honest — if a brand rarely runs storewide sales, return just 1 entry (e.g. only Black Friday). It's fine to return an empty saleMonths array if a brand never has storewide sales.
 If you cannot find a brand after your one search, return: {"error": "Brand not found"}
 
 REMINDER: Exactly 1 search. After it returns, write the JSON immediately.`,
