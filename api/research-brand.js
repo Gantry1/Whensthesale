@@ -135,8 +135,8 @@ Return ONLY raw JSON, no markdown, no backticks:
     "discount": "e.g. 30-40% off"
   },
   "saleMonths": [
-    { "month": "Feb", "label": "Winter Sale", "discount": "40%" },
-    { "month": "Nov", "label": "Black Friday", "discount": "30%" }
+    { "month": "Feb", "label": "Winter Sale", "discount": "30–40%" },
+    { "month": "Nov", "label": "Black Friday gift card", "discount": "Up to $200" }
   ],
   "patterns": ["3 short bullets, 1 sentence each"],
   "proTip": "2 sentences max",
@@ -145,7 +145,11 @@ Return ONLY raw JSON, no markdown, no backticks:
   "avgDiscount": "e.g. 25-30%"
 }
 
-For saleMonths: ONLY include months where the brand runs a STOREWIDE (or near-storewide) sale of 10% OR MORE — OR a signature annual event shoppers actively watch for (e.g., Aloversary, Apple Back-to-School bundle, Patagonia Past-Season Sale). EXCLUDE: category-only sales (e.g. "spring dresses 20% off"), outlet-only events, vague promotions ("spring picks"), and small flash sales under 10%. Use 3-letter month names (Jan, Feb, Mar...). Keep label under 20 chars. Discount should be a short string like "30%", "40%", "$100 off", or "Free gift". A brand with 2 storewide events returns 2 entries — do NOT pad with empty or weak entries.
+For saleMonths: ONLY include months where the brand runs a STOREWIDE (or near-storewide) sale of 10% OR MORE — OR a signature annual event shoppers actively watch for (e.g., Aloversary, Apple Back-to-School bundle / Black Friday gift card promo, Patagonia Past-Season Sale, Sephora Beauty Insider events). EXCLUDE: category-only sales (e.g. "spring dresses 20% off"), outlet-only events, vague promotions ("spring picks"), and small flash sales under 10%.
+
+The "discount" field MUST BE HONEST. If a brand says "up to 50% off" but most items are at 10–20%, write "10–50%" or "20–50%" — NOT "50%". Use ranges ("20–40%") freely when applicable. Use dollar ranges for brands that discount that way ("$50–100 off"). Use "Up to $X" for gift-card promos like Apple. Use "Free gift" for bundle promos. Never overpromise — a user who sees the headline number should expect that to roughly match what they pay. Keep label under 22 chars.
+
+Use 3-letter month names (Jan, Feb, Mar...). A brand with 2 storewide events returns 2 entries — do NOT pad with empty or weak entries.
 Be honest — if a brand rarely runs storewide sales, return just 1 entry (e.g. only Black Friday). It's fine to return an empty saleMonths array if a brand never has storewide sales.
 If you cannot find a brand after your one search, return: {"error": "Brand not found"}
 
