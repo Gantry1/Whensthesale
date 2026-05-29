@@ -1,8 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-// Allow this function to run up to 35s on Vercel (longer than our 30s internal
+// Allow this function to run up to 50s on Vercel (longer than our 45s internal
 // abort, so our graceful timeout fires first instead of Vercel hard-killing it).
-export const config = { maxDuration: 35 };
+export const config = { maxDuration: 50 };
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -98,9 +98,9 @@ export default async function handler(req, res) {
   const today = new Date().toISOString().slice(0, 10);
   const startTime = Date.now();
 
-  // Hard timeout: abort the call if it runs longer than 30s so a runaway
+  // Hard timeout: abort the call if it runs longer than 45s so a runaway
   // agentic loop can't burn 90+ seconds and a pile of tokens.
-  const TIMEOUT_MS = 30000;
+  const TIMEOUT_MS = 45000;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
