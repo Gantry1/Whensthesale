@@ -2413,15 +2413,26 @@ function closeModal() {
 
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
+// Bump CACHE_VERSION whenever the research prompt changes so users don't
+// keep seeing stale cached brand data from an older prompt version.
+const CACHE_VERSION = "v2";
 const RESEARCHED_BRANDS = {};
 try {
   const cached = localStorage.getItem("saleRadarResearched");
-  if (cached) Object.assign(RESEARCHED_BRANDS, JSON.parse(cached));
+  const cachedVersion = localStorage.getItem("saleRadarCacheVersion");
+  if (cached && cachedVersion === CACHE_VERSION) {
+    Object.assign(RESEARCHED_BRANDS, JSON.parse(cached));
+  } else {
+    // Cache from an older prompt version — wipe so users get fresh accurate data
+    localStorage.removeItem("saleRadarResearched");
+    localStorage.setItem("saleRadarCacheVersion", CACHE_VERSION);
+  }
 } catch (e) {}
 
 function saveResearched() {
   try {
     localStorage.setItem("saleRadarResearched", JSON.stringify(RESEARCHED_BRANDS));
+    localStorage.setItem("saleRadarCacheVersion", CACHE_VERSION);
   } catch (e) {}
 }
 
