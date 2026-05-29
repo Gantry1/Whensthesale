@@ -526,6 +526,43 @@
     margin-bottom: 14px;
     line-height: 1.5;
   }
+  /* "Currently offering" tier — when no major sale but a real always-on promo exists.
+     Same shape as current-sale-box but warm neutral tone, signaling lower urgency. */
+  .alwaysOn-box {
+    background: var(--bg-accent);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    border: 1px solid var(--rule);
+  }
+  .alwaysOn-box .label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .alwaysOn-box .title {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .alwaysOn-box .desc {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .shop-btn-neutral {
+    background: var(--ink);
+  }
+  .shop-btn-neutral:hover {
+    background: var(--accent);
+  }
   .next-sale-box {
     background: var(--bg-accent);
     border-radius: 12px;
@@ -1400,6 +1437,37 @@ const BRANDS = {
     name: "Lululemon",
     tagline: "The hardest brand to catch on sale",
     activeSale: null,
+    alwaysOnPromo: { name: "Mejuri Plus", discount: "$60/yr membership gets 15% off everything + free shipping" },
+    alwaysOnPromo: { name: "Sets and bundles", discount: "Curated kits save 15–20% vs buying products individually" },
+    alwaysOnPromo: { name: "Beauty Insider perks", discount: "Free points-based gifts, free shipping over $35 — free signup" },
+    alwaysOnPromo: { name: "Bose Refurbished", discount: "15–25% off with full warranty" },
+    alwaysOnPromo: { name: "Dyson Refurbished", discount: "15–25% off with full warranty" },
+    alwaysOnPromo: { name: "Bundle savings", discount: "Sheet sets and bedding bundles save 15–25% vs à la carte" },
+    alwaysOnPromo: { name: "Open Box & Floor Samples", discount: "40–60% off perfect-condition returns and display items" },
+    alwaysOnPromo: { name: "Red Tab Members", discount: "Members-only codes and early sale access — free signup" },
+    alwaysOnPromo: { name: "Kate Spade Outlet", discount: "Up to 75% off outlet-line bags and accessories — separate site" },
+    alwaysOnPromo: { name: "Tory Burch Outlet", discount: "40–60% off retired styles — separate outlet site" },
+    alwaysOnPromo: { name: "Coach Outlet", discount: "Up to 70% off on outlet-line bags and accessories — separate site" },
+    alwaysOnPromo: { name: "Sale section", discount: "Past-season styles up to 60% off year-round" },
+    alwaysOnPromo: { name: "Joe's New Balance Outlet", discount: "Past-season styles 30–50% off — separate outlet site" },
+    alwaysOnPromo: { name: "Sale section", discount: "Past-season colorways 20–30% off" },
+    alwaysOnPromo: { name: "adiClub member discounts", discount: "Members-only sales drop monthly — free signup" },
+    alwaysOnPromo: { name: "Sale section", discount: "Past-season styles up to 50% off year-round" },
+    alwaysOnPromo: { name: "Almost always 30%+ off", discount: "BR runs sitewide promos nearly every week" },
+    alwaysOnPromo: { name: "Sale section", discount: "Past-season workwear up to 60% off" },
+    alwaysOnPromo: { name: "Choose What You Pay", discount: "Pick from 3 transparent price tiers on past-season items" },
+    alwaysOnPromo: { name: "Sale section", discount: "Past-season styles up to 40% off" },
+    alwaysOnPromo: { name: "Sale section", discount: "Past-season styles up to 50% off + occasional extra 30% on sale" },
+    alwaysOnPromo: { name: "Sale section", discount: "Almost always running 30%+ off codes — check the homepage" },
+    alwaysOnPromo: { name: "Student & Teacher discount", discount: "15% off year-round with valid school ID" },
+    alwaysOnPromo: { name: "Outlet section", discount: "Past-season styles 25–40% off" },
+    alwaysOnPromo: { name: "Final Sale", discount: "Past-season styles up to 50% off — final sale, no returns" },
+    alwaysOnPromo: { name: "Final Sale section", discount: "Past-season styles up to 40% off" },
+    alwaysOnPromo: { name: "Sale section", discount: "Past-season styles 30–50% off year-round" },
+    alwaysOnPromo: { name: "Nike Member exclusives", discount: "20% off select via free Nike Membership" },
+    alwaysOnPromo: { name: "Worn Wear", discount: "Used Patagonia gear — significantly less than new, with the same craftsmanship" },
+    alwaysOnPromo: { name: "Apple Education Pricing", discount: "5–15% off Macs, iPads, and Apple Watch — year-round for students, parents, and educators" },
+    alwaysOnPromo: { name: "We Made Too Much", discount: "Past-season styles up to 50% off" },
     nextSale: { name: "We Made Too Much refresh", when: "Every Thursday at 6 AM PT", discount: "20–40% off select" },
     bestSaleEver: "Black Friday — 25–30% off",
     lastSale: "Black Friday 2025",
@@ -2033,11 +2101,12 @@ let activeCategory = "top";
 // strings like "May 23" that go stale the moment Memorial Day ends.
 function getNextEvent(brandKey, brand) {
   // Active sale takes precedence — no need to predict the next one
-  if (brand.activeSale) {
+  const liveSale = getEffectiveActiveSale(brand);
+  if (liveSale) {
     return {
       shortLabel: "Now",
-      saleName: brand.activeSale.name,
-      detail: brand.activeSale.ends || "Active now"
+      saleName: liveSale.name,
+      detail: liveSale.ends || "Active now"
     };
   }
 
@@ -2086,17 +2155,18 @@ function renderBrandGrid() {
   grid.innerHTML = keys.map(key => {
     const b = BRANDS[key];
     if (!b) return "";
-    const isActive = b.activeSale !== null;
+    const effectiveSale = getEffectiveActiveSale(b);
+    const isActive = effectiveSale !== null;
     const favicon = faviconFor(b.shopUrl, 64);
     const faviconImg = favicon
       ? `<img class="brand-favicon" src="${favicon}" alt="" loading="lazy" onerror="this.style.display='none'" />`
       : "";
     const next = getNextEvent(key, b);
     const primaryLine = isActive
-      ? `${b.activeSale.name} — ${b.activeSale.discount}`
+      ? `${effectiveSale.name} — ${effectiveSale.discount}`
       : `Next: ${next.saleName}`;
     const metaLine = isActive
-      ? (b.activeSale.ends || "")
+      ? (effectiveSale.ends || "")
       : next.shortLabel;
     return `
     <article class="brand-card ${isActive ? "active-sale" : ""}" data-name="${b.name.toLowerCase()} ${key}" onclick="openBrand('${key}')">
@@ -2138,15 +2208,15 @@ function renderHeroPreview() {
   dateEl.textContent = today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   const allBrands = Object.entries(BRANDS);
-  const activeSales = allBrands.filter(([k, b]) => b && b.activeSale);
-  const quietBrands = allBrands.filter(([k, b]) => b && !b.activeSale);
+  const activeSales = allBrands.filter(([k, b]) => b && getEffectiveActiveSale(b));
+  const quietBrands = allBrands.filter(([k, b]) => b && !getEffectiveActiveSale(b));
 
   // Hand-picked preferences for the "quiet premium" slot — strongest brand-recognition.
   const preferredQuiet = ["lululemon", "apple", "patagonia", "vuori"];
   const quiet = preferredQuiet
     .map(k => allBrands.find(([key]) => key === k))
     .filter(Boolean)
-    .find(([k, b]) => b && !b.activeSale);
+    .find(([k, b]) => b && !getEffectiveActiveSale(b));
 
   const picks = [];
 
@@ -2159,7 +2229,7 @@ function renderHeroPreview() {
   const upcomingCandidates = ["aritzia", "aloyoga", "madewell", "nike", "patagonia", "anthropologie", "jcrew"]
     .map(k => allBrands.find(([key]) => key === k))
     .filter(Boolean)
-    .filter(([k, b]) => b && !b.activeSale && !picks.find(p => p.key === k));
+    .filter(([k, b]) => b && !getEffectiveActiveSale(b) && !picks.find(p => p.key === k));
   upcomingCandidates.slice(0, 2).forEach(([k, b]) => {
     picks.push({ key: k, brand: b, type: "upcoming" });
   });
@@ -2182,7 +2252,8 @@ function renderHeroPreview() {
 
     let detail, statusLabel, statusClass;
     if (type === "sale") {
-      detail = `${brand.activeSale.name} — ${brand.activeSale.discount}`;
+      const sale = getEffectiveActiveSale(brand);
+      detail = `${sale.name} — ${sale.discount}`;
       statusLabel = "● ON SALE";
       statusClass = "sale";
     } else if (type === "upcoming") {
@@ -2208,6 +2279,41 @@ function renderHeroPreview() {
   }).join("");
 }
 
+// === Stale active-sale detection ===
+// Parses an activeSale.ends string ("Ends June 2", "June 2, 2026", "6/2/2026", etc.)
+// and returns true if that date is in the past. Used to suppress the green
+// "Active Sale" box when cached data shows a sale that's already ended.
+function isActiveSaleExpired(activeSale) {
+  if (!activeSale || !activeSale.ends) return false;
+  const text = String(activeSale.ends).replace(/^Ends\s+/i, "").trim();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Try native Date parsing first (works for "June 2, 2026", "6/2/2026", etc.)
+  let parsed = new Date(text);
+  // If no year present, JS sometimes parses to year 2001 — re-attempt with current year
+  if (isNaN(parsed.getTime()) || parsed.getFullYear() < 2020) {
+    parsed = new Date(`${text}, ${today.getFullYear()}`);
+  }
+  if (isNaN(parsed.getTime())) return false;  // Can't parse → don't risk hiding
+
+  // If the parsed date with current year is already months in the past, assume
+  // the sale text rolled over to next year (e.g. "Jan 5" seen on Dec 28)
+  const monthsAgo = (today.getFullYear() - parsed.getFullYear()) * 12 + (today.getMonth() - parsed.getMonth());
+  if (monthsAgo > 6) {
+    parsed.setFullYear(parsed.getFullYear() + 1);
+  }
+  parsed.setHours(23, 59, 59, 999);  // Allow same-day "Ends today"
+  return parsed.getTime() < today.getTime();
+}
+
+// Returns the effective active sale for display: null if expired or never set.
+function getEffectiveActiveSale(brand) {
+  if (!brand || !brand.activeSale) return null;
+  if (isActiveSaleExpired(brand.activeSale)) return null;
+  return brand.activeSale;
+}
+
 function openBrand(key) {
   const b = BRANDS[key];
   const modal = document.getElementById("modal");
@@ -2223,16 +2329,32 @@ function openBrand(key) {
     <h2>${modalFaviconImg}${b.name}</h2>
     <p style="font-size:16px; color:var(--ink-soft); margin-bottom:32px; line-height:1.6;">${b.tagline}</p>
 
-    ${b.activeSale ? `
+    ${(() => {
+      const liveSale = getEffectiveActiveSale(b);
+      if (liveSale) {
+        return `
       <div class="current-sale-box">
         <p class="label">● Active sale</p>
-        <p class="title">${b.activeSale.name}</p>
-        <p class="desc">${b.activeSale.discount}${b.activeSale.ends ? " · " + b.activeSale.ends : ""}</p>
+        <p class="title">${liveSale.name}</p>
+        <p class="desc">${liveSale.discount}${liveSale.ends ? " · " + liveSale.ends : ""}</p>
         <a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn">Shop the sale <span>→</span></a>
-      </div>` : ""}
+      </div>`;
+      }
+      // No live sale — fall back to always-on promo if the brand has one
+      if (b.alwaysOnPromo && b.alwaysOnPromo.name) {
+        return `
+      <div class="alwaysOn-box">
+        <p class="label">Currently offering</p>
+        <p class="title">${b.alwaysOnPromo.name}</p>
+        <p class="desc">${b.alwaysOnPromo.discount || ""}</p>
+        <a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn shop-btn-neutral">Shop ${b.name} <span>→</span></a>
+      </div>`;
+      }
+      return "";
+    })()}
 
     <div class="next-sale-box">
-      <p class="label">${b.activeSale ? "Then watch for" : "Next predicted sale"}</p>
+      <p class="label">${getEffectiveActiveSale(b) ? "Then watch for" : "Next predicted sale"}</p>
       <p class="title">${b.nextSale.name} · ${b.nextSale.discount}</p>
       <p class="when">${b.nextSale.when}</p>
     </div>
@@ -2278,7 +2400,7 @@ function openBrand(key) {
       <p class="text">${b.proTip}</p>
     </div>
 
-    ${!b.activeSale ? `<a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn">Visit ${b.name} <span>→</span></a>` : ""}
+    ${(!getEffectiveActiveSale(b) && !(b.alwaysOnPromo && b.alwaysOnPromo.name)) ? `<a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn">Visit ${b.name} <span>→</span></a>` : ""}
   `;
   modal.classList.add("open");
   document.body.style.overflow = "hidden";
@@ -2432,6 +2554,7 @@ async function researchBrand(brandName, slug) {
       name: data.name,
       tagline: data.tagline || "",
       activeSale: data.activeSale || null,
+      alwaysOnPromo: data.alwaysOnPromo || null,
       nextSale: data.nextSale || { name: "Unknown", when: "Unknown", discount: "" },
       patterns: data.patterns || [],
       proTip: data.proTip || "",
