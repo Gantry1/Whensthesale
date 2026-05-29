@@ -892,11 +892,13 @@
     color: var(--ink-faint);
     cursor: default;
     transition: transform 0.15s;
-    min-height: 64px;
+    min-height: 80px;
     min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    gap: 2px;
   }
   .month-cell.has-sale {
     background: var(--sale-soft);
@@ -908,16 +910,23 @@
     box-shadow: 0 0 0 2px var(--accent);
   }
   .month-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .month-discount {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.01em;
   }
   .month-detail {
     font-size: 10px;
-    margin-top: 4px;
-    line-height: 1.3;
-    opacity: 0.8;
+    line-height: 1.2;
+    opacity: 0.85;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1177,187 +1186,201 @@
 </div>
 
 <script>
+// === Sale calendars (new schema) ===
+// Each month maps to an ARRAY of { label, discount } entries — typically 0-1 per month.
+// Inclusion rule: storewide discount of 10%+ OR a signature event shoppers actively
+// watch for (Aloversary, Apple BTS bundle, Patagonia Past-Season). Category-only sales,
+// vague "Spring picks" promos, and outlet-only events are excluded so the calendar's
+// green months actually signal "wait for this".
 const SALE_CALENDARS = {
   lululemon: {
-    Jan: "", Feb: "", Mar: "", Apr: "", May: "", Jun: "", Jul: "",
-    Aug: "", Sep: "", Oct: "", Nov: "Black Friday 25–30%", Dec: ""
+    Nov: [{ label: "Black Friday", discount: "25%" }]
   },
   apple: {
-    Jan: "", Feb: "", Mar: "", Apr: "", May: "",
-    Jun: "BTS starts",
-    Jul: "BTS ongoing",
-    Aug: "BTS ongoing",
-    Sep: "BTS ends Sep 30",
-    Oct: "", Nov: "Small BF (resellers)", Dec: ""
+    Jun: [{ label: "Back to School bundle", discount: "Free gift" }],
+    Jul: [{ label: "BTS bundle ongoing", discount: "Free gift" }],
+    Aug: [{ label: "BTS bundle ongoing", discount: "Free gift" }],
+    Sep: [{ label: "BTS ends Sep 30", discount: "Free gift" }]
   },
   patagonia: {
-    Jan: "", Feb: "Winter Sale 40%", Mar: "", Apr: "", May: "", Jun: "",
-    Jul: "Summer preview", Aug: "Summer Sale 40%", Sep: "", Oct: "", Nov: "", Dec: ""
+    Feb: [{ label: "Winter Past-Season", discount: "40%" }],
+    Aug: [{ label: "Summer Past-Season", discount: "40%" }]
   },
   nike: {
-    Jan: "EOS clearance 40%", Feb: "", Mar: "", Apr: "",
-    May: "Memorial Day 25%", Jun: "Member event",
-    Jul: "July 4 + 40% off", Aug: "", Sep: "", Oct: "",
-    Nov: "Black Friday 25–50%", Dec: "Cyber Week 25%"
+    Jan: [{ label: "End-of-season", discount: "40%" }],
+    Jul: [{ label: "July 4 sale", discount: "40%" }],
+    Nov: [{ label: "Black Friday", discount: "50%" }],
+    Dec: [{ label: "Cyber Week", discount: "25%" }]
   },
   aloyoga: {
-    Jan: "Winter clearance", Feb: "", Mar: "", Apr: "",
-    May: "Aloversary 30%", Jun: "", Jul: "Past-season summer", Aug: "",
-    Sep: "", Oct: "",
-    Nov: "Singles Day + BF 30%", Dec: "Holiday continued"
+    May: [{ label: "Aloversary", discount: "30%" }],
+    Nov: [{ label: "Black Friday", discount: "30%" }],
+    Dec: [{ label: "Holiday sale", discount: "30%" }]
   },
   vuori: {
-    Jan: "EOS clearance", Feb: "", Mar: "", Apr: "", May: "", Jun: "",
-    Jul: "", Aug: "EOS summer", Sep: "", Oct: "",
-    Nov: "Black Friday 25%", Dec: ""
+    Nov: [{ label: "Black Friday", discount: "25%" }]
   },
   aritzia: {
-    Jan: "", Feb: "Mid-season flash", Mar: "", Apr: "", May: "", Jun: "",
-    Jul: "Summer Sale 50%", Aug: "Summer continued", Sep: "", Oct: "",
-    Nov: "Black Friday 30–40%", Dec: "Boxing Day 50–60%"
+    Jul: [{ label: "Summer Sale", discount: "50%" }],
+    Aug: [{ label: "Summer continued", discount: "50%" }],
+    Nov: [{ label: "Black Friday", discount: "40%" }],
+    Dec: [{ label: "Boxing Day", discount: "60%" }]
   },
   onrunning: {
-    Jan: "", Feb: "", Mar: "", Apr: "", May: "", Jun: "", Jul: "",
-    Aug: "Outlet refresh", Sep: "", Oct: "",
-    Nov: "Black Friday 20–25%", Dec: ""
+    Nov: [{ label: "Black Friday", discount: "25%" }]
   },
   madewell: {
-    Jan: "Winter sale 40%", Feb: "Flash sales", Mar: "Spring 30%", Apr: "Friends & Family",
-    May: "Memorial Day 30%", Jun: "Summer kickoff", Jul: "Summer sale 50%", Aug: "BTS 30%",
-    Sep: "Fall preview", Oct: "Friends & Family",
-    Nov: "Black Friday 40%", Dec: "Cyber Week 40%"
+    Jan: [{ label: "Winter sale", discount: "40%" }],
+    May: [{ label: "Memorial Day", discount: "30%" }],
+    Jul: [{ label: "Summer sale", discount: "50%" }],
+    Aug: [{ label: "Back to school", discount: "30%" }],
+    Nov: [{ label: "Black Friday", discount: "40%" }],
+    Dec: [{ label: "Cyber Week", discount: "40%" }]
   },
   jcrew: {
-    Jan: "Winter clearance 60%", Feb: "Presidents Day 40%", Mar: "Spring 30%", Apr: "Easter 40%",
-    May: "Memorial Day 40%", Jun: "Friends & Family 40%", Jul: "Summer 50%", Aug: "BTS 30%",
-    Sep: "Labor Day 40%", Oct: "Friends & Family 40%",
-    Nov: "Black Friday 40%", Dec: "Cyber Week + holiday"
+    Jan: [{ label: "Winter clearance", discount: "60%" }],
+    Feb: [{ label: "Presidents Day", discount: "40%" }],
+    Apr: [{ label: "Easter sale", discount: "40%" }],
+    May: [{ label: "Memorial Day", discount: "40%" }],
+    Jun: [{ label: "Friends & Family", discount: "40%" }],
+    Jul: [{ label: "Summer sale", discount: "50%" }],
+    Sep: [{ label: "Labor Day", discount: "40%" }],
+    Oct: [{ label: "Friends & Family", discount: "40%" }],
+    Nov: [{ label: "Black Friday", discount: "40%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "40%" }]
   },
   anthropologie: {
-    Jan: "Winter clearance", Feb: "Tagged sale +50%", Mar: "Spring picks", Apr: "Earth Day home",
-    May: "Memorial Day", Jun: "Friends & Family", Jul: "Mid-summer sale", Aug: "EOS home 30%",
-    Sep: "Labor Day", Oct: "Friends & Family",
-    Nov: "Black Friday 30%+", Dec: "Sitewide stack"
+    Feb: [{ label: "Tagged Sale", discount: "Extra 50%" }],
+    Nov: [{ label: "Black Friday", discount: "30%" }]
   },
   reformation: {
-    Jan: "End-of-season 40%", Feb: "", Mar: "Spring teaser", Apr: "",
-    May: "Memorial Day 25%", Jun: "", Jul: "Summer sale 30%", Aug: "EOS summer 40%",
-    Sep: "", Oct: "",
-    Nov: "Black Friday 25%", Dec: "Holiday continued"
+    Jan: [{ label: "End-of-season", discount: "40%" }],
+    Aug: [{ label: "End-of-summer", discount: "40%" }],
+    Nov: [{ label: "Black Friday", discount: "25%" }]
   },
   everlane: {
-    Jan: "Choose What You Pay", Feb: "", Mar: "Spring restock", Apr: "",
-    May: "Memorial Day", Jun: "", Jul: "Summer sale 30%", Aug: "EOS summer",
-    Sep: "", Oct: "",
-    Nov: "Black Friday 30%", Dec: "Cyber + holiday"
+    Jul: [{ label: "Summer sale", discount: "30%" }],
+    Nov: [{ label: "Black Friday", discount: "30%" }]
   },
   theory: {
-    Jan: "Winter sale 50%", Feb: "", Mar: "Friends & Family 25%", Apr: "Spring continued",
-    May: "Memorial Day", Jun: "Summer sale 40%", Jul: "Mid-summer 50%", Aug: "EOS 60%",
-    Sep: "", Oct: "Friends & Family",
-    Nov: "Black Friday 25–30%", Dec: "Holiday markdowns"
+    Jan: [{ label: "Winter sale", discount: "50%" }],
+    Mar: [{ label: "Friends & Family", discount: "25%" }],
+    Jul: [{ label: "Mid-summer sale", discount: "50%" }],
+    Aug: [{ label: "End-of-season", discount: "60%" }],
+    Oct: [{ label: "Friends & Family", discount: "25%" }],
+    Nov: [{ label: "Black Friday", discount: "25%" }]
   },
   bananarepublic: {
-    Jan: "Winter clearance 60%", Feb: "Presidents Day 40%", Mar: "Spring 30%", Apr: "Easter 40%",
-    May: "Memorial Day 60%", Jun: "Father's Day 40%", Jul: "July 4 50%", Aug: "EOS 60%",
-    Sep: "Labor Day 40%", Oct: "Friends & Family 40%",
-    Nov: "Black Friday 40%", Dec: "Cyber Week 40%"
+    Jan: [{ label: "Winter clearance", discount: "60%" }],
+    Feb: [{ label: "Presidents Day", discount: "40%" }],
+    Apr: [{ label: "Easter sale", discount: "40%" }],
+    May: [{ label: "Memorial Day", discount: "60%" }],
+    Jun: [{ label: "Father's Day", discount: "40%" }],
+    Jul: [{ label: "July 4 sale", discount: "50%" }],
+    Aug: [{ label: "End-of-season", discount: "60%" }],
+    Sep: [{ label: "Labor Day", discount: "40%" }],
+    Oct: [{ label: "Friends & Family", discount: "40%" }],
+    Nov: [{ label: "Black Friday", discount: "40%" }],
+    Dec: [{ label: "Cyber Week", discount: "40%" }]
   },
   freepeople: {
-    Jan: "Winter sale", Feb: "Flash sales", Mar: "Spring picks", Apr: "",
-    May: "Memorial Day", Jun: "Summer kickoff", Jul: "Summer sale 50%", Aug: "EOS summer",
-    Sep: "Fall preview", Oct: "Friends & Family",
-    Nov: "Black Friday 25%+", Dec: "Cyber + holiday"
+    Jul: [{ label: "Summer sale", discount: "50%" }],
+    Oct: [{ label: "Friends & Family", discount: "25%" }],
+    Nov: [{ label: "Black Friday", discount: "25%" }]
   },
   adidas: {
-    Jan: "EOS clearance 50%", Feb: "Presidents Day", Mar: "", Apr: "",
-    May: "Memorial Day 30%", Jun: "Member week 25%", Jul: "July 4 + summer 40%", Aug: "BTS 30%",
-    Sep: "Labor Day 25%", Oct: "Member days",
-    Nov: "Black Friday 50%", Dec: "Cyber Week 50%"
+    Jan: [{ label: "End-of-season", discount: "50%" }],
+    May: [{ label: "Memorial Day", discount: "30%" }],
+    Jul: [{ label: "July 4 sale", discount: "40%" }],
+    Nov: [{ label: "Black Friday", discount: "50%" }],
+    Dec: [{ label: "Cyber Week", discount: "50%" }]
   },
   hoka: {
-    Jan: "Winter clearance", Feb: "", Mar: "", Apr: "",
-    May: "Memorial Day select", Jun: "", Jul: "Summer past-season", Aug: "",
-    Sep: "Labor Day", Oct: "",
-    Nov: "Black Friday 25%", Dec: "Cyber Week"
+    May: [{ label: "Memorial Day", discount: "20%" }],
+    Nov: [{ label: "Black Friday", discount: "25%" }]
   },
   newbalance: {
-    Jan: "Winter clearance 40%", Feb: "", Mar: "", Apr: "",
-    May: "Memorial Day 25%", Jun: "Member event", Jul: "July 4 30%", Aug: "BTS",
-    Sep: "Labor Day", Oct: "",
-    Nov: "Black Friday 25–40%", Dec: "Cyber Week 25%"
+    Jan: [{ label: "End-of-season", discount: "40%" }],
+    May: [{ label: "Memorial Day", discount: "25%" }],
+    Jul: [{ label: "July 4 sale", discount: "30%" }],
+    Nov: [{ label: "Black Friday", discount: "40%" }],
+    Dec: [{ label: "Cyber Week", discount: "25%" }]
   },
   athleta: {
-    Jan: "Winter sale 60%", Feb: "Mid-season", Mar: "Spring 25%", Apr: "Earth Day",
-    May: "Memorial Day 30%", Jun: "Summer sale", Jul: "July 4 + summer 60%", Aug: "EOS 60%",
-    Sep: "Labor Day 25%", Oct: "Friends & Family",
-    Nov: "Black Friday 30–60%", Dec: "Cyber + holiday"
+    Jan: [{ label: "Winter sale", discount: "60%" }],
+    May: [{ label: "Memorial Day", discount: "30%" }],
+    Jul: [{ label: "July 4 sale", discount: "60%" }],
+    Aug: [{ label: "End-of-season", discount: "60%" }],
+    Sep: [{ label: "Labor Day", discount: "25%" }],
+    Oct: [{ label: "Friends & Family", discount: "30%" }],
+    Nov: [{ label: "Black Friday", discount: "30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "30%" }]
   },
   coach: {
-    Jan: "Winter clearance", Feb: "", Mar: "Spring restock", Apr: "",
-    May: "Memorial Day 25%", Jun: "Father's Day", Jul: "Summer sale 50%", Aug: "EOS",
-    Sep: "Labor Day", Oct: "",
-    Nov: "Black Friday 30%+", Dec: "Cyber + holiday"
+    May: [{ label: "Memorial Day", discount: "25%" }],
+    Jul: [{ label: "Summer sale", discount: "50%" }],
+    Nov: [{ label: "Black Friday", discount: "30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "30%" }]
   },
   toryburch: {
-    Jan: "Winter Promo Event 30%", Feb: "", Mar: "", Apr: "",
-    May: "Memorial Day", Jun: "Semi-Annual Sale", Jul: "Semi-Annual cont.", Aug: "EOS clearance",
-    Sep: "", Oct: "",
-    Nov: "Black Friday 30%", Dec: "Cyber + holiday"
+    Jan: [{ label: "Winter Promo", discount: "30%" }],
+    Jun: [{ label: "Semi-Annual Sale", discount: "60%" }],
+    Jul: [{ label: "Semi-Annual cont.", discount: "60%" }],
+    Nov: [{ label: "Black Friday", discount: "30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "30%" }]
   },
   katespade: {
-    Jan: "Winter clearance", Feb: "", Mar: "Spring sale", Apr: "Surprise sale 30%",
-    May: "Memorial Day", Jun: "Surprise sale", Jul: "July 4 + Surprise", Aug: "EOS",
-    Sep: "Labor Day", Oct: "",
-    Nov: "Black Friday 30%+", Dec: "Cyber + holiday"
+    Apr: [{ label: "Surprise Sale", discount: "30%" }],
+    Nov: [{ label: "Black Friday", discount: "30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "30%" }]
   },
   levis: {
-    Jan: "Winter clearance 40%", Feb: "Presidents Day", Mar: "", Apr: "",
-    May: "Memorial Day 30%", Jun: "Father's Day", Jul: "July 4 + summer 40%", Aug: "BTS 30%",
-    Sep: "Labor Day", Oct: "Member access",
-    Nov: "Black Friday 40%", Dec: "Cyber Week 30%"
+    Jan: [{ label: "Winter clearance", discount: "40%" }],
+    May: [{ label: "Memorial Day", discount: "30%" }],
+    Jul: [{ label: "July 4 sale", discount: "40%" }],
+    Aug: [{ label: "Back to school", discount: "30%" }],
+    Nov: [{ label: "Black Friday", discount: "40%" }],
+    Dec: [{ label: "Cyber Week", discount: "30%" }]
   },
   westelm: {
-    Jan: "Winter sale 60%", Feb: "Presidents Day", Mar: "Spring refresh", Apr: "Earth Day",
-    May: "Memorial Day 30%", Jun: "Friends & Family", Jul: "July 4 + summer 50%", Aug: "EOS clearance",
-    Sep: "Labor Day 30%", Oct: "Fall refresh",
-    Nov: "Black Friday 40%", Dec: "Cyber Week 40%"
+    Jan: [{ label: "Winter sale", discount: "60%" }],
+    May: [{ label: "Memorial Day", discount: "30%" }],
+    Jul: [{ label: "July 4 sale", discount: "50%" }],
+    Sep: [{ label: "Labor Day", discount: "30%" }],
+    Nov: [{ label: "Black Friday", discount: "40%" }],
+    Dec: [{ label: "Cyber Week", discount: "40%" }]
   },
   brooklinen: {
-    Jan: "Winter sale 25%", Feb: "Presidents Day", Mar: "", Apr: "",
-    May: "Memorial Day 25%", Jun: "Anniversary Sale 25%", Jul: "July 4 25%", Aug: "",
-    Sep: "Labor Day 25%", Oct: "",
-    Nov: "Black Friday 25%", Dec: "Cyber + holiday"
+    May: [{ label: "Memorial Day", discount: "25%" }],
+    Jun: [{ label: "Anniversary Sale", discount: "25%" }],
+    Jul: [{ label: "July 4 sale", discount: "25%" }],
+    Sep: [{ label: "Labor Day", discount: "25%" }],
+    Nov: [{ label: "Black Friday", discount: "25%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "25%" }]
   },
   dyson: {
-    Jan: "", Feb: "Refurb appears", Mar: "", Apr: "",
-    May: "Memorial Day select", Jun: "", Jul: "", Aug: "",
-    Sep: "", Oct: "",
-    Nov: "Black Friday $100+ off", Dec: "Cyber Week"
+    Nov: [{ label: "Black Friday", discount: "$100+ off" }],
+    Dec: [{ label: "Cyber Week", discount: "$100+ off" }]
   },
   bose: {
-    Jan: "Winter clearance", Feb: "Presidents Day", Mar: "", Apr: "",
-    May: "Memorial Day", Jun: "Father's Day", Jul: "July 4 sale", Aug: "BTS",
-    Sep: "Labor Day", Oct: "",
-    Nov: "Black Friday 25–40%", Dec: "Cyber + holiday"
+    May: [{ label: "Memorial Day", discount: "$50+ off" }],
+    Jul: [{ label: "July 4 sale", discount: "$50+ off" }],
+    Sep: [{ label: "Labor Day", discount: "$50+ off" }],
+    Nov: [{ label: "Black Friday", discount: "30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "25%" }]
   },
   sephora: {
-    Jan: "", Feb: "", Mar: "", Apr: "Spring Savings 20%",
-    May: "", Jun: "", Jul: "", Aug: "",
-    Sep: "", Oct: "Holiday Savings 20%",
-    Nov: "Black Friday + Cyber", Dec: "Holiday continued"
+    Apr: [{ label: "Spring Savings", discount: "20%" }],
+    Oct: [{ label: "Holiday Savings", discount: "20%" }]
   },
   glossier: {
-    Jan: "Winter sale 20%", Feb: "", Mar: "", Apr: "",
-    May: "Memorial Day", Jun: "Anniversary sale", Jul: "Summer sale 20%", Aug: "",
-    Sep: "", Oct: "",
-    Nov: "Black Friday 20–25%", Dec: "Cyber + holiday"
+    Nov: [{ label: "Black Friday", discount: "20%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "20%" }]
   },
   mejuri: {
-    Jan: "End of year cont.", Feb: "", Mar: "", Apr: "",
-    May: "Memorial Day select", Jun: "", Jul: "Summer sale 20%", Aug: "",
-    Sep: "", Oct: "",
-    Nov: "Black Friday 20%", Dec: "Year-End event"
+    Jul: [{ label: "Summer Sale", discount: "20%" }],
+    Nov: [{ label: "Black Friday", discount: "20%" }],
+    Dec: [{ label: "Year-End event", discount: "20%" }]
   }
 };
 
@@ -2023,14 +2046,16 @@ function getNextEvent(brandKey, brand) {
       const offset = startMonth + i;
       const monthIndex = ((offset % 12) + 12) % 12;
       const monthKey = months[monthIndex];
-      const sale = calendar[monthKey];
-      if (sale && sale.trim() !== "") {
+      const entries = calendar[monthKey];
+      if (entries && entries.length > 0) {
+        const first = entries[0];
         const wrapsToNextYear = offset >= 12;
         const yearLabel = wrapsToNextYear ? ` ${currentYear + 1}` : "";
         return {
           shortLabel: `${monthKey}${yearLabel}`,
-          saleName: sale,
-          detail: `${sale}`
+          saleName: first.label,
+          discount: first.discount,
+          detail: `${first.label} · ${first.discount}`
         };
       }
     }
@@ -2205,12 +2230,21 @@ function openBrand(key) {
       <p class="modal-section-title">12-month sale calendar</p>
       <div class="calendar-grid">
         ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => {
-          const sale = (SALE_CALENDARS[key] || {})[m] || "";
+          const entries = (SALE_CALENDARS[key] || {})[m] || [];
           const isCurrent = i === currentMonth;
-          const hasSale = sale.length > 0;
-          return `<div class="month-cell ${hasSale ? "has-sale" : ""} ${isCurrent ? "current" : ""}" ${hasSale ? `title="${sale.replace(/"/g,"&quot;")}"` : ""}>
+          const hasSale = entries.length > 0;
+          // For months with multiple entries (rare), show the first one's discount
+          // as the headline number, and the count as a hint.
+          const primary = hasSale ? entries[0] : null;
+          const extra = entries.length > 1 ? ` +${entries.length - 1}` : "";
+          const tooltip = hasSale
+            ? entries.map(e => `${e.label} — ${e.discount}`).join(" · ")
+            : "";
+          return `<div class="month-cell ${hasSale ? "has-sale" : ""} ${isCurrent ? "current" : ""}" ${hasSale ? `title="${tooltip.replace(/"/g,"&quot;")}"` : ""}>
             <div class="month-label">${m}</div>
-            <div class="month-detail">${hasSale ? sale : "—"}</div>
+            ${hasSale
+              ? `<div class="month-discount">${primary.discount}${extra}</div><div class="month-detail">${primary.label}</div>`
+              : `<div class="month-detail">—</div>`}
           </div>`;
         }).join("")}
       </div>
@@ -2262,6 +2296,28 @@ function slugify(s) {
   return s.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
+// === Migrate old cached calendar schema to new array-based schema ===
+// Users with localStorage entries from before the storewide-only update may
+// have calendars in the old { Jan: "string" } shape. Convert to { Jan: [{label, discount}] }
+// so the modal renderer doesn't crash on stale cache.
+function migrateLegacyCalendar(calendar) {
+  if (!calendar || typeof calendar !== "object") return {};
+  const migrated = {};
+  Object.entries(calendar).forEach(([month, value]) => {
+    if (Array.isArray(value)) {
+      migrated[month] = value;
+    } else if (typeof value === "string" && value.trim() !== "") {
+      // Try to pull a "30%" or "$100 off" out of the legacy string
+      const pctMatch = value.match(/(\d+%)/);
+      const dollarMatch = value.match(/(\$\d+\+? off)/i);
+      const discount = pctMatch ? pctMatch[1] : (dollarMatch ? dollarMatch[1] : "");
+      const label = value.replace(/\s*\d+%\s*/, "").replace(/\s*\$\d+\+? off\s*/i, "").trim() || "Sale";
+      migrated[month] = [{ label, discount }];
+    }
+  });
+  return migrated;
+}
+
 async function openFirstMatch() {
   const q = document.getElementById("search-input").value.trim();
   if (!q) return;
@@ -2279,7 +2335,7 @@ async function openFirstMatch() {
   const slug = slugify(q);
   if (RESEARCHED_BRANDS[slug]) {
     BRANDS[slug] = RESEARCHED_BRANDS[slug];
-    SALE_CALENDARS[slug] = RESEARCHED_BRANDS[slug]._calendar || {};
+    SALE_CALENDARS[slug] = migrateLegacyCalendar(RESEARCHED_BRANDS[slug]._calendar);
     openBrand(slug);
     return;
   }
@@ -2343,21 +2399,22 @@ async function researchBrand(brandName, slug) {
 
     if (!data || !data.name) throw new Error("Empty result from research");
 
-    // Build the 12-month calendar from the compact saleMonths array.
-    // (Falls back to the old saleCalendar object format if present.)
+    // Build the calendar from AI's flat saleMonths array into the new schema:
+    // each month -> array of { label, discount } entries.
     const MONTH_KEYS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    let calendar = {};
-    MONTH_KEYS.forEach(m => { calendar[m] = ""; });
+    const calendar = {};
     if (Array.isArray(data.saleMonths)) {
       data.saleMonths.forEach(entry => {
-        if (entry && entry.month) {
-          const key = entry.month.slice(0, 3);
-          const matched = MONTH_KEYS.find(m => m.toLowerCase() === key.toLowerCase());
-          if (matched) calendar[matched] = entry.label || "Sale";
-        }
+        if (!entry || !entry.month) return;
+        const key = entry.month.slice(0, 3);
+        const matched = MONTH_KEYS.find(m => m.toLowerCase() === key.toLowerCase());
+        if (!matched) return;
+        if (!calendar[matched]) calendar[matched] = [];
+        calendar[matched].push({
+          label: entry.label || "Sale",
+          discount: entry.discount || ""
+        });
       });
-    } else if (data.saleCalendar && typeof data.saleCalendar === "object") {
-      calendar = data.saleCalendar;
     }
 
     const brand = {
