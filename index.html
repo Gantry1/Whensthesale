@@ -13,7 +13,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #F7F4EE;
@@ -29,7 +29,9 @@
     --sale: #2D5A3D;
     --sale-soft: #E4F0E8;
     --shadow: 0 1px 2px rgba(26,24,20,0.04);
-    --serif: 'Fraunces', Georgia, serif;
+    /* Display font (used for headings, brand names, logo). The variable is
+       named --serif for historical reasons but now points to a geometric sans-serif. */
+    --serif: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
     --sans: 'Inter', -apple-system, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -108,7 +110,7 @@
   .hero h1 {
     font-family: var(--serif);
     font-size: clamp(40px, 6.5vw, 76px);
-    font-weight: 300;
+    font-weight: 500;
     line-height: 1.02;
     letter-spacing: -0.025em;
     margin-bottom: 28px;
@@ -308,7 +310,7 @@
   .section-header h2 {
     font-family: var(--serif);
     font-size: clamp(28px, 4vw, 44px);
-    font-weight: 300;
+    font-weight: 500;
     letter-spacing: -0.02em;
     line-height: 1.1;
   }
@@ -358,7 +360,7 @@
   .brand-name {
     font-family: var(--serif);
     font-size: 22px;
-    font-weight: 400;
+    font-weight: 600;
     letter-spacing: -0.01em;
     display: flex;
     align-items: center;
@@ -408,7 +410,8 @@
     font-weight: 500;
   }
   .brand-meta {
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 500;
     color: var(--ink-faint);
     margin-bottom: 18px;
   }
@@ -484,7 +487,7 @@
   .modal h2 {
     font-family: var(--serif);
     font-size: 44px;
-    font-weight: 300;
+    font-weight: 500;
     letter-spacing: -0.025em;
     line-height: 1.05;
     margin-bottom: 32px;
@@ -674,7 +677,7 @@
   .alerts-section h2 {
     font-family: var(--serif);
     font-size: clamp(32px, 5vw, 56px);
-    font-weight: 300;
+    font-weight: 500;
     letter-spacing: -0.025em;
     line-height: 1.05;
     margin-bottom: 20px;
@@ -761,7 +764,7 @@
   .how-num {
     font-family: var(--serif);
     font-size: 64px;
-    font-weight: 300;
+    font-weight: 500;
     color: var(--accent);
     line-height: 1;
     margin-bottom: 16px;
@@ -2116,6 +2119,7 @@ function getNextEvent(brandKey, brand) {
 
   const calendar = SALE_CALENDARS[brandKey];
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const fullMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const today = new Date();
   const currentMonth = today.getMonth();
   const currentDay = today.getDate();
@@ -2136,7 +2140,7 @@ function getNextEvent(brandKey, brand) {
         const wrapsToNextYear = offset >= 12;
         const yearLabel = wrapsToNextYear ? ` ${currentYear + 1}` : "";
         return {
-          shortLabel: `${monthKey}${yearLabel}`,
+          shortLabel: `${fullMonths[monthIndex]}${yearLabel}`,
           saleName: first.label,
           discount: first.discount,
           detail: `${first.label} · ${first.discount}`
