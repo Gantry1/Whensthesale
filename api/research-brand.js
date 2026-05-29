@@ -129,6 +129,10 @@ Return ONLY raw JSON, no markdown, no backticks:
     "discount": "e.g. 40% off",
     "ends": "e.g. Ends June 2"
   } or null if no active sale,
+  "alwaysOnPromo": {
+    "name": "e.g. Sale section / Student discount / Outlet site",
+    "discount": "e.g. Past-season styles up to 50% off"
+  } or null if the brand has truly nothing always available,
   "nextSale": {
     "name": "string",
     "when": "e.g. Mid-July",
@@ -152,6 +156,8 @@ The "discount" field MUST BE HONEST. If a brand says "up to 50% off" but most it
 Use 3-letter month names (Jan, Feb, Mar...). A brand with 2 storewide events returns 2 entries — do NOT pad with empty or weak entries.
 Be honest — if a brand rarely runs storewide sales, return just 1 entry (e.g. only Black Friday). It's fine to return an empty saleMonths array if a brand never has storewide sales.
 If you cannot find a brand after your one search, return: {"error": "Brand not found"}
+
+For alwaysOnPromo: Use this for the SMALLER ongoing offer a brand has when no major sale is running, so users always have something actionable when they click through. Good examples: a brand's permanent sale/outlet/clearance section ("Past-season styles up to 50% off"), a year-round student/educator discount ("15% off with valid school ID"), a loyalty program with real discounts ("adiClub members get monthly drops"), a refurbished-goods program ("Bose Refurbished, 15–25% off with full warranty"). Return null if the brand truly has nothing — but most do. Keep both name and discount short and concrete.
 
 REMINDER: Exactly 1 search. After it returns, write the JSON immediately.`,
       messages: [{ role: "user", content: `Research: ${rawName}` }],
