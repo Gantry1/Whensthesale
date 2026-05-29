@@ -120,46 +120,80 @@ Good single-query examples:
 
 Prioritize results from: brand's own site, deal aggregators (Slickdeals, RetailMeNot), recent news.
 
-Return ONLY raw JSON, no markdown, no backticks:
+Return ONLY raw JSON, no markdown, no backticks. The angle-bracket text below describes what goes in each field — those are DESCRIPTIONS, NOT literal values to copy.
+
 {
-  "name": "Brand Name (properly capitalized)",
-  "tagline": "one short sentence on their sale strategy",
-  "activeSale": {
-    "name": "e.g. Memorial Day Sale",
-    "discount": "e.g. 40% off",
-    "ends": "e.g. Ends June 2"
-  } or null if no active sale,
-  "alwaysOnPromo": {
-    "name": "e.g. Sale section / Student discount / Outlet site",
-    "discount": "e.g. Past-season styles up to 50% off"
-  } or null if the brand has truly nothing always available,
+  "name": "<brand name, properly capitalized>",
+  "tagline": "<one short sentence on the brand's sale strategy>",
+  "activeSale": <object described below, OR null>,
+  "alwaysOnPromo": <object described below, OR null>,
   "nextSale": {
-    "name": "string",
-    "when": "e.g. Mid-July",
-    "discount": "e.g. 30-40% off"
+    "name": "<predicted next sale name based on historical pattern>",
+    "when": "<predicted timing, e.g. mid-July, late November>",
+    "discount": "<historically typical discount range>"
   },
   "saleMonths": [
-    { "month": "Feb", "label": "Winter Sale", "discount": "30–40%" },
-    { "month": "Nov", "label": "Black Friday gift card", "discount": "Up to $200" }
+    { "month": "<3-letter month>", "label": "<short event label>", "discount": "<honest discount range>" }
   ],
-  "patterns": ["3 short bullets, 1 sentence each"],
-  "proTip": "2 sentences max",
-  "shopUrl": "URL to brand's sale or main page",
-  "nextEvent": "short label e.g. May 23 or Nov 2026",
-  "avgDiscount": "e.g. 25-30%"
+  "patterns": ["<3 short bullets, 1 sentence each, describing this brand's sale behavior>"],
+  "proTip": "<concrete actionable advice, max 2 sentences>",
+  "shopUrl": "<URL to brand's main shop or sale page>",
+  "nextEvent": "<short label, e.g. Jul 2026, Nov 2026>",
+  "avgDiscount": "<typical discount range>"
 }
 
-For saleMonths: ONLY include months where the brand runs a STOREWIDE (or near-storewide) sale of 10% OR MORE — OR a signature annual event shoppers actively watch for (e.g., Aloversary, Apple Back-to-School bundle / Black Friday gift card promo, Patagonia Past-Season Sale, Sephora Beauty Insider events). EXCLUDE: category-only sales (e.g. "spring dresses 20% off"), outlet-only events, vague promotions ("spring picks"), and small flash sales under 10%.
+=== CRITICAL RULES FOR activeSale (most error-prone field) ===
 
-The "discount" field MUST BE HONEST. If a brand says "up to 50% off" but most items are at 10–20%, write "10–50%" or "20–50%" — NOT "50%". Use ranges ("20–40%") freely when applicable. Use dollar ranges for brands that discount that way ("$50–100 off"). Use "Up to $X" for gift-card promos like Apple. Use "Free gift" for bundle promos. Never overpromise — a user who sees the headline number should expect that to roughly match what they pay. Keep label under 22 chars.
+activeSale MUST be null unless ALL THREE of these are true:
+  (a) Your search returned clear evidence of a sale CURRENTLY running on the brand's OWN website (not just a deal-blog article describing a past sale)
+  (b) The source describing the sale is recent — published or updated within the last 5 days
+  (c) Any end date stated for the sale is ON OR AFTER today (${today})
 
-Use 3-letter month names (Jan, Feb, Mar...). A brand with 2 storewide events returns 2 entries — do NOT pad with empty or weak entries.
-Be honest — if a brand rarely runs storewide sales, return just 1 entry (e.g. only Black Friday). It's fine to return an empty saleMonths array if a brand never has storewide sales.
+If you decide activeSale should be populated, use this shape:
+{
+  "name": "<sale name exactly as the brand calls it on their site right now>",
+  "discount": "<headline discount as stated on the brand site>",
+  "ends": "<'Ends Month Day' format, only if the brand explicitly states an end date; otherwise null>"
+}
+
+NEVER fabricate, predict, or guess an end date. If the brand doesn't explicitly state one, set "ends" to null — do not make one up to fill the field.
+
+Holiday-sale guardrails:
+- Memorial Day sales end by the Tuesday after Memorial Day (last Monday of May)
+- Black Friday sales end by Cyber Monday
+- Labor Day sales end the Tuesday after Labor Day
+- 4th of July sales end within a few days of July 4
+If today (${today}) is past that natural end window, the sale is NOT active — return activeSale: null EVEN IF articles you find still describe it as if active. Those articles are stale.
+
+When uncertain, return activeSale: null. The UI gracefully falls back to alwaysOnPromo and nextSale, so a null active sale is ALWAYS better than an inaccurate one.
+
+=== RULES FOR saleMonths ===
+
+ONLY include months where the brand runs a STOREWIDE (or near-storewide) sale of 10% OR MORE — OR a signature annual event shoppers actively watch for (e.g., Aloversary, Apple Back-to-School bundle, Apple Black Friday gift card promo, Patagonia Past-Season Sale, Sephora Beauty Insider events).
+
+EXCLUDE: category-only sales (e.g. "spring dresses 20% off"), outlet-only events, vague promotions ("spring picks"), and small flash sales under 10%.
+
+The "discount" field MUST BE HONEST. If a brand says "up to 50% off" but most items are at 10–20%, write "10–50%" or "20–50%" — NOT "50%". Use ranges ("20–40%") freely. Use dollar ranges for brands that discount that way ("$50–100 off"). Use "Up to $X" for gift-card promos like Apple. Use "Free gift" for bundle promos. Never overpromise — a user who sees the headline number should expect that to roughly match what they pay. Keep label under 22 chars.
+
+Use 3-letter month names (Jan, Feb, Mar...). A brand with 2 storewide events returns 2 entries — do NOT pad with empty or weak entries. Be honest — if a brand rarely runs storewide sales, return just 1 entry (e.g. only Black Friday). It's fine to return an empty saleMonths array if a brand never has storewide sales.
+
+=== RULES FOR alwaysOnPromo ===
+
+Use this for the SMALLER ongoing offer a brand has when no major sale is running, so users always have something actionable when they click through. Good examples: a brand's permanent sale/outlet/clearance section ("Past-season styles up to 50% off"), a year-round student/educator discount ("15% off with valid school ID"), a loyalty program with real discounts ("adiClub members get monthly drops"), a refurbished-goods program ("Bose Refurbished, 15–25% off with full warranty").
+
+Shape:
+{
+  "name": "<short offer name>",
+  "discount": "<concrete discount info>"
+}
+
+Return null only if the brand truly has nothing always available — but most do. Keep both fields short and concrete.
+
+===
+
 If you cannot find a brand after your one search, return: {"error": "Brand not found"}
 
-For alwaysOnPromo: Use this for the SMALLER ongoing offer a brand has when no major sale is running, so users always have something actionable when they click through. Good examples: a brand's permanent sale/outlet/clearance section ("Past-season styles up to 50% off"), a year-round student/educator discount ("15% off with valid school ID"), a loyalty program with real discounts ("adiClub members get monthly drops"), a refurbished-goods program ("Bose Refurbished, 15–25% off with full warranty"). Return null if the brand truly has nothing — but most do. Keep both name and discount short and concrete.
-
-REMINDER: Exactly 1 search. After it returns, write the JSON immediately.`,
+REMINDER: Exactly 1 search. After it returns, write the JSON immediately. When uncertain about activeSale, ALWAYS prefer null over inventing data.`,
       messages: [{ role: "user", content: `Research: ${rawName}` }],
       },
       { signal: controller.signal }
