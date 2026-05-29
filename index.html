@@ -918,10 +918,15 @@
   }
   .month-discount {
     font-family: var(--serif);
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
-    line-height: 1;
+    line-height: 1.05;
     letter-spacing: -0.01em;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .month-detail {
     font-size: 10px;
@@ -1186,201 +1191,207 @@
 </div>
 
 <script>
-// === Sale calendars (new schema) ===
-// Each month maps to an ARRAY of { label, discount } entries — typically 0-1 per month.
+// === Sale calendars (storewide ≥10% OR signature events) ===
+// Each month -> array of { label, discount } entries (usually 0-1 per month).
 // Inclusion rule: storewide discount of 10%+ OR a signature event shoppers actively
-// watch for (Aloversary, Apple BTS bundle, Patagonia Past-Season). Category-only sales,
-// vague "Spring picks" promos, and outlet-only events are excluded so the calendar's
-// green months actually signal "wait for this".
+// watch for (Apple gift cards, Patagonia Past-Season, Aloversary, etc).
+// Discount strings are HONEST ranges where applicable: e.g., "20–50%" rather than
+// "50%" when only some items hit 50% but most are at the lower end. The point is
+// to never overpromise — if a user sees 50% they should expect to actually pay
+// roughly half price on what they want, not be disappointed.
 const SALE_CALENDARS = {
   lululemon: {
-    Nov: [{ label: "Black Friday", discount: "25%" }]
+    Nov: [{ label: "Black Friday", discount: "20–30%" }]
   },
   apple: {
-    Jun: [{ label: "Back to School bundle", discount: "Free gift" }],
-    Jul: [{ label: "BTS bundle ongoing", discount: "Free gift" }],
-    Aug: [{ label: "BTS bundle ongoing", discount: "Free gift" }],
-    Sep: [{ label: "BTS ends Sep 30", discount: "Free gift" }]
+    Jun: [{ label: "Back to School", discount: "Free gift" }],
+    Jul: [{ label: "BTS bundle", discount: "Free gift" }],
+    Aug: [{ label: "BTS bundle", discount: "Free gift" }],
+    Sep: [{ label: "BTS ends Sep 30", discount: "Free gift" }],
+    Nov: [{ label: "Black Friday gift card", discount: "Up to $250" }],
+    Dec: [{ label: "Cyber Week gift card", discount: "Up to $250" }]
   },
   patagonia: {
-    Feb: [{ label: "Winter Past-Season", discount: "40%" }],
-    Aug: [{ label: "Summer Past-Season", discount: "40%" }]
+    Feb: [{ label: "Winter Past-Season", discount: "30–40%" }],
+    Aug: [{ label: "Summer Past-Season", discount: "30–40%" }]
   },
   nike: {
-    Jan: [{ label: "End-of-season", discount: "40%" }],
-    Jul: [{ label: "July 4 sale", discount: "40%" }],
-    Nov: [{ label: "Black Friday", discount: "50%" }],
-    Dec: [{ label: "Cyber Week", discount: "25%" }]
+    Jan: [{ label: "End-of-season", discount: "25–40%" }],
+    Jul: [{ label: "July 4 sale", discount: "25–40%" }],
+    Nov: [{ label: "Black Friday", discount: "25–50%" }],
+    Dec: [{ label: "Cyber Week", discount: "20–30%" }]
   },
   aloyoga: {
     May: [{ label: "Aloversary", discount: "30%" }],
-    Nov: [{ label: "Black Friday", discount: "30%" }],
-    Dec: [{ label: "Holiday sale", discount: "30%" }]
+    Nov: [{ label: "Black Friday", discount: "20–40%" }],
+    Dec: [{ label: "Holiday sale", discount: "20–40%" }]
   },
   vuori: {
-    Nov: [{ label: "Black Friday", discount: "25%" }]
+    Nov: [{ label: "Black Friday", discount: "20–30%" }]
   },
   aritzia: {
-    Jul: [{ label: "Summer Sale", discount: "50%" }],
-    Aug: [{ label: "Summer continued", discount: "50%" }],
-    Nov: [{ label: "Black Friday", discount: "40%" }],
-    Dec: [{ label: "Boxing Day", discount: "60%" }]
+    Jul: [{ label: "Summer Sale", discount: "20–50%" }],
+    Aug: [{ label: "Summer continued", discount: "20–50%" }],
+    Nov: [{ label: "Black Friday", discount: "20–50%" }],
+    Dec: [{ label: "Boxing Day", discount: "20–50%" }]
   },
   onrunning: {
-    Nov: [{ label: "Black Friday", discount: "25%" }]
+    Nov: [{ label: "Black Friday", discount: "20–25%" }]
   },
   madewell: {
-    Jan: [{ label: "Winter sale", discount: "40%" }],
-    May: [{ label: "Memorial Day", discount: "30%" }],
-    Jul: [{ label: "Summer sale", discount: "50%" }],
-    Aug: [{ label: "Back to school", discount: "30%" }],
-    Nov: [{ label: "Black Friday", discount: "40%" }],
-    Dec: [{ label: "Cyber Week", discount: "40%" }]
+    Jan: [{ label: "Winter sale", discount: "30–50%" }],
+    May: [{ label: "Memorial Day", discount: "25–40%" }],
+    Jul: [{ label: "Summer sale", discount: "30–50%" }],
+    Aug: [{ label: "Back to school", discount: "25–40%" }],
+    Nov: [{ label: "Black Friday", discount: "30–50%" }],
+    Dec: [{ label: "Cyber Week", discount: "30–50%" }]
   },
   jcrew: {
-    Jan: [{ label: "Winter clearance", discount: "60%" }],
-    Feb: [{ label: "Presidents Day", discount: "40%" }],
-    Apr: [{ label: "Easter sale", discount: "40%" }],
-    May: [{ label: "Memorial Day", discount: "40%" }],
+    Jan: [{ label: "Winter clearance", discount: "40–60%" }],
+    Feb: [{ label: "Presidents Day", discount: "30–40%" }],
+    Apr: [{ label: "Easter sale", discount: "30–40%" }],
+    May: [{ label: "Memorial Day", discount: "30–40%" }],
     Jun: [{ label: "Friends & Family", discount: "40%" }],
-    Jul: [{ label: "Summer sale", discount: "50%" }],
-    Sep: [{ label: "Labor Day", discount: "40%" }],
+    Jul: [{ label: "Summer sale", discount: "40–50%" }],
+    Sep: [{ label: "Labor Day", discount: "30–40%" }],
     Oct: [{ label: "Friends & Family", discount: "40%" }],
     Nov: [{ label: "Black Friday", discount: "40%" }],
     Dec: [{ label: "Cyber + holiday", discount: "40%" }]
   },
   anthropologie: {
-    Feb: [{ label: "Tagged Sale", discount: "Extra 50%" }],
-    Nov: [{ label: "Black Friday", discount: "30%" }]
+    Feb: [{ label: "Tagged Sale", discount: "Extra 40–50% off sale" }],
+    Nov: [{ label: "Black Friday", discount: "20–30%" }]
   },
   reformation: {
-    Jan: [{ label: "End-of-season", discount: "40%" }],
-    Aug: [{ label: "End-of-summer", discount: "40%" }],
-    Nov: [{ label: "Black Friday", discount: "25%" }]
+    Jan: [{ label: "End-of-season", discount: "25–40%" }],
+    Aug: [{ label: "End-of-summer", discount: "25–40%" }],
+    Nov: [{ label: "Black Friday", discount: "20–25%" }]
   },
   everlane: {
-    Jul: [{ label: "Summer sale", discount: "30%" }],
-    Nov: [{ label: "Black Friday", discount: "30%" }]
+    Jul: [{ label: "Summer sale", discount: "20–30%" }],
+    Nov: [{ label: "Black Friday", discount: "20–30%" }]
   },
   theory: {
-    Jan: [{ label: "Winter sale", discount: "50%" }],
+    Jan: [{ label: "Winter sale", discount: "30–50%" }],
     Mar: [{ label: "Friends & Family", discount: "25%" }],
-    Jul: [{ label: "Mid-summer sale", discount: "50%" }],
-    Aug: [{ label: "End-of-season", discount: "60%" }],
+    Jul: [{ label: "Mid-summer sale", discount: "30–50%" }],
+    Aug: [{ label: "End-of-season", discount: "40–60%" }],
     Oct: [{ label: "Friends & Family", discount: "25%" }],
-    Nov: [{ label: "Black Friday", discount: "25%" }]
+    Nov: [{ label: "Black Friday", discount: "25–30%" }]
   },
   bananarepublic: {
-    Jan: [{ label: "Winter clearance", discount: "60%" }],
-    Feb: [{ label: "Presidents Day", discount: "40%" }],
-    Apr: [{ label: "Easter sale", discount: "40%" }],
-    May: [{ label: "Memorial Day", discount: "60%" }],
-    Jun: [{ label: "Father's Day", discount: "40%" }],
-    Jul: [{ label: "July 4 sale", discount: "50%" }],
-    Aug: [{ label: "End-of-season", discount: "60%" }],
-    Sep: [{ label: "Labor Day", discount: "40%" }],
+    Jan: [{ label: "Winter clearance", discount: "40–60%" }],
+    Feb: [{ label: "Presidents Day", discount: "30–40%" }],
+    Apr: [{ label: "Easter sale", discount: "30–40%" }],
+    May: [{ label: "Memorial Day", discount: "40–60%" }],
+    Jun: [{ label: "Father's Day", discount: "30–40%" }],
+    Jul: [{ label: "July 4 sale", discount: "40–50%" }],
+    Aug: [{ label: "End-of-season", discount: "40–60%" }],
+    Sep: [{ label: "Labor Day", discount: "30–40%" }],
     Oct: [{ label: "Friends & Family", discount: "40%" }],
     Nov: [{ label: "Black Friday", discount: "40%" }],
     Dec: [{ label: "Cyber Week", discount: "40%" }]
   },
   freepeople: {
-    Jul: [{ label: "Summer sale", discount: "50%" }],
-    Oct: [{ label: "Friends & Family", discount: "25%" }],
-    Nov: [{ label: "Black Friday", discount: "25%" }]
+    Jul: [{ label: "Summer sale", discount: "30–50%" }],
+    Oct: [{ label: "Friends & Family", discount: "20–25%" }],
+    Nov: [{ label: "Black Friday", discount: "20–30%" }]
   },
   adidas: {
-    Jan: [{ label: "End-of-season", discount: "50%" }],
-    May: [{ label: "Memorial Day", discount: "30%" }],
-    Jul: [{ label: "July 4 sale", discount: "40%" }],
-    Nov: [{ label: "Black Friday", discount: "50%" }],
-    Dec: [{ label: "Cyber Week", discount: "50%" }]
+    Jan: [{ label: "End-of-season", discount: "30–50%" }],
+    May: [{ label: "Memorial Day", discount: "25–30%" }],
+    Jul: [{ label: "July 4 sale", discount: "30–40%" }],
+    Nov: [{ label: "Black Friday", discount: "30–50%" }],
+    Dec: [{ label: "Cyber Week", discount: "30–50%" }]
   },
   hoka: {
-    May: [{ label: "Memorial Day", discount: "20%" }],
-    Nov: [{ label: "Black Friday", discount: "25%" }]
+    May: [{ label: "Memorial Day", discount: "10–20%" }],
+    Nov: [{ label: "Black Friday", discount: "20–25%" }]
   },
   newbalance: {
-    Jan: [{ label: "End-of-season", discount: "40%" }],
-    May: [{ label: "Memorial Day", discount: "25%" }],
-    Jul: [{ label: "July 4 sale", discount: "30%" }],
-    Nov: [{ label: "Black Friday", discount: "40%" }],
-    Dec: [{ label: "Cyber Week", discount: "25%" }]
+    Jan: [{ label: "End-of-season", discount: "30–40%" }],
+    May: [{ label: "Memorial Day", discount: "20–25%" }],
+    Jul: [{ label: "July 4 sale", discount: "25–30%" }],
+    Nov: [{ label: "Black Friday", discount: "25–40%" }],
+    Dec: [{ label: "Cyber Week", discount: "20–25%" }]
   },
   athleta: {
-    Jan: [{ label: "Winter sale", discount: "60%" }],
-    May: [{ label: "Memorial Day", discount: "30%" }],
-    Jul: [{ label: "July 4 sale", discount: "60%" }],
-    Aug: [{ label: "End-of-season", discount: "60%" }],
-    Sep: [{ label: "Labor Day", discount: "25%" }],
-    Oct: [{ label: "Friends & Family", discount: "30%" }],
-    Nov: [{ label: "Black Friday", discount: "30%" }],
-    Dec: [{ label: "Cyber + holiday", discount: "30%" }]
+    Jan: [{ label: "Winter sale", discount: "40–60%" }],
+    May: [{ label: "Memorial Day", discount: "25–30%" }],
+    Jul: [{ label: "July 4 sale", discount: "30–60%" }],
+    Aug: [{ label: "End-of-season", discount: "40–60%" }],
+    Sep: [{ label: "Labor Day", discount: "20–25%" }],
+    Oct: [{ label: "Friends & Family", discount: "25–30%" }],
+    Nov: [{ label: "Black Friday", discount: "25–30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "25–30%" }]
   },
   coach: {
-    May: [{ label: "Memorial Day", discount: "25%" }],
-    Jul: [{ label: "Summer sale", discount: "50%" }],
-    Nov: [{ label: "Black Friday", discount: "30%" }],
-    Dec: [{ label: "Cyber + holiday", discount: "30%" }]
+    May: [{ label: "Memorial Day", discount: "20–25%" }],
+    Jul: [{ label: "Summer sale", discount: "30–50%" }],
+    Nov: [{ label: "Black Friday", discount: "25–30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "25–30%" }]
   },
   toryburch: {
-    Jan: [{ label: "Winter Promo", discount: "30%" }],
-    Jun: [{ label: "Semi-Annual Sale", discount: "60%" }],
-    Jul: [{ label: "Semi-Annual cont.", discount: "60%" }],
-    Nov: [{ label: "Black Friday", discount: "30%" }],
-    Dec: [{ label: "Cyber + holiday", discount: "30%" }]
+    Jan: [{ label: "Winter Promo", discount: "25–30%" }],
+    Jun: [{ label: "Semi-Annual Sale", discount: "30–60%" }],
+    Jul: [{ label: "Semi-Annual cont.", discount: "30–60%" }],
+    Nov: [{ label: "Black Friday", discount: "25–30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "25–30%" }]
   },
   katespade: {
-    Apr: [{ label: "Surprise Sale", discount: "30%" }],
-    Nov: [{ label: "Black Friday", discount: "30%" }],
-    Dec: [{ label: "Cyber + holiday", discount: "30%" }]
+    Apr: [{ label: "Surprise Sale", discount: "Extra 30% off sale" }],
+    Nov: [{ label: "Black Friday", discount: "25–30%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "25–30%" }]
   },
   levis: {
-    Jan: [{ label: "Winter clearance", discount: "40%" }],
-    May: [{ label: "Memorial Day", discount: "30%" }],
-    Jul: [{ label: "July 4 sale", discount: "40%" }],
-    Aug: [{ label: "Back to school", discount: "30%" }],
-    Nov: [{ label: "Black Friday", discount: "40%" }],
-    Dec: [{ label: "Cyber Week", discount: "30%" }]
+    Jan: [{ label: "Winter clearance", discount: "30–40%" }],
+    May: [{ label: "Memorial Day", discount: "25–30%" }],
+    Jul: [{ label: "July 4 sale", discount: "30–40%" }],
+    Aug: [{ label: "Back to school", discount: "25–30%" }],
+    Nov: [{ label: "Black Friday", discount: "30–40%" }],
+    Dec: [{ label: "Cyber Week", discount: "25–30%" }]
   },
   westelm: {
-    Jan: [{ label: "Winter sale", discount: "60%" }],
-    May: [{ label: "Memorial Day", discount: "30%" }],
-    Jul: [{ label: "July 4 sale", discount: "50%" }],
-    Sep: [{ label: "Labor Day", discount: "30%" }],
-    Nov: [{ label: "Black Friday", discount: "40%" }],
-    Dec: [{ label: "Cyber Week", discount: "40%" }]
+    Jan: [{ label: "Winter sale", discount: "30–60%" }],
+    May: [{ label: "Memorial Day", discount: "25–30%" }],
+    Jul: [{ label: "July 4 sale", discount: "30–50%" }],
+    Sep: [{ label: "Labor Day", discount: "25–30%" }],
+    Nov: [{ label: "Black Friday", discount: "30–40%" }],
+    Dec: [{ label: "Cyber Week", discount: "30–40%" }]
   },
   brooklinen: {
-    May: [{ label: "Memorial Day", discount: "25%" }],
-    Jun: [{ label: "Anniversary Sale", discount: "25%" }],
-    Jul: [{ label: "July 4 sale", discount: "25%" }],
-    Sep: [{ label: "Labor Day", discount: "25%" }],
-    Nov: [{ label: "Black Friday", discount: "25%" }],
-    Dec: [{ label: "Cyber + holiday", discount: "25%" }]
+    May: [{ label: "Memorial Day", discount: "20–25%" }],
+    Jun: [{ label: "Anniversary Sale", discount: "20–25%" }],
+    Jul: [{ label: "July 4 sale", discount: "20–25%" }],
+    Sep: [{ label: "Labor Day", discount: "20–25%" }],
+    Nov: [{ label: "Black Friday", discount: "20–25%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "20–25%" }]
   },
   dyson: {
-    Nov: [{ label: "Black Friday", discount: "$100+ off" }],
-    Dec: [{ label: "Cyber Week", discount: "$100+ off" }]
+    Nov: [{ label: "Black Friday", discount: "$100–200 off" }],
+    Dec: [{ label: "Cyber Week", discount: "$100–200 off" }]
   },
   bose: {
-    May: [{ label: "Memorial Day", discount: "$50+ off" }],
-    Jul: [{ label: "July 4 sale", discount: "$50+ off" }],
-    Sep: [{ label: "Labor Day", discount: "$50+ off" }],
-    Nov: [{ label: "Black Friday", discount: "30%" }],
-    Dec: [{ label: "Cyber + holiday", discount: "25%" }]
+    May: [{ label: "Memorial Day", discount: "$50–100 off" }],
+    Jul: [{ label: "July 4 sale", discount: "$50–100 off" }],
+    Sep: [{ label: "Labor Day", discount: "$50–100 off" }],
+    Nov: [{ label: "Black Friday", discount: "25–40%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "20–25%" }]
   },
   sephora: {
-    Apr: [{ label: "Spring Savings", discount: "20%" }],
-    Oct: [{ label: "Holiday Savings", discount: "20%" }]
+    Apr: [{ label: "Spring Savings", discount: "10–20% (tiered)" }],
+    Oct: [{ label: "Holiday Savings", discount: "10–20% (tiered)" }],
+    Nov: [{ label: "Black Friday minis", discount: "Holiday sets" }],
+    Dec: [{ label: "Gift sets up to 50%", discount: "Up to 50%" }]
   },
   glossier: {
     Nov: [{ label: "Black Friday", discount: "20%" }],
     Dec: [{ label: "Cyber + holiday", discount: "20%" }]
   },
   mejuri: {
-    Jul: [{ label: "Summer Sale", discount: "20%" }],
-    Nov: [{ label: "Black Friday", discount: "20%" }],
-    Dec: [{ label: "Year-End event", discount: "20%" }]
+    Jul: [{ label: "Summer Sale", discount: "15–20%" }],
+    Nov: [{ label: "Black Friday", discount: "15–20%" }],
+    Dec: [{ label: "Year-End event", discount: "15–20%" }]
   }
 };
 
