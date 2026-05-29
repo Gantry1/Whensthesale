@@ -1405,8 +1405,8 @@ const SALE_CALENDARS = {
     Dec: [{ label: "Cyber + holiday", discount: "20–25%" }]
   },
   dyson: {
-    Nov: [{ label: "Black Friday", discount: "$100–200 off" }],
-    Dec: [{ label: "Cyber Week", discount: "$100–200 off" }]
+    Nov: [{ label: "Black Friday", discount: "Up to 40% off" }],
+    Dec: [{ label: "Cyber Week", discount: "Up to 40% off" }]
   },
   bose: {
     May: [{ label: "Memorial Day", discount: "$50–100 off" }],
@@ -1476,8 +1476,8 @@ const BRANDS = {
   patagonia: {
     name: "Patagonia",
     tagline: "Predictable twice-a-year deep discounts",
-    activeSale: { name: "Past-Season Sale", discount: "Up to 40% off select apparel and gear", ends: "Ongoing while stock lasts" },
-    alwaysOnPromo: { name: "Worn Wear", discount: "Used Patagonia gear — significantly less than new, with the same craftsmanship" },
+    activeSale: null,
+    alwaysOnPromo: { name: "Worn Wear", discount: "Used Patagonia gear at significant discount — same craftsmanship, lower price" },
     nextSale: { name: "Summer Sale", when: "Late July through August", discount: "Up to 40% off summer styles" },
     bestSaleEver: "Winter & Summer Past-Season Sales (up to 50% off)",
     lastSale: "Winter Sale, Feb 2026",
@@ -1516,7 +1516,7 @@ const BRANDS = {
   aloyoga: {
     name: "Alo Yoga",
     tagline: "Premium athleisure with two big sale moments per year",
-    activeSale: { name: "Aloversary Anniversary Sale", discount: "30% off sitewide for Alo members", ends: "5-day window in May" },
+    activeSale: null,
     alwaysOnPromo: { name: "Sale section", discount: "Past-season styles 30–50% off year-round" },
     nextSale: { name: "Black Friday + Singles Day", when: "Nov 11 + Late November", discount: "30% off sitewide" },
     bestSaleEver: "Singles Day (Nov 11) — up to 70% off select",
@@ -1596,7 +1596,7 @@ const BRANDS = {
   madewell: {
     name: "Madewell",
     tagline: "Sales nearly every week — patience always pays",
-    activeSale: null,
+    activeSale: { name: "Sitewide promo code", discount: "25–30% off code running nearly every week", ends: "Rotates weekly" },
     alwaysOnPromo: { name: "Student & Teacher discount", discount: "15% off year-round with valid school ID" },
     nextSale: { name: "Summer Sale", when: "Mid-July", discount: "Up to 50% off select" },
     bestSaleEver: "Black Friday + Cyber Week — 40% off everything",
@@ -1616,9 +1616,9 @@ const BRANDS = {
   jcrew: {
     name: "J.Crew",
     tagline: "Always-on promos — buying at full price is the rookie move",
-    activeSale: null,
+    activeSale: { name: "Sitewide promo code", discount: "30%+ off code running nearly every week", ends: "Rotates weekly" },
     alwaysOnPromo: { name: "Sale section", discount: "Almost always running 30%+ off codes — check the homepage" },
-    nextSale: { name: "Friends & Family", when: "Mid-June", discount: "40% off everything" },
+    nextSale: { name: "Friends & Family", when: "Mid-June (twice yearly)", discount: "40% off everything including new arrivals" },
     bestSaleEver: "Friends & Family + Black Friday — 40% off including new arrivals",
     lastSale: "Spring promo, April 2026",
     patterns: [
@@ -1716,9 +1716,9 @@ const BRANDS = {
   bananarepublic: {
     name: "Banana Republic",
     tagline: "Sales nearly year-round — 30–40% off is the baseline",
-    activeSale: null,
+    activeSale: { name: "Sitewide promo code", discount: "30–40% off code running nearly every week", ends: "Rotates weekly" },
     alwaysOnPromo: { name: "Almost always 30%+ off", discount: "BR runs sitewide promos nearly every week" },
-    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "Up to 60% off + extra 20%" },
+    nextSale: { name: "Black Friday", when: "Late November", discount: "40% off everything (no exclusions)" },
     bestSaleEver: "Black Friday — 40% off everything (no exclusions)",
     lastSale: "Spring promo, April 2026",
     patterns: [
@@ -1896,9 +1896,9 @@ const BRANDS = {
   levis: {
     name: "Levi's",
     tagline: "Frequent promos year-round — Red Tab members get the best deals",
-    activeSale: null,
+    activeSale: { name: "Sitewide promo code", discount: "25–30% off code running nearly every week", ends: "Rotates weekly" },
     alwaysOnPromo: { name: "Red Tab Members", discount: "Members-only codes and early sale access — free signup" },
-    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "30% off + extra promos" },
+    nextSale: { name: "July 4 Sale", when: "Early July", discount: "30–40% off + extra promos" },
     bestSaleEver: "Black Friday — 40% off sitewide",
     lastSale: "Spring promo, April 2026",
     patterns: [
@@ -1916,9 +1916,9 @@ const BRANDS = {
   westelm: {
     name: "West Elm",
     tagline: "Furniture sales nearly every weekend — patience is everything",
-    activeSale: null,
+    activeSale: { name: "Weekend sitewide promo", discount: "20–30% off select — refreshes most weekends", ends: "Rotates weekly" },
     alwaysOnPromo: { name: "Open Box & Floor Samples", discount: "40–60% off perfect-condition returns and display items" },
-    nextSale: { name: "Memorial Day", when: "Late May", discount: "Up to 30% off select" },
+    nextSale: { name: "July 4 Sale", when: "Early July", discount: "30–50% off select" },
     bestSaleEver: "Black Friday — 40% off sitewide + free shipping",
     lastSale: "Spring promo, April 2026",
     patterns: [
@@ -1955,23 +1955,27 @@ const BRANDS = {
   },
   dyson: {
     name: "Dyson",
-    tagline: "Rarely on sale — Black Friday is essentially the only window",
-    activeSale: null,
-    alwaysOnPromo: { name: "Dyson Refurbished", discount: "15–25% off with full warranty" },
-    nextSale: { name: "Black Friday", when: "Late November", discount: "$100–200 off select" },
-    bestSaleEver: "Black Friday + Cyber Week — $100–200 off select models",
-    lastSale: "Black Friday 2025",
+    tagline: "Year-round deals on older models and exclusive colors — Black Friday still goes deepest",
+    activeSale: {
+      name: "Dyson Deals",
+      discount: "$50–350 off select vacuums, hair tools, and air purifiers",
+      ends: "Ongoing"
+    },
+    alwaysOnPromo: { name: "Dyson Certified Refurbished", discount: "Fully-serviced machines with full warranty — separate outlet site" },
+    nextSale: { name: "Black Friday + Cyber Week", when: "Late November", discount: "Deepest cuts of the year — newest flagships join the discount list" },
+    bestSaleEver: "Black Friday + Cyber Week — deepest discounts of the year",
+    lastSale: "Year-round Deals page (always active)",
     patterns: [
-      "Dyson protects pricing aggressively — sitewide sales are essentially non-existent",
-      "Black Friday + Cyber Week is the ONE reliable window — $100–200 off select hair tools and vacuums",
-      "Refurbished section (dyson.com/owners/refurbished) offers 20–25% off with full warranty — underrated",
-      "Authorized retailers (Best Buy, Target, Costco) occasionally beat Dyson's own pricing on holidays",
-      "Dyson Direct trade-in program offers up to $100 credit when upgrading an old Dyson"
+      "Dyson runs a permanent 'Deals' page year-round featuring $50–350 off on signature products — including Airwrap, V-series vacuums, Spot+Scrub Ai, and OnTrac headphones",
+      "Deepest discounts go to older models (V8, V11), exclusive colors, and inventory being cleared — newer flagships get smaller cuts ($100–150 off)",
+      "Black Friday + Cyber Week is still the year's biggest event, when discounts deepen further and the absolute newest products get marked down too",
+      "Certified Refurbished store (dyson.com/outlet) offers fully-serviced machines with full warranty — separate from the Deals page, often deeper savings on retired models",
+      "Authorized retailers (Best Buy, Target, Costco) occasionally beat Dyson's own pricing on major holiday weekends"
     ],
-    proTip: "Don't expect aggressive Dyson sales — Black Friday is the one real window. For year-round savings, check the Refurbished section (full warranty, 20–25% off) or look at Costco/Best Buy on major holidays — they sometimes undercut Dyson's own pricing.",
-    shopUrl: "https://www.dyson.com",
-    nextEvent: "Nov 2026",
-    avgDiscount: "10–20%"
+    proTip: "Don't wait for Black Friday — Dyson's permanent Deals page already has 15–40% off on most of their lineup year-round, especially on V8/V11 vacuums, older Airwrap colorways, and OnTrac headphones. If you want the absolute newest flagship at the deepest discount, then Black Friday is your window.",
+    shopUrl: "https://www.dyson.com/deals",
+    nextEvent: "Active now",
+    avgDiscount: "15–40%"
   },
   bose: {
     name: "Bose",
