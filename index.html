@@ -176,31 +176,16 @@
     border-bottom: 1px solid var(--rule-soft);
   }
   .hero-preview-label {
-    font-size: 11px;
-    letter-spacing: 0.12em;
+    font-size: 13px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--ink-faint);
+    color: var(--ink-soft);
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .hero-preview-pulse {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--sale);
-    box-shadow: 0 0 0 0 rgba(45,90,61,0.6);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(45,90,61,0.5); }
-    70% { box-shadow: 0 0 0 8px rgba(45,90,61,0); }
-    100% { box-shadow: 0 0 0 0 rgba(45,90,61,0); }
   }
   .hero-preview-date {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--ink-faint);
+    font-weight: 500;
   }
   .hero-preview-rows {
     display: flex;
@@ -1063,10 +1048,7 @@
 
     <div class="hero-preview" id="hero-preview">
       <div class="hero-preview-header">
-        <div class="hero-preview-label">
-          <span class="hero-preview-pulse"></span>
-          <span>What's hot this week</span>
-        </div>
+        <div class="hero-preview-label">What's hot this week</div>
         <div class="hero-preview-date" id="hero-preview-date"></div>
       </div>
       <div class="hero-preview-rows" id="hero-preview-rows"></div>
@@ -1076,10 +1058,6 @@
     </div>
   </div>
 </header>
-
-<div class="live-strip" id="live-strip" style="display:none">
-  <div class="live-strip-inner" id="live-strip-inner"></div>
-</div>
 
 <section id="brands">
   <div class="container">
@@ -2092,36 +2070,10 @@ function setCategory(cat) {
 }
 
 // === Live ticker: shows ONLY brands with a real active sale right now ===
-// Pulls from BRANDS dynamically — so when you flip a brand's activeSale to
-// null, it disappears from the ticker automatically. Honest by construction.
-function renderLiveStrip() {
-  const strip = document.getElementById("live-strip");
-  const inner = document.getElementById("live-strip-inner");
-  if (!strip || !inner) return;
-
-  const active = Object.values(BRANDS).filter(b => b && b.activeSale);
-  if (active.length === 0) {
-    strip.style.display = "none";
-    return;
-  }
-
-  // Build one item per active sale, then duplicate the list so the marquee
-  // loops seamlessly without a visible gap.
-  const items = active.map(b => {
-    const disc = b.activeSale.discount || "";
-    const name = b.activeSale.name || "Sale";
-    return `<span><span class="live-dot"></span>Live · ${b.name} ${name} — ${disc}</span>`;
-  });
-
-  inner.innerHTML = [...items, ...items, ...items].join("");
-  strip.style.display = "block";
-}
-
 renderBrandGrid();
-renderLiveStrip();
 renderHeroPreview();
 
-// === Hero preview: 3 curated rows showing the product in action ===
+// === Hero preview: 5 curated rows showing the product in action ===
 // Logic: prefer 1 active-sale brand (proves "we know what's happening NOW"),
 // 1 with an upcoming sale (proves "we predict next"), 1 quiet premium brand
 // (proves "we cover the brands that almost never discount"). Falls back
@@ -2146,23 +2098,28 @@ function renderHeroPreview() {
     .find(([k, b]) => b && !b.activeSale);
 
   const picks = [];
-  if (activeSales.length > 0) picks.push({ key: activeSales[0][0], brand: activeSales[0][1], type: "sale" });
 
-  // Upcoming-sale slot — pick a quiet brand whose nextSale window is soonest. We
-  // can't easily parse free-text "when" fields, so we just pick a recognizable
-  // quiet brand to fill the "upcoming" slot.
-  const upcomingCandidates = ["aritzia", "aloyoga", "madewell", "nike", "patagonia"]
+  // Up to 2 active sales (proves "we know what's happening NOW")
+  activeSales.slice(0, 2).forEach(([k, b]) => {
+    picks.push({ key: k, brand: b, type: "sale" });
+  });
+
+  // Up to 2 upcoming — recognizable quiet brands with notable predicted sales
+  const upcomingCandidates = ["aritzia", "aloyoga", "madewell", "nike", "patagonia", "anthropologie", "jcrew"]
     .map(k => allBrands.find(([key]) => key === k))
     .filter(Boolean)
     .filter(([k, b]) => b && !b.activeSale && !picks.find(p => p.key === k));
-  if (upcomingCandidates[0]) picks.push({ key: upcomingCandidates[0][0], brand: upcomingCandidates[0][1], type: "upcoming" });
+  upcomingCandidates.slice(0, 2).forEach(([k, b]) => {
+    picks.push({ key: k, brand: b, type: "upcoming" });
+  });
 
+  // 1 hand-picked "quiet premium" brand (proves "we cover brands that almost never discount")
   if (quiet && !picks.find(p => p.key === quiet[0])) {
     picks.push({ key: quiet[0], brand: quiet[1], type: "quiet" });
   }
 
-  // Fill to 3 if needed from any remaining quiet brands
-  while (picks.length < 3 && quietBrands.length > 0) {
+  // Fill to 5 if needed from any remaining quiet brands
+  while (picks.length < 5 && quietBrands.length > 0) {
     const next = quietBrands.find(([k]) => !picks.find(p => p.key === k));
     if (!next) break;
     picks.push({ key: next[0], brand: next[1], type: "quiet" });
