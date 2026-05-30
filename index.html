@@ -198,12 +198,18 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 10px 6px;
+    padding: 10px 10px 10px 12px;
     border-radius: 8px;
     transition: background 0.12s;
     cursor: pointer;
+    border-left: 3px solid transparent;
   }
   .hero-row:hover { background: var(--bg-accent); }
+  /* Subtle green accent on the left edge of rows with an active sale —
+     gives at-a-glance differentiation from upcoming rows without adding clutter. */
+  .hero-row-sale {
+    border-left-color: var(--sale);
+  }
   .hero-row-icon {
     width: 32px;
     height: 32px;
@@ -2220,10 +2226,9 @@ renderBrandGrid();
 renderHeroPreview();
 
 // === Hero preview: 5 curated rows showing the product in action ===
-// Logic: prefer 1 active-sale brand (proves "we know what's happening NOW"),
-// 1 with an upcoming sale (proves "we predict next"), 1 quiet premium brand
-// (proves "we cover the brands that almost never discount"). Falls back
-// gracefully if there aren't enough of each type.
+// Logic: show all currently-active sales (capped at 5), then fill any remaining
+// slots with upcoming sales from notable brands. Quiet rows are intentionally
+// excluded — a "QUIET" tile doesn't give the user anything actionable to do.
 function renderHeroPreview() {
   const rowsEl = document.getElementById("hero-preview-rows");
   const dateEl = document.getElementById("hero-preview-date");
@@ -2234,41 +2239,42 @@ function renderHeroPreview() {
 
   const allBrands = Object.entries(BRANDS);
   const activeSales = allBrands.filter(([k, b]) => b && getEffectiveActiveSale(b));
-  const quietBrands = allBrands.filter(([k, b]) => b && !getEffectiveActiveSale(b));
 
-  // Hand-picked preferences for the "quiet premium" slot — strongest brand-recognition.
-  const preferredQuiet = ["lululemon", "apple", "patagonia", "vuori"];
-  const quiet = preferredQuiet
-    .map(k => allBrands.find(([key]) => key === k))
-    .filter(Boolean)
-    .find(([k, b]) => b && !getEffectiveActiveSale(b));
-
+  const MAX_ROWS = 5;
   const picks = [];
 
-  // Up to 2 active sales (proves "we know what's happening NOW")
-  activeSales.slice(0, 2).forEach(([k, b]) => {
+  // All active sales first, up to MAX_ROWS. These are the highest-urgency rows.
+  activeSales.slice(0, MAX_ROWS).forEach(([k, b]) => {
     picks.push({ key: k, brand: b, type: "sale" });
   });
 
-  // Up to 2 upcoming — recognizable quiet brands with notable predicted sales
-  const upcomingCandidates = ["aritzia", "aloyoga", "madewell", "nike", "patagonia", "anthropologie", "jcrew"]
-    .map(k => allBrands.find(([key]) => key === k))
-    .filter(Boolean)
-    .filter(([k, b]) => b && !getEffectiveActiveSale(b) && !picks.find(p => p.key === k));
-  upcomingCandidates.slice(0, 2).forEach(([k, b]) => {
-    picks.push({ key: k, brand: b, type: "upcoming" });
-  });
-
-  // 1 hand-picked "quiet premium" brand (proves "we cover brands that almost never discount")
-  if (quiet && !picks.find(p => p.key === quiet[0])) {
-    picks.push({ key: quiet[0], brand: quiet[1], type: "quiet" });
+  // Fill remaining slots with notable upcoming sales. Order is a hand-picked
+  // preference list — strongest brand recognition first so the panel feels
+  // populated with names users care about, not whichever brand alphabetizes first.
+  const upcomingPreference = [
+    "aritzia", "aloyoga", "madewell", "jcrew", "anthropologie",
+    "nike", "patagonia", "lululemon", "apple", "vuori",
+    "athleta", "theory", "bananarepublic", "reformation", "freepeople"
+  ];
+  for (const k of upcomingPreference) {
+    if (picks.length >= MAX_ROWS) break;
+    const found = allBrands.find(([key]) => key === k);
+    if (!found) continue;
+    const [key, brand] = found;
+    if (getEffectiveActiveSale(brand)) continue;     // already shown above if on sale
+    if (picks.find(p => p.key === key)) continue;    // already picked
+    picks.push({ key, brand, type: "upcoming" });
   }
 
-  // Fill to 5 if needed from any remaining quiet brands
-  while (picks.length < 5 && quietBrands.length > 0) {
-    const next = quietBrands.find(([k]) => !picks.find(p => p.key === k));
-    if (!next) break;
-    picks.push({ key: next[0], brand: next[1], type: "quiet" });
+  // Final safety fill: if our preference list is exhausted and we still have
+  // empty slots, pull from any remaining brand with an upcoming sale.
+  if (picks.length < MAX_ROWS) {
+    for (const [k, b] of allBrands) {
+      if (picks.length >= MAX_ROWS) break;
+      if (getEffectiveActiveSale(b)) continue;
+      if (picks.find(p => p.key === k)) continue;
+      picks.push({ key: k, brand: b, type: "upcoming" });
+    }
   }
 
   rowsEl.innerHTML = picks.map(({ key, brand, type }) => {
@@ -2281,19 +2287,14 @@ function renderHeroPreview() {
       detail = `${sale.name} — ${sale.discount}`;
       statusLabel = "● ON SALE";
       statusClass = "sale";
-    } else if (type === "upcoming") {
+    } else {
       const next = getNextEvent(key, brand);
       detail = `Next: ${next.saleName} · ${next.shortLabel}`;
       statusLabel = "UPCOMING";
       statusClass = "upcoming";
-    } else {
-      const next = getNextEvent(key, brand);
-      detail = `Next: ${next.saleName} · ${next.shortLabel}`;
-      statusLabel = "QUIET";
-      statusClass = "quiet";
     }
 
-    return `<div class="hero-row" onclick="openBrand('${key}')">
+    return `<div class="hero-row hero-row-${type}" onclick="openBrand('${key}')">
       ${favImg}
       <div class="hero-row-main">
         <div class="hero-row-name">${brand.name}</div>
