@@ -1139,7 +1139,7 @@
       <button class="cat-btn active" data-cat="top" onclick="setCategory('top')">Top 10 Brands</button>
       <button class="cat-btn" data-cat="fashion" onclick="setCategory('fashion')">Fashion</button>
       <button class="cat-btn" data-cat="tech" onclick="setCategory('tech')">Tech</button>
-      <button class="cat-btn" data-cat="beauty" onclick="setCategory('beauty')">Beauty</button>
+      <button class="cat-btn" data-cat="beauty_wellness" onclick="setCategory('beauty_wellness')">Beauty & Wellness</button>
     </div>
 
     <div class="brand-grid" id="brand-grid"></div>
@@ -1438,6 +1438,59 @@ const SALE_CALENDARS = {
     Jul: [{ label: "Summer Sale", discount: "15–20%" }],
     Nov: [{ label: "Black Friday", discount: "15–20%" }],
     Dec: [{ label: "Year-End event", discount: "15–20%" }]
+  },
+  aesop: {
+    Nov: [{ label: "Holiday Gift Kits", discount: "10–15%" }],
+    Dec: [{ label: "Holiday Gift Kits", discount: "10–15%" }]
+  },
+  drunkelephant: {
+    Apr: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
+    Oct: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
+    Nov: [{ label: "Black Friday", discount: "20%" }]
+  },
+  tatcha: {
+    Apr: [{ label: "Spring F&F", discount: "20–25%" }],
+    Jul: [{ label: "Summer F&F", discount: "20–25%" }],
+    Oct: [{ label: "Fall F&F", discount: "20–25%" }],
+    Nov: [{ label: "Black Friday", discount: "20–25%" }]
+  },
+  theordinary: {
+    Nov: [{ label: "Slowvember", discount: "23% sitewide" }],
+    Dec: [{ label: "Boxing Day", discount: "23% sitewide" }]
+  },
+  olaplex: {
+    Apr: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
+    Oct: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
+    Nov: [{ label: "Black Friday", discount: "20%" }]
+  },
+  charlottetilbury: {
+    Apr: [{ label: "Spring promo", discount: "15–20%" }],
+    Oct: [{ label: "Friends & Family", discount: "20–25%" }],
+    Nov: [{ label: "Black Friday", discount: "25%" }],
+    Dec: [{ label: "Cyber + holiday", discount: "20–25%" }]
+  },
+  patmcgrath: {
+    Apr: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
+    Oct: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
+    Nov: [{ label: "Black Friday", discount: "20%" }]
+  },
+  rarebeauty: {
+    Apr: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
+    Oct: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
+    Nov: [{ label: "Black Friday", discount: "20%" }]
+  },
+  lelabo: {
+    Nov: [{ label: "Holiday Gift Sets", discount: "10–15%" }],
+    Dec: [{ label: "Holiday Gift Sets", discount: "10–15%" }]
+  },
+  goop: {
+    Apr: [{ label: "Spring F&F", discount: "20–25%" }],
+    May: [{ label: "Memorial Day", discount: "20–25%" }],
+    Jul: [{ label: "July 4 Sale", discount: "20–25%" }],
+    Sep: [{ label: "Labor Day", discount: "20–25%" }],
+    Oct: [{ label: "Fall F&F", discount: "20–25%" }],
+    Nov: [{ label: "Black Friday", discount: "25–30%" }],
+    Dec: [{ label: "Cyber Week", discount: "25–30%" }]
   }
 };
 
@@ -2065,6 +2118,206 @@ const BRANDS = {
     shopUrl: "https://mejuri.com",
     nextEvent: "Jul 2026",
     avgDiscount: "15–20%"
+  },
+  aesop: {
+    name: "Aesop",
+    tagline: "The Lululemon of skincare — Aesop essentially never goes on sale",
+    activeSale: null,
+    alwaysOnPromo: { name: "Sample with every order", discount: "Complimentary samples curated to your products — no discount, but real value" },
+    nextSale: { name: "Holiday Gift Kits", when: "Mid-November through December", discount: "Curated kits save 10–15% vs à la carte" },
+    bestSaleEver: "Aesop doesn't really do sales — but department store partners occasionally include them in beauty events",
+    lastSale: "No public sitewide sales — Aesop's pricing strategy excludes discounts",
+    patterns: [
+      "Aesop has a firm no-discount policy on their own site — pricing reflects the brand's premium positioning year-round",
+      "Holiday Gift Kits (Nov-Dec) bundle products at modest savings vs buying individually — the closest thing to a sale",
+      "Authorized partners like Nordstrom, Bloomingdale's, and Mecca occasionally include Aesop in beauty F&F events (typically 10–15% off)",
+      "Sephora does NOT carry Aesop — you have to go through Aesop direct or department store partners",
+      "Complimentary samples and signature gift-wrapping are how Aesop signals value — the brand experience replaces the discount"
+    ],
+    proTip: "Don't wait for an Aesop sale — there essentially isn't one. Best move: subscribe to Nordstrom's beauty email list and pounce when they run a beauty F&F event (twice yearly, typically 10–15% off including Aesop). Or wait for Holiday Gift Kits in November for built-in bundle savings.",
+    shopUrl: "https://www.aesop.com",
+    nextEvent: "Nov 2026",
+    avgDiscount: "10–15%"
+  },
+  drunkelephant: {
+    name: "Drunk Elephant",
+    tagline: "Clean skincare with predictable Sephora-anchored sale moments",
+    activeSale: null,
+    alwaysOnPromo: { name: "Bundle kits", discount: "Curated 'Littles' kits and bundles save 15–25% vs full-size à la carte" },
+    nextSale: { name: "Sephora Savings Event", when: "Mid-April + Mid-October", discount: "10–20% off (tiered by Beauty Insider level)" },
+    bestSaleEver: "Sephora Holiday Savings + Black Friday — 20% off for Rouge members",
+    lastSale: "Spring Savings Event, April 2026",
+    patterns: [
+      "Drunk Elephant's biggest sales happen THROUGH Sephora, not their own site — sale calendar mirrors Sephora's two annual events",
+      "Their own site (drunkelephant.com) rarely runs sitewide promos — focus is on bundles and 'Littles' kits",
+      "Black Friday + Cyber Week is the only major own-site discount window (typically 20% off)",
+      "New email subscribers get 10% off their first order — solid baseline",
+      "Sets and bundles offer 15–25% off vs à la carte year-round — best year-round value"
+    ],
+    proTip: "Shop Drunk Elephant through Sephora during their April and October Savings Events for the deepest discounts — Rouge members get 20% off. Direct on drunkelephant.com, your best year-round play is the 'Littles' kits which save 15–25% vs buying full sizes individually.",
+    shopUrl: "https://www.drunkelephant.com",
+    nextEvent: "Oct 2026",
+    avgDiscount: "10–20%"
+  },
+  tatcha: {
+    name: "Tatcha",
+    tagline: "Japanese premium skincare — predictable Friends & Family + Sephora events",
+    activeSale: null,
+    alwaysOnPromo: { name: "Beauty Box & Bundles", discount: "Sets save 20–25% vs à la carte" },
+    nextSale: { name: "Friends & Family", when: "Mid-July + October", discount: "20–25% off sitewide" },
+    bestSaleEver: "Black Friday + Friends & Family — 25% off sitewide",
+    lastSale: "Spring Friends & Family, April 2026",
+    patterns: [
+      "Tatcha runs Friends & Family events twice yearly (mid-summer + fall) — 20–25% off sitewide is the main discount window",
+      "Black Friday + Cyber Week typically matches F&F at 25% off sitewide",
+      "Available through Sephora too — sale events stack with Sephora's tiered Beauty Insider discounts",
+      "Beauty Boxes and curated sets save 20–25% vs buying products individually year-round",
+      "Email subscribers get 15% off first order + birthday gifts + early access to all F&F events"
+    ],
+    proTip: "Sign up for Tatcha emails to get 15% off immediately and early access to Friends & Family events. Time bigger orders for F&F (July or October) when you can stack a 20–25% discount on the whole site. The Beauty Box sets are quietly the best year-round value.",
+    shopUrl: "https://www.tatcha.com",
+    nextEvent: "Jul 2026",
+    avgDiscount: "20–25%"
+  },
+  theordinary: {
+    name: "The Ordinary",
+    tagline: "Affordable cult skincare — one big annual sale event makes it even cheaper",
+    activeSale: null,
+    alwaysOnPromo: { name: "Already-low everyday pricing", discount: "Most products $5–15 year-round — discounts come on top of already-low prices" },
+    nextSale: { name: "Slowvember + Boxing Day", when: "All of November + Dec 26", discount: "23% off sitewide (Deciem family)" },
+    bestSaleEver: "Slowvember — 23% off sitewide for the entire month of November",
+    lastSale: "Slowvember, November 2025",
+    patterns: [
+      "Deciem (The Ordinary's parent brand) runs 'Slowvember' — a 23% off sitewide discount for ALL of November in place of a flash Black Friday event",
+      "The 23% number is symbolic and intentional — same percentage they're proud of for keeping margins lower than industry average",
+      "Boxing Day (Dec 26) follows up with another 23% off sitewide for those who missed November",
+      "Outside Slowvember, sitewide sales are essentially nonexistent — the everyday low pricing is the strategy",
+      "NIOD (sister brand under Deciem) is also included in Slowvember and Boxing Day — premium-tier serums at 23% off"
+    ],
+    proTip: "Stock up during Slowvember — the entire month of November is 23% off sitewide. This is unusual because most brands have flash 1-day Black Friday events, but Deciem deliberately stretches it across the whole month so you're not pressured into a panicked midnight checkout. Plan accordingly.",
+    shopUrl: "https://theordinary.com",
+    nextEvent: "Nov 2026",
+    avgDiscount: "23%"
+  },
+  olaplex: {
+    name: "Olaplex",
+    tagline: "Premium hair care with rare own-site sales — Sephora is often the better deal",
+    activeSale: null,
+    alwaysOnPromo: { name: "Bond Builder Bundles", discount: "Curated kits save 15–20% vs à la carte" },
+    nextSale: { name: "Sephora Savings Event", when: "Mid-April + Mid-October", discount: "10–20% off (tiered by Beauty Insider level)" },
+    bestSaleEver: "Sephora Holiday Savings + Black Friday — 20% off for Rouge members",
+    lastSale: "Spring Savings, April 2026",
+    patterns: [
+      "Olaplex's own site rarely runs sitewide sales — the biggest discount moments happen via Sephora's Savings Events (April + October)",
+      "Black Friday + Cyber Week is the one reliable own-site sale, typically 20% off sitewide",
+      "Bundle kits and 'Hair Routine' sets save 15–20% vs à la carte year-round",
+      "Email subscribers get 10% off first order plus exclusive perks",
+      "Authorized retailers (Sephora, Ulta, Nordstrom) frequently match or beat olaplex.com pricing — always check before buying direct"
+    ],
+    proTip: "Don't buy Olaplex direct at full price — Sephora's April and October Savings Events offer 20% off for Rouge members, often beating olaplex.com. For bundle savings, the Bond Builder Kits are 15–20% cheaper than buying No. 3, No. 4, No. 5, etc. separately.",
+    shopUrl: "https://olaplex.com",
+    nextEvent: "Oct 2026",
+    avgDiscount: "15–20%"
+  },
+  charlottetilbury: {
+    name: "Charlotte Tilbury",
+    tagline: "Luxury makeup with two big sale windows — F&F in October, Black Friday in November",
+    activeSale: null,
+    alwaysOnPromo: { name: "Magic Kits & Beauty Boxes", discount: "Curated sets save 20–30% vs à la carte" },
+    nextSale: { name: "Friends & Family", when: "Mid-October", discount: "20–25% off sitewide" },
+    bestSaleEver: "Friends & Family + Black Friday — 25% off sitewide",
+    lastSale: "Spring promo, April 2026",
+    patterns: [
+      "Charlotte Tilbury runs Friends & Family in October — 20–25% off sitewide, the year's most reliable own-site discount window",
+      "Black Friday + Cyber Week typically matches F&F at 25% off sitewide",
+      "Magic Kits, gift sets, and Beauty Boxes save 20–30% vs à la carte year-round — best year-round value play",
+      "Available through Sephora and Nordstrom — sometimes those retailers' beauty events beat Charlotte Tilbury direct",
+      "Email subscribers get 10% off first order + early access to F&F (typically 24-hour head start)"
+    ],
+    proTip: "Sign up for Charlotte Tilbury emails for early F&F access — the 24-hour head start matters when the popular Pillow Talk lipsticks sell out fast. For year-round savings, the Magic Kits are 20–30% cheaper than buying products individually and make great gifts.",
+    shopUrl: "https://www.charlottetilbury.com",
+    nextEvent: "Oct 2026",
+    avgDiscount: "20–25%"
+  },
+  patmcgrath: {
+    name: "Pat McGrath Labs",
+    tagline: "Mother of makeup — rare sales, runs mostly through Sephora's events",
+    activeSale: null,
+    alwaysOnPromo: { name: "Mini & Trial Sizes", discount: "Travel and mini sizes offer entry-level price points without sale pricing" },
+    nextSale: { name: "Sephora Savings Event", when: "Mid-April + Mid-October", discount: "10–20% off (tiered by Beauty Insider level)" },
+    bestSaleEver: "Sephora Holiday Savings + Black Friday — 20% off for Rouge members",
+    lastSale: "Spring Savings Event, April 2026",
+    patterns: [
+      "Pat McGrath Labs essentially doesn't run own-site sitewide sales — premium positioning excludes flash discounts",
+      "Biggest discount moments happen through Sephora's twice-yearly Savings Events (April + October)",
+      "Black Friday + Cyber Week is the one own-site discount window, typically 20% off select",
+      "Gift sets and Mthrshp Subliminal palettes offer concentrated value vs single eyeshadows",
+      "Sale events through Bergdorf Goodman, Saks, and Net-a-Porter occasionally include Pat McGrath at 15–25% off"
+    ],
+    proTip: "Pat McGrath Labs almost never discounts on her own site. Your real shot at sub-retail pricing is Sephora's April and October Savings Events (20% off for Rouge), or the rare Bergdorf/Saks beauty event. Otherwise, the gift sets give you the best per-product value.",
+    shopUrl: "https://www.patmcgrath.com",
+    nextEvent: "Oct 2026",
+    avgDiscount: "15–20%"
+  },
+  rarebeauty: {
+    name: "Rare Beauty",
+    tagline: "Selena Gomez's clean makeup brand — Sephora is the main sale channel",
+    activeSale: null,
+    alwaysOnPromo: { name: "Refill program", discount: "Refillable products save 10–15% vs full replacement" },
+    nextSale: { name: "Sephora Savings Event", when: "Mid-April + Mid-October", discount: "10–20% off (tiered by Beauty Insider level)" },
+    bestSaleEver: "Sephora Holiday Savings + Black Friday — 20% off for Rouge members",
+    lastSale: "Spring Savings Event, April 2026",
+    patterns: [
+      "Rare Beauty sells primarily through Sephora — own-site sales are minimal, real discounts happen via Sephora Savings Events",
+      "Black Friday + Cyber Week is the one own-site sitewide event, typically 20% off",
+      "Bundle sets save 15–25% vs à la carte year-round",
+      "Refill program offers ~10–15% off vs buying full replacement products",
+      "1% of proceeds support the Rare Impact Fund (mental health) — part of the brand's value proposition beyond pricing"
+    ],
+    proTip: "Time bigger Rare Beauty stockups for Sephora's April and October Savings Events — Rouge members get 20% off, which is the deepest discount you'll see on the brand. For everyday value, the refill program saves ~10–15% vs buying replacements.",
+    shopUrl: "https://www.rarebeauty.com",
+    nextEvent: "Oct 2026",
+    avgDiscount: "15–20%"
+  },
+  lelabo: {
+    name: "Le Labo",
+    tagline: "The Lululemon of fragrance — Le Labo essentially never goes on sale",
+    activeSale: null,
+    alwaysOnPromo: { name: "Personalized label", discount: "Custom hand-labeled bottles included with every fragrance — no discount, but signature brand experience" },
+    nextSale: { name: "Holiday Gift Sets", when: "November through December", discount: "Curated discovery sets and travel-size kits at concentrated value" },
+    bestSaleEver: "Le Labo does not run public sales — only authorized partner events occasionally include them",
+    lastSale: "No public sitewide sales — Le Labo's pricing strategy excludes discounts",
+    patterns: [
+      "Le Labo does NOT run sales on its own site — premium positioning excludes discounting as a brand strategy",
+      "Holiday Gift Sets (Nov-Dec) bundle travel sizes and discovery kits at concentrated value vs à la carte — closest thing to a sale",
+      "Authorized partners like Nordstrom, Bergdorf Goodman, and Saks occasionally include Le Labo in beauty F&F events (typically 10–15% off)",
+      "Travel-size 'City Exclusives' offer entry-level price points without true discounts",
+      "Discovery sets (5x sample-size bottles) give you a way to test multiple scents before committing — not a discount but real value"
+    ],
+    proTip: "Don't wait for a Le Labo sale — there isn't one. Your real shot at sub-retail pricing is Nordstrom or Bergdorf's beauty F&F events (twice yearly, typically 10–15% off). For value, the Discovery sets let you test 5 fragrances for less than a single full bottle.",
+    shopUrl: "https://www.lelabofragrances.com",
+    nextEvent: "Nov 2026",
+    avgDiscount: "10–15%"
+  },
+  goop: {
+    name: "goop",
+    tagline: "Gwyneth's wellness empire — reliable Memorial Day + Black Friday sales, F&F in spring",
+    activeSale: null,
+    alwaysOnPromo: { name: "goop kits and bundles", discount: "Curated wellness + beauty kits save 15–25% vs à la carte" },
+    nextSale: { name: "Memorial Day Sale", when: "Late May", discount: "20–25% off sitewide" },
+    bestSaleEver: "Black Friday + Cyber Week — 25–30% off sitewide",
+    lastSale: "Spring Friends & Family, April 2026",
+    patterns: [
+      "goop runs sitewide sales 5–6 times per year — Memorial Day, July 4, Labor Day, F&F (spring + fall), Black Friday",
+      "Black Friday + Cyber Week is the year's deepest, typically 25–30% off sitewide",
+      "Friends & Family events (April + October) hit 20–25% off including the high-end goop Beauty line",
+      "Email subscribers get 15% off first order + early access to all sitewide sales",
+      "Outlet section ('Final Sale') runs year-round at 30–50% off past-season wellness and apparel"
+    ],
+    proTip: "goop's Black Friday is the deepest sitewide moment of the year (25–30% off), but if you can't wait, Memorial Day and July 4 both deliver 20–25% off reliably. Sign up for emails to get 15% off your first order plus early access to the Friends & Family events.",
+    shopUrl: "https://goop.com",
+    nextEvent: "Jul 2026",
+    avgDiscount: "20–25%"
   }
 };
 
@@ -2101,9 +2354,9 @@ function domainOnly(shopUrl) {
 // These arrays decide which subset shows in the visible grid per category.
 const CATEGORIES = {
   top: ["lululemon", "apple", "dyson", "patagonia", "nike", "aritzia", "vuori", "aloyoga", "onrunning", "sephora"],
-  fashion: ["lululemon", "aritzia", "madewell", "jcrew", "anthropologie", "reformation", "everlane", "theory", "bananarepublic", "freepeople", "vuori", "aloyoga", "athleta", "coach", "toryburch", "katespade", "levis"],
+  fashion: ["lululemon", "aritzia", "madewell", "jcrew", "anthropologie", "reformation", "everlane", "theory", "bananarepublic", "freepeople", "vuori", "aloyoga", "athleta", "coach", "toryburch", "katespade", "levis", "mejuri"],
   tech: ["apple", "dyson", "bose"],
-  beauty: ["sephora", "glossier", "mejuri"],
+  beauty_wellness: ["sephora", "glossier", "aesop", "drunkelephant", "tatcha", "theordinary", "olaplex", "charlottetilbury", "patmcgrath", "rarebeauty", "lelabo", "goop"],
 };
 
 let activeCategory = "top";
