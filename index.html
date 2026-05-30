@@ -2106,8 +2106,47 @@ let activeCategory = "top";
 // Looks at a brand's saleCalendar and returns the next future month with a sale.
 // This keeps card data accurate as time passes, instead of relying on hardcoded
 // strings like "May 23" that go stale the moment Memorial Day ends.
+
+// Walks a brand's calendar and returns the next future sale entry, ignoring
+// any currently-active sale. Used by the modal's "Next predicted sale" box and
+// by getNextEvent below. Centralizing this avoids the bug where the modal
+// shows a stale hardcoded sale name long after the date has passed.
+function getNextCalendarEvent(brandKey) {
+  const calendar = SALE_CALENDARS[brandKey];
+  if (!calendar) return null;
+
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const fullMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentDay = today.getDate();
+  const currentYear = today.getFullYear();
+
+  // If past day 20 of this month, assume any sale in this month has either
+  // happened or won't, and skip to next month. (Sales typically anchor to early/mid-month.)
+  const startMonth = currentDay < 20 ? currentMonth : currentMonth + 1;
+
+  for (let i = 0; i < 12; i++) {
+    const offset = startMonth + i;
+    const monthIndex = ((offset % 12) + 12) % 12;
+    const monthKey = months[monthIndex];
+    const entries = calendar[monthKey];
+    if (entries && entries.length > 0) {
+      const first = entries[0];
+      const wrapsToNextYear = offset >= 12;
+      const yearLabel = wrapsToNextYear ? ` ${currentYear + 1}` : "";
+      return {
+        monthLabel: `${fullMonths[monthIndex]}${yearLabel}`,
+        saleName: first.label,
+        discount: first.discount,
+      };
+    }
+  }
+  return null;
+}
+
 function getNextEvent(brandKey, brand) {
-  // Active sale takes precedence — no need to predict the next one
+  // For brand-card display: if a sale is live now, show that.
   const liveSale = getEffectiveActiveSale(brand);
   if (liveSale) {
     return {
@@ -2117,39 +2156,17 @@ function getNextEvent(brandKey, brand) {
     };
   }
 
-  const calendar = SALE_CALENDARS[brandKey];
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const fullMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentDay = today.getDate();
-  const currentYear = today.getFullYear();
-
-  // If we're past day 20 of this month, assume any sale in this month has either
-  // happened or won't, and skip to next month. (Sales typically anchor to early/mid-month.)
-  const startMonth = currentDay < 20 ? currentMonth : currentMonth + 1;
-
-  if (calendar) {
-    for (let i = 0; i < 12; i++) {
-      const offset = startMonth + i;
-      const monthIndex = ((offset % 12) + 12) % 12;
-      const monthKey = months[monthIndex];
-      const entries = calendar[monthKey];
-      if (entries && entries.length > 0) {
-        const first = entries[0];
-        const wrapsToNextYear = offset >= 12;
-        const yearLabel = wrapsToNextYear ? ` ${currentYear + 1}` : "";
-        return {
-          shortLabel: `${fullMonths[monthIndex]}${yearLabel}`,
-          saleName: first.label,
-          discount: first.discount,
-          detail: `${first.label} · ${first.discount}`
-        };
-      }
-    }
+  const next = getNextCalendarEvent(brandKey);
+  if (next) {
+    return {
+      shortLabel: next.monthLabel,
+      saleName: next.saleName,
+      discount: next.discount,
+      detail: `${next.saleName} · ${next.discount}`
+    };
   }
 
-  // Fallback if no calendar data is found
+  // Fallback if no calendar data — read from hardcoded nextSale
   return {
     shortLabel: brand.nextEvent || "—",
     saleName: brand.nextSale ? brand.nextSale.name : "—",
@@ -2361,11 +2378,20 @@ function openBrand(key) {
       return "";
     })()}
 
-    <div class="next-sale-box">
-      <p class="label">${getEffectiveActiveSale(b) ? "Then watch for" : "Next predicted sale"}</p>
-      <p class="title">${b.nextSale.name} · ${b.nextSale.discount}</p>
-      <p class="when">${b.nextSale.when}</p>
-    </div>
+    ${(() => {
+      // Use the dynamic calendar walk so this box auto-rolls forward when a sale
+      // passes, instead of showing the hardcoded brand.nextSale forever.
+      const upcoming = getNextCalendarEvent(key);
+      const title = upcoming
+        ? `${upcoming.saleName} · ${upcoming.discount}`
+        : `${b.nextSale.name} · ${b.nextSale.discount}`;
+      const when = upcoming ? upcoming.monthLabel : b.nextSale.when;
+      return `<div class="next-sale-box">
+        <p class="label">${getEffectiveActiveSale(b) ? "Then watch for" : "Next predicted sale"}</p>
+        <p class="title">${title}</p>
+        <p class="when">${when}</p>
+      </div>`;
+    })()}
 
     <div class="modal-section">
       <p class="modal-section-title">12-month sale calendar</p>
