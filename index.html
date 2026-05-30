@@ -2565,6 +2565,14 @@ function renderHeroPreview() {
 function isActiveSaleExpired(activeSale) {
   if (!activeSale || !activeSale.ends) return false;
   const text = String(activeSale.ends).replace(/^Ends\s+/i, "").trim();
+
+  // Bail out early on phrases that obviously aren't dates ("Year-round",
+  // "Rotates weekly", "Ongoing", "Refreshes constantly", etc.). Chrome's
+  // date parser is lenient enough to interpret "Rotates weekly, 2026" as
+  // Jan 1, 2026 — which would then incorrectly mark every ongoing sale as
+  // expired after Jan 1 of the current year. A date needs at least a digit.
+  if (!/\d/.test(text)) return false;
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
