@@ -3016,7 +3016,7 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal
 
 // Bump CACHE_VERSION whenever the research prompt changes so users don't
 // keep seeing stale cached brand data from an older prompt version.
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const RESEARCHED_BRANDS = {};
 try {
   const cached = localStorage.getItem("saleRadarResearched");
@@ -3173,6 +3173,7 @@ async function researchBrand(brandName, slug) {
       shopUrl: data.shopUrl || "#",
       nextEvent: data.nextEvent || "",
       avgDiscount: data.avgDiscount || "",
+      coupon: data.coupon || "Occasional",
       _calendar: calendar,
     };
 
