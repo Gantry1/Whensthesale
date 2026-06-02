@@ -139,7 +139,8 @@ Return ONLY raw JSON, no markdown, no backticks. The angle-bracket text below de
   "proTip": "<concrete actionable advice, max 2 sentences>",
   "shopUrl": "<URL to brand's main shop or sale page>",
   "nextEvent": "<short label, e.g. Jul 2026, Nov 2026>",
-  "avgDiscount": "<typical discount range>"
+  "avgDiscount": "<typical discount range>",
+  "coupon": "<one of exactly: Common, Occasional, Rare, Never>"
 }
 
 === CRITICAL RULES FOR activeSale (most error-prone field) ===
@@ -188,6 +189,16 @@ Shape:
 }
 
 Return null only if the brand truly has nothing always available — but most do. Keep both fields short and concrete.
+
+=== RULES FOR coupon ===
+
+Describe how often this brand's discounts come via a COUPON CODE entered at checkout (as opposed to marked-down prices, outlet sections, or no discounts at all). Return EXACTLY one of these four words:
+- "Common" — discounts are almost always delivered via a checkout promo code, and codes run frequently (e.g. Banana Republic, J.Crew, Gap-family brands, Levi's — there's nearly always a code)
+- "Occasional" — codes appear sometimes, but discounts also come via markdowns/sale sections (e.g. Nike member codes, Sephora tiered event codes)
+- "Rare" — the brand seldom uses codes; discounts are mostly marked-down prices or outlet (e.g. Lululemon, most premium athletic brands)
+- "Never" — the brand essentially never uses coupon codes; firm pricing or partner-retailer events only (e.g. Aesop, Le Labo)
+
+Base this on the brand's general pricing strategy, not a single current promo. When unsure, choose the more conservative (lower-frequency) option.
 
 ===
 
