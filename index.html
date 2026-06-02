@@ -650,6 +650,95 @@
   }
   .shop-btn:hover { background: #4d1f17; }
 
+  /* ============================================================
+     === REDESIGNED MODAL COMPONENTS (v6) ===
+     Verdict banner, characteristic-offering panel, next-sale
+     meter, and brand-profile strip (frequency + coupon).
+     ============================================================ */
+
+  /* Modal header with favicon beside the name */
+  .m-header { display: flex; align-items: center; gap: 13px; margin-bottom: 6px; padding-right: 44px; }
+  .m-favicon-lead {
+    width: 40px; height: 40px; border-radius: 10px; padding: 4px; background: var(--bg-card);
+    border: 1px solid var(--rule); object-fit: contain; flex-shrink: 0;
+  }
+  .m-title {
+    font-family: var(--serif); font-size: 32px; font-weight: 600;
+    letter-spacing: -0.02em; line-height: 1;
+  }
+  .m-tagline { color: var(--ink-soft); font-size: 15px; margin-bottom: 22px; padding-left: 53px; margin-top: 4px; }
+  @media (max-width: 560px) { .m-tagline { padding-left: 0; } }
+
+  /* Verdict banner */
+  .verdict { border-radius: 16px; padding: 20px 24px; margin-bottom: 14px; display: flex; align-items: center; gap: 16px; }
+  .verdict.buy  { background: linear-gradient(135deg, var(--sale-soft), #eef6f0); border: 1px solid rgba(45,90,61,0.25); }
+  .verdict.hold { background: linear-gradient(135deg, var(--wait-soft), #faf3e6); border: 1px solid rgba(154,106,30,0.25); }
+  .verdict.wait { background: linear-gradient(135deg, var(--accent-soft), #f9ebe6); border: 1px solid rgba(107,44,32,0.2); }
+  .verdict-icon {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; display: flex;
+    align-items: center; justify-content: center; font-family: var(--serif);
+    font-weight: 700; font-size: 20px; color: #fff;
+  }
+  .verdict.buy  .verdict-icon { background: var(--sale); }
+  .verdict.hold .verdict-icon { background: var(--wait); }
+  .verdict.wait .verdict-icon { background: var(--accent); }
+  .verdict-body { flex: 1; min-width: 0; }
+  .verdict-kicker { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 3px; }
+  .verdict.buy  .verdict-kicker { color: var(--sale); }
+  .verdict.hold .verdict-kicker { color: var(--wait); }
+  .verdict.wait .verdict-kicker { color: var(--accent); }
+  .verdict-headline { font-family: var(--serif); font-size: 20px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; color: var(--ink); }
+
+  /* Characteristic offering panel (holds the shop button) */
+  .offering { background: var(--bg-card); border: 1px solid var(--rule-soft); border-radius: 16px; padding: 20px 22px; margin-bottom: 12px; }
+  .offering-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+  .offering-main { display: flex; align-items: center; gap: 16px; }
+  .offering-text { flex: 1; min-width: 0; }
+  .offering-title { font-family: var(--serif); font-size: 19px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 3px; }
+  .offering-detail { font-size: 13.5px; color: var(--ink-soft); line-height: 1.45; }
+  .offering.none .offering-title { color: var(--ink-soft); }
+  .shop-btn-inline {
+    display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; background: var(--accent);
+    color: var(--bg); padding: 12px 22px; border-radius: 100px; font-size: 14px; font-weight: 500;
+    text-decoration: none; cursor: pointer; transition: background 0.15s; white-space: nowrap;
+  }
+  .shop-btn-inline:hover { background: #4d1f17; }
+  @media (max-width: 560px) {
+    .offering-main { flex-direction: column; align-items: stretch; gap: 14px; }
+    .shop-btn-inline { justify-content: center; }
+  }
+
+  /* Next big sale panel + meter */
+  .nextsale { background: var(--bg-accent); border-radius: 16px; padding: 20px 22px; margin-bottom: 24px; }
+  .nextsale-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .nextsale-label { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .nextsale-eta { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--accent); letter-spacing: -0.01em; }
+  .nextsale-eta.imminent { color: var(--sale); }
+  .nextsale-title { font-family: var(--serif); font-size: 19px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; margin-bottom: 2px; }
+  .nextsale-when { font-size: 13px; color: var(--ink-soft); margin-bottom: 16px; }
+  .nextsale-meter-wrap { margin-top: 14px; }
+  .nextsale-meter-track { height: 8px; border-radius: 100px; background: rgba(26,24,20,0.08); position: relative; overflow: hidden; }
+  .nextsale-meter-fill {
+    position: absolute; left: 0; top: 0; bottom: 0; border-radius: 100px;
+    background: linear-gradient(90deg, #6BA883, var(--sale)); transition: width 0.6s ease;
+  }
+  .nextsale-meter-caption { font-size: 11.5px; color: var(--ink-faint); margin-top: 8px; font-weight: 500; }
+  .nextsale-faraway { margin-top: 12px; font-size: 12.5px; color: var(--ink-faint); font-weight: 500; display: flex; align-items: center; gap: 7px; }
+  .faraway-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-faint); display: inline-block; }
+
+  /* Brand profile strip: frequency dots + coupon descriptor */
+  .profile-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  @media (max-width: 560px) { .profile-strip { grid-template-columns: 1fr; } }
+  .profile-card {
+    background: var(--bg-card); border: 1px solid var(--rule-soft); border-radius: 14px;
+    padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .profile-card-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px; }
+  .profile-card-value { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+  .freq-dots { display: flex; gap: 5px; flex-shrink: 0; }
+  .freq-dot { width: 11px; height: 11px; border-radius: 50%; background: rgba(26,24,20,0.12); }
+  .freq-dot.on { background: var(--sale); }
+
   /* === ALERTS / EMAIL SECTION === */
   .alerts-section {
     background: var(--ink);
@@ -1511,6 +1600,7 @@ const BRANDS = {
       "Members of Lululemon Studio sometimes get exclusive early access to WMTM drops"
     ],
     proTip: "Set a recurring Thursday 6 AM alarm for We Made Too Much. The first hour determines who gets what. If you want a specific item at full size run, this is the only reliable way short of Black Friday.",
+    coupon: "Rare",
     shopUrl: "https://shop.lululemon.com",
     nextEvent: "Thu morning",
     avgDiscount: "20–30%"
@@ -1531,6 +1621,7 @@ const BRANDS = {
       "Black Friday discounts are typically small ($50–$100) and only via authorized resellers like Best Buy"
     ],
     proTip: "If you're a student, faculty, or even a parent of a student — Education Pricing is always live and saves $100–200. Time bigger purchases for Back to School (June–September) when free AirPods or Apple Pencil come bundled in.",
+    coupon: "Rare",
     shopUrl: "https://www.apple.com",
     nextEvent: "Jun 2026",
     avgDiscount: "$100–200"
@@ -1551,6 +1642,7 @@ const BRANDS = {
       "Worn Wear (used Patagonia) offers 50%+ off authentic gear — also underrated"
     ],
     proTip: "Don't buy at full price unless you need it now. Mark February and late July on your calendar — those are the only two times Patagonia discounts. Wait until week 2 of the sale for the deepest cuts as inventory clears.",
+    coupon: "Never",
     shopUrl: "https://www.patagonia.com",
     nextEvent: "Jul 2026",
     avgDiscount: "30–40%"
@@ -1571,6 +1663,7 @@ const BRANDS = {
       "SNKRS app launches almost never discount — they're full price for hype reasons"
     ],
     proTip: "Join Nike Membership (free) and download both the Nike and SNKRS apps. Member-only sales typically beat public ones. For sneakers, check the outlet section — same models appear there 6–12 months later at 40–50% off.",
+    coupon: "Occasional",
     shopUrl: "https://www.nike.com",
     nextEvent: "May 23",
     avgDiscount: "20–25%"
@@ -1591,6 +1684,7 @@ const BRANDS = {
       "Members get 10% off their first order + birthday gifts + early sale access"
     ],
     proTip: "Sign up for Alo membership immediately — it's free, takes 2 minutes, and unlocks 10% off your first order plus early access to all sales. The two unmissable moments are Aloversary in May and Singles Day on Nov 11.",
+    coupon: "Occasional",
     shopUrl: "https://www.aloyoga.com",
     nextEvent: "Nov 11",
     avgDiscount: "30%"
@@ -1611,6 +1705,7 @@ const BRANDS = {
       "Their performance fabrics rarely make it to deep discount — high demand keeps margins protected"
     ],
     proTip: "Vuori is the hardest brand to catch on sale outside Black Friday. If you want their joggers or shorts at a discount, your best bet is the email signup ($20 off) or waiting for end-of-season clearance in August/January.",
+    coupon: "Rare",
     shopUrl: "https://vuoriclothing.com",
     nextEvent: "Aug 2026",
     avgDiscount: "20–25%"
@@ -1631,6 +1726,7 @@ const BRANDS = {
       "Wilfred, Babaton, and Wilfred Free lines tend to get the deepest discounts at end-of-season"
     ],
     proTip: "Plan major Aritzia purchases around Boxing Day (Dec 26) and mid-July — these are the only times you'll see 50%+ off. Sign up for emails to get early sale access, often 24 hours before public.",
+    coupon: "Rare",
     shopUrl: "https://www.aritzia.com",
     nextEvent: "Jul 2026",
     avgDiscount: "30–50%"
@@ -1651,6 +1747,7 @@ const BRANDS = {
       "Authorized resellers (REI, Zappos, Nordstrom) sometimes match or beat On's own sales"
     ],
     proTip: "Don't expect aggressive On sales like you'd see from Nike or Adidas — they protect brand pricing. Best move: shop the Outlet section for past-season colorways at 25–40% off, or wait for REI Member Sales which often include On.",
+    coupon: "Rare",
     shopUrl: "https://www.on-running.com",
     nextEvent: "Nov 2026",
     avgDiscount: "20–25%"
@@ -1671,6 +1768,7 @@ const BRANDS = {
       "The sale section regularly stacks with an additional 30–40% off — 'sale on sale' is the move"
     ],
     proTip: "Never buy at full price. There's a promo nearly every week, and if you sign up for emails, your first order gets 15% off automatically. For big purchases, wait for Friends & Family or Black Friday.",
+    coupon: "Common",
     shopUrl: "https://www.madewell.com",
     nextEvent: "Jul 2026",
     avgDiscount: "25–40%"
@@ -1691,6 +1789,7 @@ const BRANDS = {
       "Email subscribers get earlier promo code access (usually 24 hours)"
     ],
     proTip: "Wait for a code — there's always one within a week. For new arrivals you really want, the only sub-full-price option is Friends & Family. For everything else, stack a promo code on the sale section.",
+    coupon: "Common",
     shopUrl: "https://www.jcrew.com",
     nextEvent: "Jun 2026",
     avgDiscount: "30–40%"
@@ -1711,6 +1810,7 @@ const BRANDS = {
       "AnthroPerks members get early access to all major sales (free to join)"
     ],
     proTip: "Sign up for AnthroPerks (free) for early sale access. Track items in your wishlist — they ping you when an item drops into sale. The sweet spot is catching a 'sale-on-sale' tagged event, where final prices often hit 60%+ off.",
+    coupon: "Occasional",
     shopUrl: "https://www.anthropologie.com",
     nextEvent: "Spring tagged event",
     avgDiscount: "30–50%"
@@ -1731,6 +1831,7 @@ const BRANDS = {
       "Sign up for emails — first order gets a 15% off code"
     ],
     proTip: "Don't expect aggressive sitewide sales. Your two best windows are end-of-winter and end-of-summer, when past-season styles hit 40–50% off. Otherwise, focus on the sale section and watch for stacked email promos.",
+    coupon: "Rare",
     shopUrl: "https://www.thereformation.com",
     nextEvent: "Jul 2026",
     avgDiscount: "25–40%"
@@ -1751,6 +1852,7 @@ const BRANDS = {
       "Their transparent pricing means baseline markups are already lower — discounts are 'true' discounts, not inflated MSRP"
     ],
     proTip: "Sign up for the email list to unlock $25 off your first $100+ order — that's the most reliable Everlane discount. Otherwise, plan major purchases around Black Friday or watch the 'Choose What You Pay' section.",
+    coupon: "Rare",
     shopUrl: "https://www.everlane.com",
     nextEvent: "Nov 2026",
     avgDiscount: "20–30%"
@@ -1771,6 +1873,7 @@ const BRANDS = {
       "Wholesale partners (Nordstrom, Bloomingdale's, Saks Off 5th) frequently match or beat Theory's own sales"
     ],
     proTip: "If you want full-price workwear at a discount, Friends & Family in spring is your single best window. For deeper savings, wait for end-of-summer or end-of-winter clearance — that's when 60% off appears.",
+    coupon: "Occasional",
     shopUrl: "https://www.theory.com",
     nextEvent: "Mar 2026",
     avgDiscount: "25–40%"
@@ -1791,6 +1894,7 @@ const BRANDS = {
       "New email subscribers get 15% off their first order"
     ],
     proTip: "Never pay full price. Wait a week or two and there's always a 30% off code. For big purchases, time them for Black Friday or Memorial Day weekend — only times you'll see 40%+ off without exclusions.",
+    coupon: "Common",
     shopUrl: "https://bananarepublic.gap.com",
     nextEvent: "May 23",
     avgDiscount: "30–40%"
@@ -1811,6 +1915,7 @@ const BRANDS = {
       "Sister to Anthropologie — both share AnthroPerks loyalty program for early sale access"
     ],
     proTip: "Sign up for AnthroPerks (free) for early sale access at Free People too. The 'Sale' section regularly hits 50%+ off — that's the best year-round value, not the sitewide events.",
+    coupon: "Occasional",
     shopUrl: "https://www.freepeople.com",
     nextEvent: "Jul 2026",
     avgDiscount: "30–50%"
@@ -1831,6 +1936,7 @@ const BRANDS = {
       "Outlet store regularly carries current-season styles at 30–40% off"
     ],
     proTip: "Join adiClub (free) — member sales are the most reliable discount channel. For big purchases, Black Friday is unbeatable. For sneakers specifically, the Outlet section often has the same models still in current rotation.",
+    coupon: "Common",
     shopUrl: "https://www.adidas.com",
     nextEvent: "May 23",
     avgDiscount: "30–50%"
@@ -1851,6 +1957,7 @@ const BRANDS = {
       "REI Member Sales (March + November) regularly include Hoka at 20%+ off"
     ],
     proTip: "Hoka.com itself rarely runs aggressive sales. The smart move: check Zappos, REI, and DSW — they often have the same models 20–25% off when Hoka.com is full price. REI Member Sale (twice yearly) is the underrated window.",
+    coupon: "Rare",
     shopUrl: "https://www.hoka.com",
     nextEvent: "May 23",
     avgDiscount: "20–25%"
@@ -1871,6 +1978,7 @@ const BRANDS = {
       "Joe's New Balance Outlet (separate site) carries past-season styles at 30–50% off year-round"
     ],
     proTip: "Beyond newbalance.com, check Joe's New Balance Outlet for ongoing 30–50% off past-season models. For current styles, Black Friday is the most reliable sitewide moment.",
+    coupon: "Occasional",
     shopUrl: "https://www.newbalance.com",
     nextEvent: "May 23",
     avgDiscount: "25–35%"
@@ -1891,6 +1999,7 @@ const BRANDS = {
       "Athleta Rewards (free) members get early access and exclusive coupons"
     ],
     proTip: "If you like Lululemon-style fits but won't wait until Black Friday for a discount, Athleta is your move. Their sale section regularly hits 50–60% off, and Athleta Rewards (free) gives you 24-hour early sale access.",
+    coupon: "Common",
     shopUrl: "https://athleta.gap.com",
     nextEvent: "May 23",
     avgDiscount: "30–50%"
@@ -1911,6 +2020,7 @@ const BRANDS = {
       "Coach Insider (free) members get early access and exclusive Outlet coupons"
     ],
     proTip: "Never shop Coach.com at full price — shop Coach Outlet instead. The bags are made for outlet (slightly different from main line) but the quality is the same and prices are 50–70% lower. Sign up for Coach Insider for stackable extra-off codes.",
+    coupon: "Occasional",
     shopUrl: "https://www.coachoutlet.com",
     nextEvent: "Active now",
     avgDiscount: "50–70%"
@@ -1931,6 +2041,7 @@ const BRANDS = {
       "Email signup gets early access to both major sales (24-hour head start)"
     ],
     proTip: "Plan Tory Burch purchases around June/July (Semi-Annual) or January (Winter Promo) — those are basically the only times you'll see significant discounts on the main site. Otherwise, the Outlet has year-round 40–60% off.",
+    coupon: "Rare",
     shopUrl: "https://www.toryburch.com",
     nextEvent: "Jun 2026",
     avgDiscount: "30–50%"
@@ -1951,6 +2062,7 @@ const BRANDS = {
       "Sister brand to Coach (both owned by Tapestry) — sale patterns mirror each other"
     ],
     proTip: "Sign up for emails to catch Surprise Sales — they're flash events that get announced day-of and last 24–48 hours. For everyday savings, Kate Spade Outlet runs 50–70% off year-round on a wide outlet-line selection.",
+    coupon: "Occasional",
     shopUrl: "https://www.katespadeoutlet.com",
     nextEvent: "Next Surprise Sale",
     avgDiscount: "30–50%"
@@ -1971,6 +2083,7 @@ const BRANDS = {
       "Wholesale partners (Macy's, Nordstrom, Amazon) frequently match or beat Levi's own sales"
     ],
     proTip: "Don't pay full price. Join Red Tab Members (free) for member-only codes, and check Macy's or Amazon — they often have the same 501s, 511s, etc. at 30–40% off when Levi.com is full price.",
+    coupon: "Common",
     shopUrl: "https://www.levi.com",
     nextEvent: "May 23",
     avgDiscount: "25–40%"
@@ -1991,6 +2104,7 @@ const BRANDS = {
       "Pottery Barn / Williams Sonoma Rewards (free) program covers West Elm too — earn back 5% per purchase"
     ],
     proTip: "Never buy West Elm furniture at full price — there's a sitewide sale almost every weekend. For the deepest savings, target Memorial Day, July 4, Labor Day, or Black Friday. The Open Box section has year-round 40–60% off on returned/floor sample items.",
+    coupon: "Occasional",
     shopUrl: "https://www.westelm.com",
     nextEvent: "May 23",
     avgDiscount: "25–40%"
@@ -2011,6 +2125,7 @@ const BRANDS = {
       "Bundle deals (sheet sets + duvet covers, etc.) consistently offer better per-item value than buying separately"
     ],
     proTip: "Sign up for emails (10% off) and plan major bedding purchases around Memorial Day, the June Anniversary Sale, or Black Friday — those bring 25% off sitewide. Bundles always beat à la carte.",
+    coupon: "Common",
     shopUrl: "https://www.brooklinen.com",
     nextEvent: "May 23",
     avgDiscount: "15–25%"
@@ -2035,6 +2150,7 @@ const BRANDS = {
       "Authorized retailers (Best Buy, Target, Costco) occasionally beat Dyson's own pricing on major holiday weekends"
     ],
     proTip: "Don't wait for Black Friday — Dyson's permanent Deals page already has 15–40% off on most of their lineup year-round, especially on V8/V11 vacuums, older Airwrap colorways, and OnTrac headphones. If you want the absolute newest flagship at the deepest discount, then Black Friday is your window.",
+    coupon: "Rare",
     shopUrl: "https://www.dyson.com/deals",
     nextEvent: "Active now",
     avgDiscount: "15–40%"
@@ -2055,6 +2171,7 @@ const BRANDS = {
       "Best Buy and Amazon frequently match or beat Bose.com pricing during holidays"
     ],
     proTip: "Check Best Buy and Amazon before committing to Bose.com — they often match or beat the same sale price with faster shipping. The Refurbished store is your year-round value play, 15–25% off with full warranty.",
+    coupon: "Occasional",
     shopUrl: "https://www.bose.com",
     nextEvent: "May 23",
     avgDiscount: "15–30%"
@@ -2075,6 +2192,7 @@ const BRANDS = {
       "Beauty Insider (free) is essential — even base-tier members get the 10% off sale events"
     ],
     proTip: "Time big beauty stockups for the Spring Savings (April) or Holiday Savings (October) events — those are essentially the only Sephora sales. Sign up for Beauty Insider (free) — even base-tier gets 10% off during the events.",
+    coupon: "Occasional",
     shopUrl: "https://www.sephora.com",
     nextEvent: "Oct 2026",
     avgDiscount: "10–20%"
@@ -2095,6 +2213,7 @@ const BRANDS = {
       "Email signup gets 10% off your first order — best baseline discount"
     ],
     proTip: "Glossier rarely discounts — your two real moments are Black Friday and the Anniversary Sale (timing varies, watch email). Otherwise, the bundles and sets save 15–20% vs buying products individually.",
+    coupon: "Rare",
     shopUrl: "https://www.glossier.com",
     nextEvent: "Nov 2026",
     avgDiscount: "20%"
@@ -2115,6 +2234,7 @@ const BRANDS = {
       "Email signup gets you 10% off your first order"
     ],
     proTip: "If you shop Mejuri more than 2–3x per year, the Plus membership ($60/yr) pays for itself with 15% off everything plus free shipping. Otherwise, the Summer Sale (July) and Year-End Event (December) are your best windows for fine jewelry discounts.",
+    coupon: "Rare",
     shopUrl: "https://mejuri.com",
     nextEvent: "Jul 2026",
     avgDiscount: "15–20%"
@@ -2135,6 +2255,7 @@ const BRANDS = {
       "Complimentary samples and signature gift-wrapping are how Aesop signals value — the brand experience replaces the discount"
     ],
     proTip: "Don't wait for an Aesop sale — there essentially isn't one. Best move: subscribe to Nordstrom's beauty email list and pounce when they run a beauty F&F event (twice yearly, typically 10–15% off including Aesop). Or wait for Holiday Gift Kits in November for built-in bundle savings.",
+    coupon: "Never",
     shopUrl: "https://www.aesop.com",
     nextEvent: "Nov 2026",
     avgDiscount: "10–15%"
@@ -2155,6 +2276,7 @@ const BRANDS = {
       "Sets and bundles offer 15–25% off vs à la carte year-round — best year-round value"
     ],
     proTip: "Shop Drunk Elephant through Sephora during their April and October Savings Events for the deepest discounts — Rouge members get 20% off. Direct on drunkelephant.com, your best year-round play is the 'Littles' kits which save 15–25% vs buying full sizes individually.",
+    coupon: "Occasional",
     shopUrl: "https://www.drunkelephant.com",
     nextEvent: "Oct 2026",
     avgDiscount: "10–20%"
@@ -2175,6 +2297,7 @@ const BRANDS = {
       "Email subscribers get 15% off first order + birthday gifts + early access to all F&F events"
     ],
     proTip: "Sign up for Tatcha emails to get 15% off immediately and early access to Friends & Family events. Time bigger orders for F&F (July or October) when you can stack a 20–25% discount on the whole site. The Beauty Box sets are quietly the best year-round value.",
+    coupon: "Occasional",
     shopUrl: "https://www.tatcha.com",
     nextEvent: "Jul 2026",
     avgDiscount: "20–25%"
@@ -2195,6 +2318,7 @@ const BRANDS = {
       "NIOD (sister brand under Deciem) is also included in Slowvember and Boxing Day — premium-tier serums at 23% off"
     ],
     proTip: "Stock up during Slowvember — the entire month of November is 23% off sitewide. This is unusual because most brands have flash 1-day Black Friday events, but Deciem deliberately stretches it across the whole month so you're not pressured into a panicked midnight checkout. Plan accordingly.",
+    coupon: "Occasional",
     shopUrl: "https://theordinary.com",
     nextEvent: "Nov 2026",
     avgDiscount: "23%"
@@ -2215,6 +2339,7 @@ const BRANDS = {
       "Authorized retailers (Sephora, Ulta, Nordstrom) frequently match or beat olaplex.com pricing — always check before buying direct"
     ],
     proTip: "Don't buy Olaplex direct at full price — Sephora's April and October Savings Events offer 20% off for Rouge members, often beating olaplex.com. For bundle savings, the Bond Builder Kits are 15–20% cheaper than buying No. 3, No. 4, No. 5, etc. separately.",
+    coupon: "Occasional",
     shopUrl: "https://olaplex.com",
     nextEvent: "Oct 2026",
     avgDiscount: "15–20%"
@@ -2235,6 +2360,7 @@ const BRANDS = {
       "Email subscribers get 10% off first order + early access to F&F (typically 24-hour head start)"
     ],
     proTip: "Sign up for Charlotte Tilbury emails for early F&F access — the 24-hour head start matters when the popular Pillow Talk lipsticks sell out fast. For year-round savings, the Magic Kits are 20–30% cheaper than buying products individually and make great gifts.",
+    coupon: "Occasional",
     shopUrl: "https://www.charlottetilbury.com",
     nextEvent: "Oct 2026",
     avgDiscount: "20–25%"
@@ -2255,6 +2381,7 @@ const BRANDS = {
       "Sale events through Bergdorf Goodman, Saks, and Net-a-Porter occasionally include Pat McGrath at 15–25% off"
     ],
     proTip: "Pat McGrath Labs almost never discounts on her own site. Your real shot at sub-retail pricing is Sephora's April and October Savings Events (20% off for Rouge), or the rare Bergdorf/Saks beauty event. Otherwise, the gift sets give you the best per-product value.",
+    coupon: "Rare",
     shopUrl: "https://www.patmcgrath.com",
     nextEvent: "Oct 2026",
     avgDiscount: "15–20%"
@@ -2275,6 +2402,7 @@ const BRANDS = {
       "1% of proceeds support the Rare Impact Fund (mental health) — part of the brand's value proposition beyond pricing"
     ],
     proTip: "Time bigger Rare Beauty stockups for Sephora's April and October Savings Events — Rouge members get 20% off, which is the deepest discount you'll see on the brand. For everyday value, the refill program saves ~10–15% vs buying replacements.",
+    coupon: "Occasional",
     shopUrl: "https://www.rarebeauty.com",
     nextEvent: "Oct 2026",
     avgDiscount: "15–20%"
@@ -2295,6 +2423,7 @@ const BRANDS = {
       "Discovery sets (5x sample-size bottles) give you a way to test multiple scents before committing — not a discount but real value"
     ],
     proTip: "Don't wait for a Le Labo sale — there isn't one. Your real shot at sub-retail pricing is Nordstrom or Bergdorf's beauty F&F events (twice yearly, typically 10–15% off). For value, the Discovery sets let you test 5 fragrances for less than a single full bottle.",
+    coupon: "Never",
     shopUrl: "https://www.lelabofragrances.com",
     nextEvent: "Nov 2026",
     avgDiscount: "10–15%"
@@ -2315,6 +2444,7 @@ const BRANDS = {
       "Outlet section ('Final Sale') runs year-round at 30–50% off past-season wellness and apparel"
     ],
     proTip: "goop's Black Friday is the deepest sitewide moment of the year (25–30% off), but if you can't wait, Memorial Day and July 4 both deliver 20–25% off reliably. Sign up for emails to get 15% off your first order plus early access to the Friends & Family events.",
+    coupon: "Common",
     shopUrl: "https://goop.com",
     nextEvent: "Jul 2026",
     avgDiscount: "20–25%"
@@ -2402,6 +2532,133 @@ function getNextCalendarEvent(brandKey) {
     }
   }
   return null;
+}
+
+// Returns the approximate number of days until the next predicted sale month.
+// Since we predict a *month* not an exact day, we anchor to the 15th (mid-month)
+// as a reasonable center of the predicted window. Returns null if no calendar.
+function getDaysUntilNextSale(brandKey) {
+  const calendar = SALE_CALENDARS[brandKey];
+  if (!calendar) return null;
+
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const currentMonth = today.getMonth();
+  const currentDay = today.getDate();
+  const currentYear = today.getFullYear();
+
+  const startMonth = currentDay < 20 ? currentMonth : currentMonth + 1;
+
+  for (let i = 0; i < 12; i++) {
+    const offset = startMonth + i;
+    const monthIndex = ((offset % 12) + 12) % 12;
+    const monthKey = months[monthIndex];
+    const entries = calendar[monthKey];
+    if (entries && entries.length > 0) {
+      const wrapsToNextYear = offset >= 12;
+      const targetYear = wrapsToNextYear ? currentYear + 1 : currentYear;
+      // Anchor to mid-month (the 15th) as the center of the predicted window
+      const target = new Date(targetYear, monthIndex, 15);
+      target.setHours(0, 0, 0, 0);
+      const diffMs = target.getTime() - today.getTime();
+      const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      return Math.max(0, days);
+    }
+  }
+  return null;
+}
+
+// Frequency bucket from how many months have storewide sales in the calendar.
+// Used for the 3-dot frequency meter. Returns { dots, label }.
+function getFrequencyBucket(brandKey) {
+  const calendar = SALE_CALENDARS[brandKey] || {};
+  const count = Object.keys(calendar).length;
+  if (count >= 7) return { dots: 3, label: "Frequent" };
+  if (count >= 4) return { dots: 2, label: "Moderate" };
+  if (count >= 1) return { dots: 1, label: "Rare" };
+  return { dots: 0, label: "Almost never" };
+}
+
+// Computes the buy/hold/wait verdict for a brand.
+// - "buy"  : there's an active sale right now, OR the brand discounts so often
+//            (frequent) that there's almost always something live
+// - "hold" : a sale is genuinely close (within the lookahead window)
+// - "wait" : nothing active and nothing imminent
+// Returns { type, icon, kicker, headline }.
+const VERDICT_LOOKAHEAD_DAYS = 60;
+function computeVerdict(brandKey, brand) {
+  const liveSale = getEffectiveActiveSale(brand);
+  const daysAway = getDaysUntilNextSale(brandKey);
+  const freq = getFrequencyBucket(brandKey);
+
+  if (liveSale) {
+    return {
+      type: "buy",
+      icon: "✓",
+      kicker: "Good time to buy",
+      headline: liveSale.name + (liveSale.discount ? " — " + liveSale.discount : "")
+    };
+  }
+
+  // Frequent-discounter with a sale imminent → treat as buy
+  if (freq.dots === 3 && daysAway !== null && daysAway <= 14) {
+    return {
+      type: "buy",
+      icon: "✓",
+      kicker: "Good time to buy",
+      headline: "A discount is active or imminent"
+    };
+  }
+
+  if (daysAway !== null && daysAway <= VERDICT_LOOKAHEAD_DAYS) {
+    return {
+      type: "hold",
+      icon: "⏳",
+      kicker: "A sale is probably close",
+      headline: "Worth holding off — a sale is coming soon"
+    };
+  }
+
+  // Nothing imminent. If the brand has an always-on promo, soften the "wait".
+  return {
+    type: "wait",
+    icon: "◷",
+    kicker: "No sale on the immediate horizon",
+    headline: brand.alwaysOnPromo && brand.alwaysOnPromo.name
+      ? "No major sale soon — but there's an ongoing offer"
+      : "Buy when you need it — no sale expected soon"
+  };
+}
+
+// Formats days-until into the weeks-based ETA label + meter state.
+// Returns { etaText, imminent, withinWindow, fillPct, caption, faraway }.
+function formatSaleTiming(daysAway) {
+  if (daysAway === null) {
+    return { etaText: "—", imminent: false, withinWindow: false, faraway: true, farawayText: "Timing unknown" };
+  }
+  if (daysAway > VERDICT_LOOKAHEAD_DAYS) {
+    const months = Math.max(1, Math.round(daysAway / 30));
+    return {
+      etaText: `~${months} ${months === 1 ? "month" : "months"}`,
+      imminent: false, withinWindow: false, faraway: true,
+      farawayText: `Still ~${months} ${months === 1 ? "month" : "months"} out — nothing imminent`
+    };
+  }
+  if (daysAway < 7) {
+    return {
+      etaText: "Any day now", imminent: true, withinWindow: true, faraway: false,
+      fillPct: 95, caption: "Our predicted window is basically here — keep an eye out"
+    };
+  }
+  const weeks = Math.round(daysAway / 7);
+  const fillPct = Math.round(((VERDICT_LOOKAHEAD_DAYS - daysAway) / VERDICT_LOOKAHEAD_DAYS) * 100);
+  return {
+    etaText: `~${weeks} ${weeks === 1 ? "week" : "weeks"}`,
+    imminent: false, withinWindow: true, faraway: false,
+    fillPct,
+    caption: `Approaching — about ${weeks} ${weeks === 1 ? "week" : "weeks"} out`
+  };
 }
 
 function getNextEvent(brandKey, brand) {
@@ -2605,82 +2862,162 @@ function openBrand(key) {
   const b = BRANDS[key];
   const modal = document.getElementById("modal");
   const body = document.getElementById("modal-body");
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const currentMonth = new Date().getMonth();
   const modalFavicon = faviconFor(b.shopUrl, 128);
   const modalFaviconImg = modalFavicon
-    ? `<img class="brand-favicon modal-favicon" src="${modalFavicon}" alt="" onerror="this.style.display='none'" />`
+    ? `<img class="m-favicon-lead" src="${modalFavicon}" alt="" onerror="this.style.display='none'" />`
     : "";
+
+  // --- Compute the decision signals ---
+  const liveSale = getEffectiveActiveSale(b);
+  const verdict = computeVerdict(key, b);
+  const daysAway = getDaysUntilNextSale(key);
+  const timing = formatSaleTiming(daysAway);
+  const freq = getFrequencyBucket(key);
+  const upcoming = getNextCalendarEvent(key);
+
+  // --- Characteristic offering panel ---
+  // Prefer a live sale, then the always-on promo. If neither exists, it's a
+  // "no ongoing discount" brand and we omit the shop button (don't push a brand
+  // we're telling the user to wait on).
+  let offeringHTML = "";
+  if (liveSale) {
+    offeringHTML = `
+      <div class="offering">
+        <div class="offering-label">On sale right now</div>
+        <div class="offering-main">
+          <div class="offering-text">
+            <div class="offering-title">${liveSale.name}</div>
+            <div class="offering-detail">${liveSale.discount}${liveSale.ends ? " · " + liveSale.ends : ""}</div>
+          </div>
+          <a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn-inline">Shop ${b.name} <span>→</span></a>
+        </div>
+      </div>`;
+  } else if (b.alwaysOnPromo && b.alwaysOnPromo.name) {
+    offeringHTML = `
+      <div class="offering">
+        <div class="offering-label">Typically available here</div>
+        <div class="offering-main">
+          <div class="offering-text">
+            <div class="offering-title">${b.alwaysOnPromo.name}</div>
+            <div class="offering-detail">${b.alwaysOnPromo.discount || ""}</div>
+          </div>
+          <a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn-inline">Shop ${b.name} <span>→</span></a>
+        </div>
+      </div>`;
+  } else {
+    offeringHTML = `
+      <div class="offering none">
+        <div class="offering-label">What to expect</div>
+        <div class="offering-main">
+          <div class="offering-text">
+            <div class="offering-title">No ongoing discount</div>
+            <div class="offering-detail">${b.name} holds firm pricing. Your best savings move is a department-store beauty event or waiting for the window below.</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // --- Next big sale panel + meter ---
+  const nextTitle = upcoming ? upcoming.saleName : (b.nextSale ? b.nextSale.name : "—");
+  const nextWhen = upcoming
+    ? `${upcoming.monthLabel}${upcoming.discount ? " · " + upcoming.discount : ""}`
+    : (b.nextSale ? b.nextSale.when : "");
+  let meterHTML;
+  if (timing.faraway) {
+    meterHTML = `<div class="nextsale-faraway"><span class="faraway-dot"></span>${timing.farawayText}</div>`;
+  } else {
+    meterHTML = `
+      <div class="nextsale-meter-wrap">
+        <div class="nextsale-meter-track"><div class="nextsale-meter-fill" style="width:${timing.fillPct}%"></div></div>
+        <div class="nextsale-meter-caption">${timing.caption}</div>
+      </div>`;
+  }
+  const nextSaleHTML = `
+    <div class="nextsale">
+      <div class="nextsale-top">
+        <span class="nextsale-label">${liveSale ? "Then watch for" : "Next big sale"}</span>
+        <span class="nextsale-eta${timing.imminent ? ' imminent' : ''}">${timing.etaText}</span>
+      </div>
+      <div class="nextsale-title">${nextTitle}</div>
+      <div class="nextsale-when">${nextWhen}</div>
+      ${meterHTML}
+    </div>`;
+
+  // --- Brand profile strip (frequency dots + coupon descriptor) ---
+  const dotsHTML = [0,1,2].map(i => `<span class="freq-dot ${i < freq.dots ? 'on' : ''}"></span>`).join("");
+  const couponVal = b.coupon || "—";
+  const profileHTML = `
+    <div class="profile-strip">
+      <div class="profile-card">
+        <div>
+          <div class="profile-card-label">Sale frequency</div>
+          <div class="profile-card-value">${freq.label}</div>
+        </div>
+        <div class="freq-dots">${dotsHTML}</div>
+      </div>
+      <div class="profile-card">
+        <div>
+          <div class="profile-card-label">Coupon codes</div>
+          <div class="profile-card-value">${couponVal}</div>
+        </div>
+      </div>
+    </div>`;
+
+  // --- 12-month calendar (preserves multi-entry handling + next-sale highlight) ---
+  const nextMonthIndex = upcoming ? months.indexOf(upcoming.monthLabel.split(" ")[0].slice(0,3)) : -1;
+  const calHTML = months.map((m, i) => {
+    const entries = (SALE_CALENDARS[key] || {})[m] || [];
+    const isCurrent = i === currentMonth;
+    const hasSale = entries.length > 0;
+    const isNext = hasSale && i === nextMonthIndex;
+    const primary = hasSale ? entries[0] : null;
+    const extra = entries.length > 1 ? ` +${entries.length - 1}` : "";
+    const tooltip = hasSale ? entries.map(e => `${e.label} — ${e.discount}`).join(" · ") : "";
+    const cls = ["month-cell"];
+    if (hasSale) cls.push("has-sale");
+    if (isNext) cls.push("next-sale");
+    if (isCurrent) cls.push("current");
+    return `<div class="${cls.join(" ")}" ${hasSale ? `title="${tooltip.replace(/"/g,"&quot;")}"` : ""}>
+      <div class="month-label">${m}</div>
+      ${hasSale
+        ? `<div class="month-discount">${primary.discount}${extra}</div><div class="month-detail">${primary.label}</div>`
+        : `<div class="month-detail">—</div>`}
+    </div>`;
+  }).join("");
+
   body.innerHTML = `
     <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
-    <p class="modal-eyebrow">Brand intelligence</p>
-    <h2>${modalFaviconImg}${b.name}</h2>
-    <p style="font-size:16px; color:var(--ink-soft); margin-bottom:32px; line-height:1.6;">${b.tagline}</p>
 
-    ${(() => {
-      const liveSale = getEffectiveActiveSale(b);
-      if (liveSale) {
-        return `
-      <div class="current-sale-box">
-        <p class="label">● Active sale</p>
-        <p class="title">${liveSale.name}</p>
-        <p class="desc">${liveSale.discount}${liveSale.ends ? " · " + liveSale.ends : ""}</p>
-        <a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn">Shop the sale <span>→</span></a>
-      </div>`;
-      }
-      // No live sale — fall back to always-on promo if the brand has one
-      if (b.alwaysOnPromo && b.alwaysOnPromo.name) {
-        return `
-      <div class="alwaysOn-box">
-        <p class="label">Currently offering</p>
-        <p class="title">${b.alwaysOnPromo.name}</p>
-        <p class="desc">${b.alwaysOnPromo.discount || ""}</p>
-        <a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn shop-btn-neutral">Shop ${b.name} <span>→</span></a>
-      </div>`;
-      }
-      return "";
-    })()}
+    <div class="m-header">
+      ${modalFaviconImg}
+      <div class="m-title">${b.name}</div>
+    </div>
+    <p class="m-tagline">${b.tagline}</p>
 
-    ${(() => {
-      // Use the dynamic calendar walk so this box auto-rolls forward when a sale
-      // passes, instead of showing the hardcoded brand.nextSale forever.
-      const upcoming = getNextCalendarEvent(key);
-      const title = upcoming
-        ? `${upcoming.saleName} · ${upcoming.discount}`
-        : `${b.nextSale.name} · ${b.nextSale.discount}`;
-      const when = upcoming ? upcoming.monthLabel : b.nextSale.when;
-      return `<div class="next-sale-box">
-        <p class="label">${getEffectiveActiveSale(b) ? "Then watch for" : "Next predicted sale"}</p>
-        <p class="title">${title}</p>
-        <p class="when">${when}</p>
-      </div>`;
-    })()}
+    <div class="verdict ${verdict.type}">
+      <div class="verdict-icon">${verdict.icon}</div>
+      <div class="verdict-body">
+        <div class="verdict-kicker">${verdict.kicker}</div>
+        <div class="verdict-headline">${verdict.headline}</div>
+      </div>
+    </div>
+
+    ${offeringHTML}
+
+    ${nextSaleHTML}
+
+    ${profileHTML}
 
     <div class="modal-section">
       <p class="modal-section-title">12-month sale calendar</p>
-      <div class="calendar-grid">
-        ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => {
-          const entries = (SALE_CALENDARS[key] || {})[m] || [];
-          const isCurrent = i === currentMonth;
-          const hasSale = entries.length > 0;
-          // For months with multiple entries (rare), show the first one's discount
-          // as the headline number, and the count as a hint.
-          const primary = hasSale ? entries[0] : null;
-          const extra = entries.length > 1 ? ` +${entries.length - 1}` : "";
-          const tooltip = hasSale
-            ? entries.map(e => `${e.label} — ${e.discount}`).join(" · ")
-            : "";
-          return `<div class="month-cell ${hasSale ? "has-sale" : ""} ${isCurrent ? "current" : ""}" ${hasSale ? `title="${tooltip.replace(/"/g,"&quot;")}"` : ""}>
-            <div class="month-label">${m}</div>
-            ${hasSale
-              ? `<div class="month-discount">${primary.discount}${extra}</div><div class="month-detail">${primary.label}</div>`
-              : `<div class="month-detail">—</div>`}
-          </div>`;
-        }).join("")}
-      </div>
+      <div class="calendar-grid">${calHTML}</div>
       <div class="calendar-legend">
         <span><span class="legend-dot" style="background:var(--sale-soft)"></span>Sale month</span>
+        <span><span class="legend-dot" style="background:var(--sale-soft);box-shadow:0 0 0 1.5px var(--sale)"></span>Next sale</span>
         <span><span class="legend-dot" style="background:var(--bg-accent)"></span>No sale typically</span>
-        <span><span class="legend-dot" style="background:var(--bg-card);border:2px solid var(--accent)"></span>This month</span>
+        <span><span class="legend-dot" style="background:var(--bg-card);border:2px solid var(--ink)"></span>This month</span>
       </div>
     </div>
 
@@ -2690,13 +3027,11 @@ function openBrand(key) {
     </div>
 
     <div class="modal-section">
-      <p class="modal-section-title">Sale patterns</p>
+      <p class="modal-section-title">Full sale patterns</p>
       <ul class="pattern-list">
         ${b.patterns.map(p => `<li>${p}</li>`).join("")}
       </ul>
     </div>
-
-    ${(!getEffectiveActiveSale(b) && !(b.alwaysOnPromo && b.alwaysOnPromo.name)) ? `<a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn">Visit ${b.name} <span>→</span></a>` : ""}
   `;
   modal.classList.add("open");
   document.body.style.overflow = "hidden";
