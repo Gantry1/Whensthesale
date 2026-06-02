@@ -1389,7 +1389,6 @@ const SALE_CALENDARS = {
     Dec: [{ label: "Cyber + holiday", discount: "40%" }]
   },
   anthropologie: {
-    Feb: [{ label: "Tagged Sale", discount: "Extra 40–50% off sale" }],
     Nov: [{ label: "Black Friday", discount: "20–30%" }]
   },
   reformation: {
@@ -1469,7 +1468,6 @@ const SALE_CALENDARS = {
     Dec: [{ label: "Cyber + holiday", discount: "25–30%" }]
   },
   katespade: {
-    Apr: [{ label: "Surprise Sale", discount: "Extra 30% off sale" }],
     Nov: [{ label: "Black Friday", discount: "25–30%" }],
     Dec: [{ label: "Cyber + holiday", discount: "25–30%" }]
   },
@@ -1786,24 +1784,24 @@ const BRANDS = {
   },
   anthropologie: {
     name: "Anthropologie",
-    tagline: "Targeted category sales — rarely sitewide, often deep",
+    tagline: "Rarely sitewide — the dependable window is Black Friday",
     activeSale: null,
-    alwaysOnPromo: { name: "Sale section", discount: "Past-season styles up to 50% off + occasional extra 30% on sale" },
-    nextSale: { name: "Tagged Sale", when: "Periodic flash events", discount: "Extra 50% off sale" },
-    bestSaleEver: "Tagged Sale + Cyber Week stacks — 70%+ off final price",
-    lastSale: "Winter Tagged Sale, Jan 2026",
+    alwaysOnPromo: { name: "Sale section", discount: "Past-season styles up to 50% off" },
+    nextSale: { name: "Black Friday", when: "Late November", discount: "20–30% off" },
+    bestSaleEver: "Black Friday — sitewide tier discount on top of sale section",
+    lastSale: "Black Friday 2025",
     patterns: [
-      "Anthropologie rarely does sitewide discounts — they promote categories instead (home, dresses, etc.)",
-      "Their signature move is 'Tagged Sale': extra 30–50% off already-reduced items, multiple times per year",
-      "Home and furniture events (Earth Day, end of summer) regularly hit 40%+ off",
-      "Black Friday + Cyber Week stack a sitewide tier discount on top of sale section",
-      "AnthroPerks members get early access to all major sales (free to join)"
+      "Anthropologie rarely does true sitewide discounts — they promote specific categories (home, dresses, etc.) instead",
+      "Black Friday + Cyber Week is the dependable window — a sitewide tier discount stacks on top of the sale section",
+      "They also run frequent 'Tagged Sale' events (extra % off already-reduced items), but these are bait-y, limited to a handful of items, and impossible to time — treat the headline number with skepticism",
+      "Home and furniture events appear around Earth Day and end of summer, but are category-specific",
+      "AnthroPerks members get early access to major sales (free to join)"
     ],
-    proTip: "Sign up for AnthroPerks (free) for early sale access. Track items in your wishlist — they ping you when an item drops into sale. The sweet spot is catching a 'sale-on-sale' tagged event, where final prices often hit 60%+ off.",
+    proTip: "Sign up for AnthroPerks (free) for early access and wishlist drop alerts. Your dependable window is Black Friday; ignore the constant 'extra 50% off sale' banners — they apply to very few items and exist mostly to pull you to the site.",
     coupon: "Occasional",
     shopUrl: "https://www.anthropologie.com",
-    nextEvent: "Spring tagged event",
-    avgDiscount: "30–50%"
+    nextEvent: "Nov 2026",
+    avgDiscount: "20–30%"
   },
   reformation: {
     name: "Reformation",
@@ -2038,24 +2036,24 @@ const BRANDS = {
   },
   katespade: {
     name: "Kate Spade",
-    tagline: "Surprise Sale events are the real prize — short and deep",
+    tagline: "The Outlet is the real value — main-line sales are rare",
     activeSale: null,
     alwaysOnPromo: { name: "Kate Spade Outlet", discount: "Up to 75% off outlet-line bags and accessories — separate site" },
-    nextSale: { name: "Surprise Sale", when: "Periodic flash, ~monthly", discount: "Extra 30% off sale + free shipping" },
+    nextSale: { name: "Black Friday", when: "Late November", discount: "25–30% off" },
     bestSaleEver: "Kate Spade Outlet Black Friday — 70%+ off",
-    lastSale: "April Surprise Sale",
+    lastSale: "Black Friday 2025",
     patterns: [
-      "Kate Spade's 'Surprise Sale' events appear roughly monthly — flash promos with extra 30% off sale section",
-      "Kate Spade Outlet (separate site) runs 50–70% off year-round on outlet-line items",
+      "Kate Spade Outlet (separate site) runs 50–70% off year-round on outlet-line items — the most reliable value by far",
+      "Main-site storewide sales are rare — Black Friday and the December holiday stretch are the dependable windows",
       "Holiday weekends (Memorial Day, July 4, Black Friday) deepen Outlet promos with stackable codes",
-      "Email subscribers get earliest notice of Surprise Sale events — usually 12-24 hours ahead",
+      "'Surprise Sale' flash events do pop up periodically, but they're announced day-of with no predictable date — watch email if you want to catch one",
       "Sister brand to Coach (both owned by Tapestry) — sale patterns mirror each other"
     ],
-    proTip: "Sign up for emails to catch Surprise Sales — they're flash events that get announced day-of and last 24–48 hours. For everyday savings, Kate Spade Outlet runs 50–70% off year-round on a wide outlet-line selection.",
+    proTip: "Shop Kate Spade Outlet for the best year-round value — 50–70% off a wide outlet-line selection. On the main site, wait for Black Friday; the periodic 'Surprise Sales' are real but impossible to time, so don't count on them.",
     coupon: "Occasional",
     shopUrl: "https://www.katespadeoutlet.com",
-    nextEvent: "Next Surprise Sale",
-    avgDiscount: "30–50%"
+    nextEvent: "Nov 2026",
+    avgDiscount: "25–30%"
   },
   levis: {
     name: "Levi's",
@@ -2431,6 +2429,61 @@ function faviconFor(shopUrl, size = 64) {
   } catch (e) {
     return "";
   }
+}
+
+// === "Typically X%+" discount formatter ===
+// The calendar leads on TIMING, not exact discount depth, so we show a single
+// honest floor figure ("typically 25%+") rather than a precise range that could
+// disappoint. Rule for a low–high % range: take the average of (low, midpoint)
+// and round to the nearest 5. This biases the figure toward the lower portion of
+// the range (about a quarter of the way in), so the "+" comfortably covers the
+// upside and users are never disappointed by an over-promise.
+//   15–30% → 20%+ , 20–40% → 25%+ , 25–50% → 30%+ , 15–20% → 15%+
+// Non-percentage discounts (dollar amounts, "free gift", "up to X%", tiered/stacked
+// promos) are kept as their original descriptive string — the "+" floor format
+// only makes sense for straightforward storewide percentage sales.
+function typicalDiscount(discountStr) {
+  if (!discountStr || typeof discountStr !== "string") return discountStr || "";
+  const s = discountStr.trim();
+
+  // Keep descriptive as-is: dollar amounts, "up to" (a ceiling, not a floor),
+  // "free"/gift/sets/holiday, and "extra ... off sale" stacking promos.
+  if (/\$/.test(s)) return s;
+  if (/up to/i.test(s)) return s;
+  if (/free|gift|set|holiday/i.test(s)) return s;
+  if (/extra/i.test(s)) return s;
+
+  // Strip qualifier suffixes like "(tiered)" or "sitewide" before parsing numbers.
+  const cleaned = s.replace(/\(.*?\)/g, "").replace(/sitewide/i, "").trim();
+
+  // Range: "20–40%" / "20-40%" / "20 – 40 %"
+  const rangeMatch = cleaned.match(/(\d+)\s*[–-]\s*(\d+)\s*%/);
+  if (rangeMatch) {
+    const lo = parseInt(rangeMatch[1], 10);
+    const hi = parseInt(rangeMatch[2], 10);
+    const mid = (lo + hi) / 2;
+    const figure = Math.round(((lo + mid) / 2) / 5) * 5;
+    return `Typically ${figure}%+`;
+  }
+
+  // Single percentage: "20%" / "40%" → use it as the floor
+  const singleMatch = cleaned.match(/(\d+)\s*%/);
+  if (singleMatch) {
+    const v = parseInt(singleMatch[1], 10);
+    const figure = Math.round(v / 5) * 5;
+    return `Typically ${figure}%+`;
+  }
+
+  // Anything unrecognized: leave as-is.
+  return s;
+}
+
+// Compact variant for the cramped calendar cells: drops the "Typically " prefix
+// so it fits ("25%+" instead of "Typically 25%+"). Falls back to the descriptive
+// string for non-percentage discounts, same as typicalDiscount.
+function typicalDiscountShort(discountStr) {
+  const full = typicalDiscount(discountStr);
+  return full.replace(/^Typically\s+/, "");
 }
 
 
@@ -2892,7 +2945,7 @@ function openBrand(key) {
   // --- Next big sale panel + meter ---
   const nextTitle = upcoming ? upcoming.saleName : (b.nextSale ? b.nextSale.name : "—");
   const nextWhen = upcoming
-    ? `${upcoming.monthLabel}${upcoming.discount ? " · " + upcoming.discount : ""}`
+    ? `${upcoming.monthLabel}${upcoming.discount ? " · " + typicalDiscount(upcoming.discount) : ""}`
     : (b.nextSale ? b.nextSale.when : "");
   let meterHTML;
   if (timing.faraway) {
@@ -2917,7 +2970,11 @@ function openBrand(key) {
 
   // --- Brand profile strip (frequency dots + coupon descriptor) ---
   const dotsHTML = [0,1,2].map(i => `<span class="freq-dot ${i < freq.dots ? 'on' : ''}"></span>`).join("");
-  const couponVal = b.coupon || "—";
+  // Coupon value is stored as Common/Occasional/Rare/Never (also returned by the
+  // research API). We display "Rare" as the friendlier "Unlikely" without changing
+  // the underlying data, so brand data + API prompt stay untouched.
+  const couponRaw = b.coupon || "—";
+  const couponVal = couponRaw === "Rare" ? "Unlikely" : couponRaw;
   const profileHTML = `
     <div class="profile-strip">
       <div class="profile-card">
@@ -2952,7 +3009,7 @@ function openBrand(key) {
     return `<div class="${cls.join(" ")}" ${hasSale ? `title="${tooltip.replace(/"/g,"&quot;")}"` : ""}>
       <div class="month-label">${m}</div>
       ${hasSale
-        ? `<div class="month-discount">${primary.discount}${extra}</div><div class="month-detail">${primary.label}</div>`
+        ? `<div class="month-discount">${typicalDiscountShort(primary.discount)}${extra}</div><div class="month-detail">${primary.label}</div>`
         : `<div class="month-detail">—</div>`}
     </div>`;
   }).join("");
