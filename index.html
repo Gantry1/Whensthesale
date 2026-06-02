@@ -109,19 +109,20 @@
   }
   .hero h1 {
     font-family: var(--serif);
-    font-size: clamp(40px, 6.5vw, 76px);
-    font-weight: 500;
-    line-height: 1.02;
-    letter-spacing: -0.025em;
-    margin-bottom: 28px;
-    max-width: 880px;
+    font-size: clamp(48px, 8.5vw, 96px);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    margin-bottom: 26px;
+    max-width: 920px;
     margin-left: auto;
     margin-right: auto;
+    color: var(--ink);
   }
   .hero h1 em {
     font-style: normal;
     color: var(--accent);
-    font-weight: 600;
+    font-weight: 700;
   }
   .hero p {
     font-size: 18px;
@@ -374,13 +375,13 @@
     min-width: 0;
   }
   .brand-favicon {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
     object-fit: contain;
     background: var(--bg);
-    border: 0.5px solid var(--rule);
-    padding: 2px;
+    border: 1px solid var(--rule);
+    padding: 9px;
     flex-shrink: 0;
   }
   .brand-favicon.modal-favicon {
@@ -1188,7 +1189,7 @@
 <header class="hero">
   <div class="container">
     <p class="hero-eyebrow">Premium sale intelligence</p>
-    <h1>Know exactly when <em>premium brands</em> go on sale.</h1>
+    <h1>Right product.<br>Right time.</h1>
     <p>Lululemon, Apple, Patagonia, Nike — the brands that almost never discount. We track every sale, predict the next one, and send you the moment prices drop.</p>
     <div class="hero-buttons">
       <a href="#brands" class="btn-primary">Browse brands</a>
@@ -2464,6 +2465,24 @@ function faviconFor(shopUrl, size = 64) {
   }
 }
 
+// === Brand logo via Brandfetch Logo API ===
+// Higher-quality, consistent brand icons (vs. inconsistent favicons). Free up to
+// 500k requests/month. Requires a client ID from https://developer.brandfetch.com.
+// IMPORTANT: replace the placeholder below with your real client ID, or logos
+// won't load and every card will fall back to the Google favicon (handled via
+// the img onerror in the card markup). 'icon' = square brand mark, ideal for the
+// square tiles in the grid. Retina-sized at 128 for a 52px display.
+const BRANDFETCH_CLIENT_ID = "REPLACE_WITH_YOUR_BRANDFETCH_CLIENT_ID";
+function logoFor(shopUrl, size = 128) {
+  if (!shopUrl) return "";
+  try {
+    const host = new URL(shopUrl).hostname.replace(/^www\./, "");
+    return `https://cdn.brandfetch.io/${host}/w/${size}/h/${size}/icon.png?c=${BRANDFETCH_CLIENT_ID}`;
+  } catch (e) {
+    return "";
+  }
+}
+
 // === Domain-only URL helper ===
 // Outbound brand links go to the homepage (e.g. https://www.coach.com), not the
 // brand-specific sale path. Reason: sale URLs (/sale, /outlet/sale, etc.) go
@@ -2698,10 +2717,13 @@ function renderBrandGrid() {
     if (!b) return "";
     const effectiveSale = getEffectiveActiveSale(b);
     const isActive = effectiveSale !== null;
+    const logo = logoFor(b.shopUrl, 128);
     const favicon = faviconFor(b.shopUrl, 64);
-    const faviconImg = favicon
-      ? `<img class="brand-favicon" src="${favicon}" alt="" loading="lazy" onerror="this.style.display='none'" />`
-      : "";
+    // Primary: Brandfetch logo. If it fails, swap to Google favicon. If that
+    // also fails, hide the img. Escaped quotes since this is inside a template string.
+    const faviconImg = logo
+      ? `<img class="brand-favicon" src="${logo}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${favicon}';this.dataset.fallback=1;" />`
+      : (favicon ? `<img class="brand-favicon" src="${favicon}" alt="" loading="lazy" onerror="this.style.display='none'" />` : "");
     const next = getNextEvent(key, b);
     const primaryLine = isActive
       ? `${effectiveSale.name} — ${effectiveSale.discount}`
@@ -2788,8 +2810,11 @@ function renderHeroPreview() {
   }
 
   rowsEl.innerHTML = picks.map(({ key, brand, type }) => {
+    const logo = logoFor(brand.shopUrl, 128);
     const fav = faviconFor(brand.shopUrl, 64);
-    const favImg = fav ? `<img class="hero-row-icon" src="${fav}" alt="" loading="lazy" onerror="this.style.display='none'" />` : `<div class="hero-row-icon"></div>`;
+    const favImg = logo
+      ? `<img class="hero-row-icon" src="${logo}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${fav}';" />`
+      : (fav ? `<img class="hero-row-icon" src="${fav}" alt="" loading="lazy" onerror="this.style.display='none'" />` : `<div class="hero-row-icon"></div>`);
 
     let detail, statusLabel, statusClass;
     if (type === "sale") {
@@ -2864,10 +2889,11 @@ function openBrand(key) {
   const body = document.getElementById("modal-body");
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const currentMonth = new Date().getMonth();
+  const modalLogo = logoFor(b.shopUrl, 128);
   const modalFavicon = faviconFor(b.shopUrl, 128);
-  const modalFaviconImg = modalFavicon
-    ? `<img class="m-favicon-lead" src="${modalFavicon}" alt="" onerror="this.style.display='none'" />`
-    : "";
+  const modalFaviconImg = modalLogo
+    ? `<img class="m-favicon-lead" src="${modalLogo}" alt="" onerror="this.onerror=null;this.src='${modalFavicon}';" />`
+    : (modalFavicon ? `<img class="m-favicon-lead" src="${modalFavicon}" alt="" onerror="this.style.display='none'" />` : "");
 
   // --- Compute the decision signals ---
   const liveSale = getEffectiveActiveSale(b);
