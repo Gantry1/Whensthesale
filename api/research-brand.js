@@ -172,7 +172,15 @@ When uncertain, return activeSale: null. The UI gracefully falls back to alwaysO
 
 ONLY include months where the brand runs a STOREWIDE (or near-storewide) sale of 10% OR MORE — OR a signature annual event shoppers actively watch for (e.g., Aloversary, Apple Back-to-School bundle, Apple Black Friday gift card promo, Patagonia Past-Season Sale, Sephora Beauty Insider events).
 
-EXCLUDE: category-only sales (e.g. "spring dresses 20% off"), outlet-only events, vague promotions ("spring picks"), and small flash sales under 10%.
+The guiding principle: this is a PREDICTIVE calendar about WHEN sales happen. Only include sales whose TIMING is predictable from year to year. A modest storewide sale (even 15%) that reliably recurs is far more valuable here than a deep discount you cannot time.
+
+EXCLUDE all of the following — they either aren't storewide or can't be reliably timed:
+- Category-only sales (e.g. "spring dresses 20% off", "40% off all denim", "home event") — too specific, often flash-driven
+- "Surprise" sales, "flash" sales, or any sale announced day-of with no predictable date
+- Stacking promos like "extra 30% off sale items" or "extra 40–50% off sale" — these apply only to already-reduced stock, not storewide
+- Outlet-only events, vague promotions ("spring picks"), and small sales under 10%
+
+CRITICAL — never include "extra X% off sale" style promotions (e.g. "extra 40–50% off sale items"). These are a manipulative retail pattern: the headline number applies to only a tiny handful of items and exists mainly to bait clicks to the site. Surfacing them would create a disingenuous, untrustworthy experience. A real storewide sale ("25% off everything") is the only kind that belongs here. When in doubt, leave it out.
 
 The "discount" field MUST BE HONEST. If a brand says "up to 50% off" but most items are at 10–20%, write "10–50%" or "20–50%" — NOT "50%". Use ranges ("20–40%") freely. Use dollar ranges for brands that discount that way ("$50–100 off"). Use "Up to $X" for gift-card promos like Apple. Use "Free gift" for bundle promos. Never overpromise — a user who sees the headline number should expect that to roughly match what they pay. Keep label under 22 chars.
 
