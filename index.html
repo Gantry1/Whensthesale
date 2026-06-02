@@ -212,13 +212,10 @@
     border-left-color: var(--sale);
   }
   .hero-row-icon {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
     border-radius: 8px;
     object-fit: contain;
-    background: var(--bg);
-    border: 0.5px solid var(--rule);
-    padding: 3px;
     flex-shrink: 0;
   }
   .hero-row-main { flex: 1; min-width: 0; }
@@ -371,17 +368,16 @@
     letter-spacing: -0.01em;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-width: 0;
   }
+  /* Logo now fills the tile footprint with no border/background — the image
+     itself sits in the ~52px space the bordered tile used to occupy. */
   .brand-favicon {
     width: 52px;
     height: 52px;
-    border-radius: 14px;
+    border-radius: 10px;
     object-fit: contain;
-    background: var(--bg);
-    border: 1px solid var(--rule);
-    padding: 9px;
     flex-shrink: 0;
   }
   .brand-favicon.modal-favicon {
@@ -660,8 +656,7 @@
   /* Modal header with favicon beside the name */
   .m-header { display: flex; align-items: center; gap: 13px; margin-bottom: 6px; padding-right: 44px; }
   .m-favicon-lead {
-    width: 40px; height: 40px; border-radius: 10px; padding: 4px; background: var(--bg-card);
-    border: 1px solid var(--rule); object-fit: contain; flex-shrink: 0;
+    width: 46px; height: 46px; border-radius: 10px; object-fit: contain; flex-shrink: 0;
   }
   .m-title {
     font-family: var(--serif); font-size: 32px; font-weight: 600;
@@ -1559,11 +1554,6 @@ const SALE_CALENDARS = {
     Nov: [{ label: "Black Friday", discount: "25%" }],
     Dec: [{ label: "Cyber + holiday", discount: "20–25%" }]
   },
-  patmcgrath: {
-    Apr: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
-    Oct: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
-    Nov: [{ label: "Black Friday", discount: "20%" }]
-  },
   rarebeauty: {
     Apr: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
     Oct: [{ label: "Sephora Savings", discount: "10–20% (tiered)" }],
@@ -2366,27 +2356,6 @@ const BRANDS = {
     nextEvent: "Oct 2026",
     avgDiscount: "20–25%"
   },
-  patmcgrath: {
-    name: "Pat McGrath Labs",
-    tagline: "Mother of makeup — rare sales, runs mostly through Sephora's events",
-    activeSale: null,
-    alwaysOnPromo: { name: "Mini & Trial Sizes", discount: "Travel and mini sizes offer entry-level price points without sale pricing" },
-    nextSale: { name: "Sephora Savings Event", when: "Mid-April + Mid-October", discount: "10–20% off (tiered by Beauty Insider level)" },
-    bestSaleEver: "Sephora Holiday Savings + Black Friday — 20% off for Rouge members",
-    lastSale: "Spring Savings Event, April 2026",
-    patterns: [
-      "Pat McGrath Labs essentially doesn't run own-site sitewide sales — premium positioning excludes flash discounts",
-      "Biggest discount moments happen through Sephora's twice-yearly Savings Events (April + October)",
-      "Black Friday + Cyber Week is the one own-site discount window, typically 20% off select",
-      "Gift sets and Mthrshp Subliminal palettes offer concentrated value vs single eyeshadows",
-      "Sale events through Bergdorf Goodman, Saks, and Net-a-Porter occasionally include Pat McGrath at 15–25% off"
-    ],
-    proTip: "Pat McGrath Labs almost never discounts on her own site. Your real shot at sub-retail pricing is Sephora's April and October Savings Events (20% off for Rouge), or the rare Bergdorf/Saks beauty event. Otherwise, the gift sets give you the best per-product value.",
-    coupon: "Rare",
-    shopUrl: "https://www.patmcgrath.com",
-    nextEvent: "Oct 2026",
-    avgDiscount: "15–20%"
-  },
   rarebeauty: {
     name: "Rare Beauty",
     tagline: "Selena Gomez's clean makeup brand — Sephora is the main sale channel",
@@ -2472,7 +2441,7 @@ function faviconFor(shopUrl, size = 64) {
 // won't load and every card will fall back to the Google favicon (handled via
 // the img onerror in the card markup). 'icon' = square brand mark, ideal for the
 // square tiles in the grid. Retina-sized at 128 for a 52px display.
-const BRANDFETCH_CLIENT_ID = "1idW3xQrWBCIDAzf34S";
+const BRANDFETCH_CLIENT_ID = "REPLACE_WITH_YOUR_BRANDFETCH_CLIENT_ID";
 function logoFor(shopUrl, size = 128) {
   if (!shopUrl) return "";
   try {
@@ -2505,7 +2474,7 @@ const CATEGORIES = {
   top: ["lululemon", "apple", "dyson", "patagonia", "nike", "aritzia", "vuori", "aloyoga", "onrunning", "sephora"],
   fashion: ["lululemon", "aritzia", "madewell", "jcrew", "anthropologie", "reformation", "everlane", "theory", "bananarepublic", "freepeople", "vuori", "aloyoga", "athleta", "coach", "toryburch", "katespade", "levis", "mejuri"],
   tech: ["apple", "dyson", "bose"],
-  beauty_wellness: ["sephora", "glossier", "aesop", "drunkelephant", "tatcha", "theordinary", "olaplex", "charlottetilbury", "patmcgrath", "rarebeauty", "lelabo", "goop"],
+  beauty_wellness: ["sephora", "glossier", "aesop", "drunkelephant", "tatcha", "theordinary", "olaplex", "charlottetilbury", "rarebeauty", "lelabo", "goop"],
 };
 
 let activeCategory = "top";
