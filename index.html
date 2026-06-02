@@ -2684,16 +2684,16 @@ function openBrand(key) {
       </div>
     </div>
 
+    <div class="tip-box">
+      <p class="label">Pro tip</p>
+      <p class="text">${b.proTip}</p>
+    </div>
+
     <div class="modal-section">
       <p class="modal-section-title">Sale patterns</p>
       <ul class="pattern-list">
         ${b.patterns.map(p => `<li>${p}</li>`).join("")}
       </ul>
-    </div>
-
-    <div class="tip-box">
-      <p class="label">Pro tip</p>
-      <p class="text">${b.proTip}</p>
     </div>
 
     ${(!getEffectiveActiveSale(b) && !(b.alwaysOnPromo && b.alwaysOnPromo.name)) ? `<a href="${domainOnly(b.shopUrl)}" target="_blank" rel="noopener" class="shop-btn">Visit ${b.name} <span>→</span></a>` : ""}
