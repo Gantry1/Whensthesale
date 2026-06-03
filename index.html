@@ -99,7 +99,59 @@
   .hero {
     padding: 90px 0 60px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
   }
+
+  /* === HERO FAVICON SCATTER === */
+  /* Floating brand favicon chips arranged around the headline (never overlapping
+     it). Each chip is clickable and opens that brand's modal. Hidden on mobile. */
+  .scatter {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none; /* container ignores clicks; chips re-enable their own */
+  }
+  .hero .container { position: relative; z-index: 2; } /* text sits above scatter */
+  .chip-pos {
+    position: absolute;
+    transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+    pointer-events: none;
+  }
+  .chip {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule-soft);
+    box-shadow: 0 2px 10px rgba(26,24,20,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease;
+    animation: chipBob var(--dur, 7s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .chip img { width: 60%; height: 60%; object-fit: contain; border-radius: 5px; }
+  .chip:hover {
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 14px 30px rgba(26,24,20,0.20);
+    z-index: 5;
+    animation-play-state: paused;
+  }
+  @keyframes chipBob {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @media (max-width: 760px) {
+    .scatter { display: none; } /* clean, readable headline on mobile */
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chip { animation: none; }
+  }
+
   .hero-eyebrow {
     font-size: 12px;
     letter-spacing: 0.15em;
@@ -1181,6 +1233,7 @@
 </nav>
 
 <header class="hero">
+  <div class="scatter" id="hero-scatter"></div>
   <div class="container">
     <p class="hero-eyebrow">Premium sale intelligence</p>
     <h1>Right product.<br>Right time.</h1>
@@ -2757,6 +2810,125 @@ function setCategory(cat) {
 // === Live ticker: shows ONLY brands with a real active sale right now ===
 renderBrandGrid();
 renderHeroPreview();
+// Defer scatter until layout/fonts settle so text zones measure accurately.
+requestAnimationFrame(() => requestAnimationFrame(renderHeroScatter));
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(renderHeroScatter);
+}
+
+// === Hero favicon scatter ===
+// Floating, clickable brand favicons arranged in balanced regions around the
+// headline (never overlapping the text). Clicking a chip opens that brand's modal.
+// Brands are a curated, recognizable subset; placement is balanced-random so it
+// looks different each load but never clumps. Hidden on mobile via CSS.
+const SCATTER_BRANDS = [
+  "lululemon", "apple", "nike", "patagonia", "aritzia", "levis", "dyson",
+  "sephora", "coach", "adidas", "madewell", "glossier", "newbalance", "toryburch"
+];
+
+function randBetween(min, max) { return min + Math.random() * (max - min); }
+
+function renderHeroScatter() {
+  const scatter = document.getElementById("hero-scatter");
+  if (!scatter) return;
+  scatter.innerHTML = "";
+
+  const heroBox = scatter.getBoundingClientRect();
+  if (heroBox.width < 760) return; // mobile / too narrow — CSS also hides it
+
+  // Per-element protected text zones so chips never overlap the real text.
+  const parts = document.querySelectorAll(".hero .container .hero-eyebrow, .hero .container h1, .hero .container > p, .hero .container .hero-buttons, .hero .container .hero-preview");
+  const padX = 20, padY = 18;
+  const zones = [];
+  parts.forEach(el => {
+    const rr = el.getBoundingClientRect();
+    let left = (rr.left - heroBox.left) - padX;
+    let right = (rr.right - heroBox.left) + padX;
+    if (el.tagName === "H1") { const w = right - left, s = w * 0.10; left += s; right -= s; }
+    zones.push({ left, right, top: (rr.top - heroBox.top) - padY, bottom: (rr.bottom - heroBox.top) + padY });
+  });
+
+  const CHIP = 52;
+  const r = CHIP / 2 + 9; // effective radius incl. hover/bob margin
+  const W = heroBox.width, H = heroBox.height;
+
+  function clearsZones(cx, cy) {
+    for (const z of zones) {
+      const nx = Math.max(z.left, Math.min(cx, z.right));
+      const ny = Math.max(z.top, Math.min(cy, z.bottom));
+      const dx = cx - nx, dy = cy - ny;
+      if ((dx * dx + dy * dy) <= (r * r)) return false;
+    }
+    return true;
+  }
+
+  const placed = [];
+  const leftColMax = Math.min(W * 0.30, 360);
+  const rightColMin = W - Math.min(W * 0.30, 360);
+
+  // Only scatter brands that actually exist in BRANDS.
+  const brandKeys = SCATTER_BRANDS.filter(k => BRANDS[k]);
+
+  brandKeys.forEach((key, i) => {
+    const region = i % 4; // 0 left, 1 right, 2 top, 3 bottom — balanced
+    let cx, cy, ok = false, attempts = 0;
+    while (!ok && attempts < 80) {
+      attempts++;
+      if (region === 0) { cx = randBetween(r + 4, leftColMax); cy = randBetween(r + 4, H - r - 4); }
+      else if (region === 1) { cx = randBetween(rightColMin, W - r - 4); cy = randBetween(r + 4, H - r - 4); }
+      else if (region === 2) { cx = randBetween(r + 4, W - r - 4); cy = randBetween(r + 4, H * 0.30); }
+      else { cx = randBetween(r + 4, W - r - 4); cy = randBetween(H * 0.70, H - r - 4); }
+
+      if (!clearsZones(cx, cy)) continue;
+      const farFromChips = placed.every(p => {
+        const dx = p.cx - cx, dy = p.cy - cy;
+        return Math.sqrt(dx * dx + dy * dy) > (2 * r - 6);
+      });
+      if (!farFromChips) continue;
+      ok = true;
+    }
+    if (!ok) return; // skip rather than overlap
+
+    placed.push({ cx, cy });
+
+    const b = BRANDS[key];
+    const fav = faviconFor(b.shopUrl, 64);
+
+    const pos = document.createElement("div");
+    pos.className = "chip-pos";
+    pos.style.left = (cx / W * 100) + "%";
+    pos.style.top = (cy / H * 100) + "%";
+    pos.style.setProperty("--rot", randBetween(-8, 8).toFixed(1) + "deg");
+
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.style.setProperty("--dur", (6 + randBetween(0, 3)).toFixed(1) + "s");
+    chip.style.setProperty("--delay", (i * 0.3).toFixed(1) + "s");
+    chip.title = b.name;
+    chip.setAttribute("role", "button");
+    chip.setAttribute("aria-label", `View ${b.name} sale info`);
+    chip.onclick = () => openBrand(key);
+
+    if (fav) {
+      const img = document.createElement("img");
+      img.src = fav;
+      img.alt = "";
+      img.loading = "lazy";
+      img.onerror = function () { this.style.display = "none"; };
+      chip.appendChild(img);
+    }
+
+    pos.appendChild(chip);
+    scatter.appendChild(pos);
+  });
+}
+
+// Re-layout the scatter on resize (debounced) so it stays balanced and clear.
+let _scatterResizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(_scatterResizeTimer);
+  _scatterResizeTimer = setTimeout(renderHeroScatter, 200);
+});
 
 // === Hero preview: 5 curated rows showing the product in action ===
 // Logic: show all currently-active sales (capped at 5), then fill any remaining
