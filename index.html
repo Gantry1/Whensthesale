@@ -212,13 +212,21 @@
   .btn-secondary:hover { background: var(--bg-accent); }
 
   /* === Hero Preview Panel === */
-  .hero-preview {
+  /* Two hero-preview panels side by side ("What's hot this month" + "Coming soon") */
+  .hero-previews {
+    display: flex;
+    gap: 16px;
     margin: 56px auto 0;
-    max-width: 720px;
+    max-width: 940px;
+    align-items: stretch;
+  }
+  .hero-preview {
+    flex: 1;
+    min-width: 0;
     background: var(--bg-card);
     border: 1px solid var(--rule);
     border-radius: 20px;
-    padding: 24px 28px;
+    padding: 22px 24px;
     box-shadow: 0 4px 24px rgba(26,24,20,0.04);
     text-align: left;
   }
@@ -229,18 +237,20 @@
     margin-bottom: 16px;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--rule-soft);
+    gap: 10px;
   }
   .hero-preview-label {
     font-size: 13px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--ink-soft);
     font-weight: 600;
   }
   .hero-preview-date {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--ink-faint);
     font-weight: 500;
+    white-space: nowrap;
   }
   .hero-preview-rows {
     display: flex;
@@ -250,16 +260,14 @@
   .hero-row {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 10px 10px 10px 12px;
+    gap: 12px;
+    padding: 10px 8px 10px 10px;
     border-radius: 8px;
     transition: background 0.12s;
     cursor: pointer;
     border-left: 3px solid transparent;
   }
   .hero-row:hover { background: var(--bg-accent); }
-  /* Subtle green accent on the left edge of rows with an active sale —
-     gives at-a-glance differentiation from upcoming rows without adding clutter. */
   .hero-row-sale {
     border-left-color: var(--sale);
   }
@@ -273,51 +281,58 @@
   .hero-row-main { flex: 1; min-width: 0; }
   .hero-row-name {
     font-family: var(--serif);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
     color: var(--ink);
     margin-bottom: 2px;
   }
   .hero-row-detail {
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--ink-soft);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .hero-row-status {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    padding: 3px 10px;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
     border-radius: 100px;
     flex-shrink: 0;
   }
-  .hero-row-status.sale {
+  .hero-row-status.expected {
     background: var(--sale-soft);
     color: var(--sale);
   }
-  .hero-row-status.quiet {
-    background: var(--bg-accent);
-    color: var(--ink-faint);
-  }
   .hero-row-status.upcoming {
-    background: #FCEFE8;
+    background: var(--bg-accent);
     color: var(--accent);
   }
-  .hero-preview-footer {
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid var(--rule-soft);
+  /* legacy classes kept in case referenced elsewhere */
+  .hero-row-status.sale { background: var(--sale-soft); color: var(--sale); }
+  .hero-row-status.quiet { background: var(--bg-accent); color: var(--ink-faint); }
+  .hero-empty {
+    padding: 26px 10px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+  .hero-previews-footer {
+    max-width: 940px;
+    margin: 14px auto 0;
     text-align: center;
     font-size: 12px;
-    color: var(--ink-faint);
   }
-  .hero-preview-footer a {
+  .hero-previews-footer a {
     color: var(--accent);
     font-weight: 500;
   }
-  .hero-preview-footer a:hover { text-decoration: underline; }
+  .hero-previews-footer a:hover { text-decoration: underline; }
+  @media (max-width: 760px) {
+    .hero-previews { flex-direction: column; max-width: 560px; }
+  }
   @media (max-width: 640px) {
     .hero-preview { padding: 18px 18px; }
     .hero-row-detail { font-size: 11px; }
@@ -1135,6 +1150,44 @@
     display: inline-block;
   }
 
+  /* === HOVER BAR POPUP === */
+  /* Floating popup showing a sale's historical discount range. Appears on hover
+     (desktop) or tap (mobile) of a calendar month or hero-preview row. Fixed
+     position, anchored to the hovered element via JS. Non-interactive. */
+  .hover-bar-popup {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    width: 290px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 16px 18px 14px;
+    box-shadow: 0 10px 32px rgba(26,24,20,0.16);
+    pointer-events: none; /* never intercept the cursor (prevents flicker) */
+    animation: hbFade 0.14s ease;
+  }
+  @keyframes hbFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .hb-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 3px; }
+  .hb-title { font-family: var(--serif); font-size: 14px; font-weight: 600; color: var(--ink); }
+  .hb-month { font-size: 10px; color: var(--ink-faint); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+  .hb-sub { font-size: 11.5px; color: var(--ink-soft); margin-bottom: 32px; }
+  .hb-track-wrap { position: relative; padding: 0 2px 22px; }
+  .hb-track { height: 8px; border-radius: 100px; background: rgba(26,24,20,0.08); position: relative; }
+  .hb-range { position: absolute; top: 0; bottom: 0; border-radius: 100px; background: var(--sage, #6BA883); }
+  .hb-dot { position: absolute; top: 50%; width: 15px; height: 15px; border-radius: 50%; background: var(--sale); border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.25); transform: translate(-50%,-50%); z-index: 2; }
+  .hb-pin { position: absolute; bottom: 15px; transform: translateX(-50%); z-index: 3; }
+  .hb-bubble { background: var(--sale); color: #fff; font-family: var(--serif); font-weight: 600; font-size: 11.5px; padding: 2px 8px; border-radius: 7px; white-space: nowrap; position: relative; }
+  .hb-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid var(--sale); }
+  .hb-edge { position: absolute; top: 13px; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: var(--sale); white-space: nowrap; }
+  .hb-legend { font-size: 11px; color: var(--ink-soft); display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+  .hb-legend span { display: flex; align-items: center; gap: 6px; }
+  .hb-sw-range { width: 14px; height: 8px; border-radius: 100px; background: var(--sage, #6BA883); display: inline-block; }
+  .hb-sw-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--sale); border: 2.5px solid #fff; box-shadow: 0 0 0 1px var(--rule); display: inline-block; }
+  /* non-percentage message */
+  .hb-nonpct { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+  .hb-nonpct b { color: var(--ink); font-weight: 600; }
+
   /* === FOOTER === */
   footer {
     border-top: 1px solid var(--rule);
@@ -1243,15 +1296,24 @@
       <a href="#alerts" class="btn-secondary">Get sale alerts →</a>
     </div>
 
-    <div class="hero-preview" id="hero-preview">
-      <div class="hero-preview-header">
-        <div class="hero-preview-label">What's hot this week</div>
-        <div class="hero-preview-date" id="hero-preview-date"></div>
+    <div class="hero-previews">
+      <div class="hero-preview" id="hero-preview-hot">
+        <div class="hero-preview-header">
+          <div class="hero-preview-label">What's hot this month</div>
+          <div class="hero-preview-date" id="hero-preview-date"></div>
+        </div>
+        <div class="hero-preview-rows" id="hero-preview-rows-hot"></div>
       </div>
-      <div class="hero-preview-rows" id="hero-preview-rows"></div>
-      <div class="hero-preview-footer">
-        <a href="#brands">See all brands →</a>
+      <div class="hero-preview" id="hero-preview-soon">
+        <div class="hero-preview-header">
+          <div class="hero-preview-label">Coming soon</div>
+          <div class="hero-preview-date">Next 60 days</div>
+        </div>
+        <div class="hero-preview-rows" id="hero-preview-rows-soon"></div>
       </div>
+    </div>
+    <div class="hero-previews-footer">
+      <a href="#brands">See all brands →</a>
     </div>
   </div>
 </header>
@@ -2539,6 +2601,161 @@ function typicalDiscountShort(discountStr) {
   return full.replace(/^Typically\s+/, "");
 }
 
+// === Discount-parsing engine (powers the hover bar) ===
+// Turns a discount STRING ("20–40%") into the NUMBERS the hover bar needs:
+//   { isPercent: true, low, high, likely }
+// For non-percentage discounts (dollar amounts, "Up to $X", "Free gift",
+// "extra X off sale"), there's no honest 0–100% band to draw, so it returns:
+//   { isPercent: false, text }
+// and the bar shows a short message instead. The "likely" figure uses the SAME
+// midpoint-biased formula as typicalDiscount(), so the bar's pin always matches
+// the calendar cell's "X%+" number.
+function parseDiscountRange(discountStr) {
+  if (!discountStr || typeof discountStr !== "string") {
+    return { isPercent: false, text: discountStr || "" };
+  }
+  const s = discountStr.trim();
+
+  // Non-percentage cases — same classification as typicalDiscount, kept consistent.
+  if (/\$/.test(s)) return { isPercent: false, text: s };
+  if (/up to/i.test(s)) return { isPercent: false, text: s };
+  if (/free|gift|set|holiday/i.test(s)) return { isPercent: false, text: s };
+  if (/extra/i.test(s)) return { isPercent: false, text: s };
+
+  const cleaned = s.replace(/\(.*?\)/g, "").replace(/sitewide/i, "").trim();
+
+  const rangeMatch = cleaned.match(/(\d+)\s*[–-]\s*(\d+)\s*%/);
+  if (rangeMatch) {
+    const low = parseInt(rangeMatch[1], 10);
+    const high = parseInt(rangeMatch[2], 10);
+    const mid = (low + high) / 2;
+    const likely = Math.round(((low + mid) / 2) / 5) * 5;
+    return { isPercent: true, low, high, likely };
+  }
+
+  const singleMatch = cleaned.match(/(\d+)\s*%/);
+  if (singleMatch) {
+    const v = parseInt(singleMatch[1], 10);
+    const likely = Math.round(v / 5) * 5;
+    return { isPercent: true, low: v, high: v, likely };
+  }
+
+  return { isPercent: false, text: s };
+}
+
+// Escape a value for safe use inside a double-quoted HTML attribute.
+// (Brand/sale labels can contain & and "; apostrophes are safe inside "" quotes,
+// which matters for entries like "Father's Day".)
+function escapeAttr(s) {
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+}
+
+// === Shared hover-bar popup ===
+// One reusable popup element, positioned via JS relative to whatever element is
+// hovered/tapped. Lives on <body> with fixed positioning so it never gets clipped
+// by the modal's or grid's overflow.
+let _hoverBarEl = null;
+let _hoverBarAnchor = null;
+function getHoverBarEl() {
+  if (!_hoverBarEl) {
+    _hoverBarEl = document.createElement("div");
+    _hoverBarEl.className = "hover-bar-popup";
+    document.body.appendChild(_hoverBarEl);
+  }
+  return _hoverBarEl;
+}
+
+function buildHoverBarHTML(saleLabel, monthLabel, parsed) {
+  const head = `
+    <div class="hb-head">
+      <span class="hb-title">${saleLabel || "Sale"}</span>
+      ${monthLabel ? `<span class="hb-month">${monthLabel}</span>` : ""}
+    </div>`;
+
+  if (!parsed.isPercent) {
+    // Non-percentage deal — no honest 0–100% band to draw, so explain it briefly.
+    let kind = "special";
+    const t = (parsed.text || "").toLowerCase();
+    if (/\$/.test(t) || /up to \$/.test(t)) kind = "dollar-value";
+    else if (/free|gift|set/.test(t)) kind = "free-gift";
+    else if (/up to/.test(t)) kind = "capped";
+    const blurb = kind === "free-gift"
+      ? `This one comes as a <b>free gift or bundle</b> rather than a percentage off.`
+      : kind === "dollar-value"
+        ? `This is a <b>dollar-amount</b> deal, not a flat percentage.`
+        : `This isn't a flat percentage sale.`;
+    return `${head}
+      <div class="hb-sub" style="margin-bottom:12px;">What to expect</div>
+      <div class="hb-nonpct">${blurb}<br><b>${parsed.text || "—"}</b></div>`;
+  }
+
+  const { low, high, likely } = parsed;
+  const hasBand = high > low;
+  const rangeDiv = hasBand
+    ? `<div class="hb-range" style="left:${low}%; width:${high - low}%;"></div>`
+    : "";
+  const edgeLow = `<div class="hb-edge" style="left:${low}%;">~${low}%</div>`;
+  const edgeHigh = hasBand ? `<div class="hb-edge" style="left:${high}%;">~${high}%</div>` : "";
+
+  return `${head}
+    <div class="hb-sub">Historical discount range</div>
+    <div class="hb-track-wrap">
+      <div class="hb-track">
+        ${rangeDiv}
+        <div class="hb-pin" style="left:${likely}%;"><div class="hb-bubble">~${likely}%</div></div>
+        <div class="hb-dot" style="left:${likely}%;"></div>
+        ${edgeLow}
+        ${edgeHigh}
+      </div>
+    </div>
+    <div class="hb-legend">
+      <span><span class="hb-sw-range"></span>Typical range</span>
+      <span><span class="hb-sw-dot"></span>Most likely</span>
+    </div>`;
+}
+
+function positionHoverBar(anchorEl) {
+  const el = getHoverBarEl();
+  const r = anchorEl.getBoundingClientRect();
+  const w = el.offsetWidth, h = el.offsetHeight;
+  let left = r.left + r.width / 2 - w / 2;
+  left = Math.max(10, Math.min(left, window.innerWidth - w - 10));
+  let top = r.top - h - 10;            // prefer above the anchor
+  if (top < 10) top = r.bottom + 10;   // not enough room → below
+  el.style.left = left + "px";
+  el.style.top = top + "px";
+}
+
+function showHoverBar(anchorEl, saleLabel, monthLabel, discountStr) {
+  const el = getHoverBarEl();
+  el.innerHTML = buildHoverBarHTML(saleLabel, monthLabel, parseDiscountRange(discountStr));
+  el.style.display = "block";
+  _hoverBarAnchor = anchorEl;
+  positionHoverBar(anchorEl); // measure then place
+}
+
+function hideHoverBar() {
+  if (_hoverBarEl) _hoverBarEl.style.display = "none";
+  _hoverBarAnchor = null;
+}
+
+function toggleHoverBar(anchorEl, saleLabel, monthLabel, discountStr) {
+  if (_hoverBarEl && _hoverBarEl.style.display === "block" && _hoverBarAnchor === anchorEl) {
+    hideHoverBar();
+  } else {
+    showHoverBar(anchorEl, saleLabel, monthLabel, discountStr);
+  }
+}
+
+// True only on devices with a real hovering pointer (desktop). Touch devices
+// fall back to tap-to-toggle instead of hover.
+function hasHover() {
+  return window.matchMedia && window.matchMedia("(hover: hover)").matches;
+}
+
+// Hide the popup if the user scrolls (its fixed position would otherwise go stale).
+window.addEventListener("scroll", hideHoverBar, true);
+
 
 // === Domain-only URL helper ===
 // Outbound brand links go to the homepage (e.g. https://www.coach.com), not the
@@ -2934,80 +3151,141 @@ window.addEventListener("resize", () => {
 // Logic: show all currently-active sales (capped at 5), then fill any remaining
 // slots with upcoming sales from notable brands. Quiet rows are intentionally
 // excluded — a "QUIET" tile doesn't give the user anything actionable to do.
+// Finds a brand's soonest sale by walking its calendar forward from a start month.
+// Returns { monthKey, monthIndex, monthLabel, entry, days } or null.
+// days = approx days until that sale (anchored to the 15th, the window's center).
+function soonestSale(brandKey, fromMonthIndex) {
+  const cal = SALE_CALENDARS[brandKey];
+  if (!cal) return null;
+  const monthsShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const monthsFull = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const cy = today.getFullYear();
+  for (let i = 0; i < 12; i++) {
+    const offset = fromMonthIndex + i;
+    const mi = ((offset % 12) + 12) % 12;
+    const key = monthsShort[mi];
+    const entries = cal[key];
+    if (entries && entries.length > 0) {
+      const wraps = offset >= 12 || (mi < today.getMonth() && offset >= 12);
+      const yr = (fromMonthIndex + i) >= 12 ? cy + 1 : cy;
+      const target = new Date(yr, mi, 15);
+      target.setHours(0, 0, 0, 0);
+      const days = Math.max(0, Math.round((target - today) / (1000 * 60 * 60 * 24)));
+      return { monthKey: key, monthIndex: mi, monthLabel: monthsFull[mi], entry: entries[0], days };
+    }
+  }
+  return null;
+}
+
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Builds one hero-preview row's HTML. type: "hot" (this month) | "soon" (≤60 days).
+// Carries sale data in escaped data-attributes for the hover bar; listeners are
+// attached after render (see attachHeroRowListeners) to avoid inline-handler
+// escaping problems with labels like "Father's Day".
+function heroRowHTML(key, type) {
+  const b = BRANDS[key];
+  const monthsShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const monthsFull = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const curMonth = new Date().getMonth();
+
+  let entry, monthLabel;
+  if (type === "hot") {
+    const list = (SALE_CALENDARS[key] || {})[monthsShort[curMonth]] || [];
+    entry = list[0];
+    monthLabel = monthsFull[curMonth];
+  } else {
+    const s = soonestSale(key, curMonth + 1);
+    if (!s) return "";
+    entry = s.entry;
+    monthLabel = s.monthLabel;
+  }
+  if (!entry) return "";
+
+  const fav = faviconFor(b.shopUrl, 64);
+  const favImg = fav
+    ? `<img class="hero-row-icon" src="${fav}" alt="" loading="lazy" onerror="this.style.display='none'" />`
+    : `<div class="hero-row-icon"></div>`;
+
+  const detail = `${entry.label} · ${typicalDiscount(entry.discount)}`;
+  const statusLabel = type === "hot" ? "Expected Sale" : "Upcoming";
+  const statusClass = type === "hot" ? "expected" : "upcoming";
+
+  return `<div class="hero-row ${type === "hot" ? "hero-row-sale" : ""}"
+    data-key="${escapeAttr(key)}"
+    data-sale="${escapeAttr(entry.label)}"
+    data-month="${escapeAttr(monthLabel)}"
+    data-discount="${escapeAttr(entry.discount)}">
+    ${favImg}
+    <div class="hero-row-main">
+      <div class="hero-row-name">${b.name}</div>
+      <div class="hero-row-detail">${detail}</div>
+    </div>
+    <span class="hero-row-status ${statusClass}">${statusLabel}</span>
+  </div>`;
+}
+
+// Attaches click (→ modal) and, on desktop, hover (→ hover bar) to hero rows.
+function attachHeroRowListeners(container) {
+  container.querySelectorAll(".hero-row").forEach(row => {
+    const key = row.dataset.key;
+    row.addEventListener("click", () => openBrand(key));
+    if (hasHover()) {
+      row.addEventListener("mouseenter", () => showHoverBar(row, row.dataset.sale, row.dataset.month, row.dataset.discount));
+      row.addEventListener("mouseleave", hideHoverBar);
+    }
+  });
+}
+
 function renderHeroPreview() {
-  const rowsEl = document.getElementById("hero-preview-rows");
+  const hotEl = document.getElementById("hero-preview-rows-hot");
+  const soonEl = document.getElementById("hero-preview-rows-soon");
   const dateEl = document.getElementById("hero-preview-date");
-  if (!rowsEl || !dateEl) return;
+  if (!hotEl || !soonEl) return;
 
   const today = new Date();
-  dateEl.textContent = today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  if (dateEl) dateEl.textContent = today.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
-  const allBrands = Object.entries(BRANDS);
-  const activeSales = allBrands.filter(([k, b]) => b && getEffectiveActiveSale(b));
+  const monthsShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const curMonth = today.getMonth();
+  const curMonthKey = monthsShort[curMonth];
+  const MAX = 5;
+  const allKeys = Object.keys(BRANDS);
 
-  const MAX_ROWS = 5;
-  const picks = [];
-
-  // All active sales first, up to MAX_ROWS. These are the highest-urgency rows.
-  activeSales.slice(0, MAX_ROWS).forEach(([k, b]) => {
-    picks.push({ key: k, brand: b, type: "sale" });
+  // HOT: brands with a calendared sale in the current month ("Expected Sale").
+  const hotKeys = allKeys.filter(k => {
+    const cal = SALE_CALENDARS[k];
+    return cal && cal[curMonthKey] && cal[curMonthKey].length > 0;
   });
 
-  // Fill remaining slots with notable upcoming sales. Order is a hand-picked
-  // preference list — strongest brand recognition first so the panel feels
-  // populated with names users care about, not whichever brand alphabetizes first.
-  const upcomingPreference = [
-    "aritzia", "aloyoga", "madewell", "jcrew", "anthropologie",
-    "nike", "patagonia", "lululemon", "apple", "vuori",
-    "athleta", "theory", "bananarepublic", "reformation", "freepeople"
-  ];
-  for (const k of upcomingPreference) {
-    if (picks.length >= MAX_ROWS) break;
-    const found = allBrands.find(([key]) => key === k);
-    if (!found) continue;
-    const [key, brand] = found;
-    if (getEffectiveActiveSale(brand)) continue;     // already shown above if on sale
-    if (picks.find(p => p.key === key)) continue;    // already picked
-    picks.push({ key, brand, type: "upcoming" });
-  }
+  // SOON: brands NOT hot this month whose next sale falls within ~60 days ("Upcoming").
+  const soonKeys = allKeys.filter(k => {
+    if (hotKeys.includes(k)) return false;
+    const s = soonestSale(k, curMonth + 1);
+    return s && s.days > 0 && s.days <= 60;
+  });
 
-  // Final safety fill: if our preference list is exhausted and we still have
-  // empty slots, pull from any remaining brand with an upcoming sale.
-  if (picks.length < MAX_ROWS) {
-    for (const [k, b] of allBrands) {
-      if (picks.length >= MAX_ROWS) break;
-      if (getEffectiveActiveSale(b)) continue;
-      if (picks.find(p => p.key === k)) continue;
-      picks.push({ key: k, brand: b, type: "upcoming" });
-    }
-  }
+  const hotPicks = shuffleArray(hotKeys).slice(0, MAX);
+  const soonPicks = shuffleArray(soonKeys).slice(0, MAX);
 
-  rowsEl.innerHTML = picks.map(({ key, brand, type }) => {
-    const fav = faviconFor(brand.shopUrl, 64);
-    const favImg = fav ? `<img class="hero-row-icon" src="${fav}" alt="" loading="lazy" onerror="this.style.display='none'" />` : `<div class="hero-row-icon"></div>`;
+  hotEl.innerHTML = hotPicks.length
+    ? hotPicks.map(k => heroRowHTML(k, "hot")).join("")
+    : `<div class="hero-empty">No major sales expected this month — check back soon.</div>`;
+  soonEl.innerHTML = soonPicks.length
+    ? soonPicks.map(k => heroRowHTML(k, "soon")).join("")
+    : `<div class="hero-empty">Nothing on the horizon just yet — check back soon.</div>`;
 
-    let detail, statusLabel, statusClass;
-    if (type === "sale") {
-      const sale = getEffectiveActiveSale(brand);
-      detail = `${sale.name} — ${sale.discount}`;
-      statusLabel = "● ON SALE";
-      statusClass = "sale";
-    } else {
-      const next = getNextEvent(key, brand);
-      detail = `Next: ${next.saleName} · ${next.shortLabel}`;
-      statusLabel = "UPCOMING";
-      statusClass = "upcoming";
-    }
-
-    return `<div class="hero-row hero-row-${type}" onclick="openBrand('${key}')">
-      ${favImg}
-      <div class="hero-row-main">
-        <div class="hero-row-name">${brand.name}</div>
-        <div class="hero-row-detail">${detail}</div>
-      </div>
-      <span class="hero-row-status ${statusClass}">${statusLabel}</span>
-    </div>`;
-  }).join("");
+  attachHeroRowListeners(hotEl);
+  attachHeroRowListeners(soonEl);
 }
 
 // === Stale active-sale detection ===
@@ -3166,6 +3444,7 @@ function openBrand(key) {
 
   // --- 12-month calendar (preserves multi-entry handling + next-sale highlight) ---
   const nextMonthIndex = upcoming ? months.indexOf(upcoming.monthLabel.split(" ")[0].slice(0,3)) : -1;
+  const monthsFullCal = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const calHTML = months.map((m, i) => {
     const entries = (SALE_CALENDARS[key] || {})[m] || [];
     const isCurrent = i === currentMonth;
@@ -3173,12 +3452,15 @@ function openBrand(key) {
     const isNext = hasSale && i === nextMonthIndex;
     const primary = hasSale ? entries[0] : null;
     const extra = entries.length > 1 ? ` +${entries.length - 1}` : "";
-    const tooltip = hasSale ? entries.map(e => `${e.label} — ${e.discount}`).join(" · ") : "";
     const cls = ["month-cell"];
     if (hasSale) cls.push("has-sale");
     if (isNext) cls.push("next-sale");
     if (isCurrent) cls.push("current");
-    return `<div class="${cls.join(" ")}" ${hasSale ? `title="${tooltip.replace(/"/g,"&quot;")}"` : ""}>
+    // Data attributes drive the hover bar (hover on desktop / tap on mobile).
+    const dataAttrs = hasSale
+      ? ` data-sale="${escapeAttr(primary.label)}" data-month="${escapeAttr(monthsFullCal[i])}" data-discount="${escapeAttr(primary.discount)}"`
+      : "";
+    return `<div class="${cls.join(" ")}"${dataAttrs}>
       <div class="month-label">${m}</div>
       ${hasSale
         ? `<div class="month-discount">${typicalDiscountShort(primary.discount)}${extra}</div><div class="month-detail">${primary.label}</div>`
@@ -3234,11 +3516,27 @@ function openBrand(key) {
   `;
   modal.classList.add("open");
   document.body.style.overflow = "hidden";
+
+  // Wire the hover bar onto the calendar months: hover on desktop, tap on mobile.
+  body.querySelectorAll(".month-cell.has-sale").forEach(cell => {
+    const sale = cell.dataset.sale, month = cell.dataset.month, disc = cell.dataset.discount;
+    if (hasHover()) {
+      cell.addEventListener("mouseenter", () => showHoverBar(cell, sale, month, disc));
+      cell.addEventListener("mouseleave", hideHoverBar);
+    } else {
+      cell.style.cursor = "pointer";
+      cell.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleHoverBar(cell, sale, month, disc);
+      });
+    }
+  });
 }
 
 function closeModal() {
   document.getElementById("modal").classList.remove("open");
   document.body.style.overflow = "";
+  hideHoverBar();
 }
 
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
