@@ -112,7 +112,13 @@
     z-index: 1;
     pointer-events: none; /* container ignores clicks; chips re-enable their own */
   }
-  .hero .container { position: relative; z-index: 2; } /* text sits above scatter */
+  .hero .container { position: relative; z-index: 2; pointer-events: none; } /* empty areas click through to chips */
+  /* Restore interactivity ONLY on genuinely interactive content (buttons, preview
+     panels, links). Non-interactive text stays click-through so chips tucked near
+     the headline edges remain clickable. */
+  .hero .container .hero-buttons,
+  .hero .container .hero-previews,
+  .hero .container .hero-previews-footer { pointer-events: auto; }
   .chip-pos {
     position: absolute;
     transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
@@ -1166,6 +1172,12 @@
     box-shadow: 0 10px 32px rgba(26,24,20,0.16);
     pointer-events: none; /* never intercept the cursor (prevents flicker) */
     animation: hbFade 0.14s ease;
+  }
+  /* Wider, roomier popup on desktop (hover devices); compact on mobile/touch. */
+  @media (hover: hover) {
+    .hover-bar-popup { width: 350px; padding: 18px 22px 16px; }
+    .hover-bar-popup .hb-title { font-size: 15px; }
+    .hover-bar-popup .hb-sub { font-size: 12px; }
   }
   @keyframes hbFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
   .hb-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 3px; }
@@ -2694,8 +2706,20 @@ function buildHoverBarHTML(saleLabel, monthLabel, parsed) {
   const rangeDiv = hasBand
     ? `<div class="hb-range" style="left:${low}%; width:${high - low}%;"></div>`
     : "";
-  const edgeLow = `<div class="hb-edge" style="left:${low}%;">~${low}%</div>`;
-  const edgeHigh = hasBand ? `<div class="hb-edge" style="left:${high}%;">~${high}%</div>` : "";
+
+  // Edge labels: when the band is wide enough, label both ends (~20% … ~50%).
+  // When it's narrow (ends too close — e.g. 20–25%), the two labels would
+  // overlap, so show a single combined label centered under the band instead.
+  let edgeLabels;
+  if (!hasBand) {
+    edgeLabels = `<div class="hb-edge" style="left:${low}%;">~${low}%</div>`;
+  } else if (high - low < 12) {
+    const mid = (low + high) / 2;
+    edgeLabels = `<div class="hb-edge" style="left:${mid}%;">~${low}–${high}%</div>`;
+  } else {
+    edgeLabels = `<div class="hb-edge" style="left:${low}%;">~${low}%</div>` +
+                 `<div class="hb-edge" style="left:${high}%;">~${high}%</div>`;
+  }
 
   return `${head}
     <div class="hb-sub">Historical discount range</div>
@@ -2704,8 +2728,7 @@ function buildHoverBarHTML(saleLabel, monthLabel, parsed) {
         ${rangeDiv}
         <div class="hb-pin" style="left:${likely}%;"><div class="hb-bubble">~${likely}%</div></div>
         <div class="hb-dot" style="left:${likely}%;"></div>
-        ${edgeLow}
-        ${edgeHigh}
+        ${edgeLabels}
       </div>
     </div>
     <div class="hb-legend">
