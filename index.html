@@ -1164,41 +1164,64 @@
     display: none;
     position: fixed;
     z-index: 9999;
-    width: 290px;
+    width: min(400px, calc(100vw - 24px)); /* always fits the viewport */
+    max-width: 400px;
     background: var(--bg-card);
     border: 1px solid var(--rule);
     border-radius: 14px;
-    padding: 16px 18px 14px;
+    padding: 0;
+    overflow: hidden; /* clips the sage box to the rounded corners */
     box-shadow: 0 10px 32px rgba(26,24,20,0.16);
     pointer-events: none; /* never intercept the cursor (prevents flicker) */
     animation: hbFade 0.14s ease;
   }
-  /* Wider, roomier popup on desktop (hover devices); compact on mobile/touch. */
-  @media (hover: hover) {
-    .hover-bar-popup { width: 350px; padding: 18px 22px 16px; }
-    .hover-bar-popup .hb-title { font-size: 15px; }
-    .hover-bar-popup .hb-sub { font-size: 12px; }
-  }
   @keyframes hbFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-  .hb-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 3px; }
-  .hb-title { font-family: var(--serif); font-size: 14px; font-weight: 600; color: var(--ink); }
-  .hb-month { font-size: 10px; color: var(--ink-faint); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
-  .hb-sub { font-size: 11.5px; color: var(--ink-soft); margin-bottom: 32px; }
+
+  /* Layout: sage summary box + bar body side by side (desktop/tablet),
+     stacked vertically on phones (see media query below). */
+  .hb-inner { display: flex; align-items: stretch; }
+
+  /* Light sage summary box — month / % / sale name. Soft tint + dark green text,
+     matching the calendar cells (not a heavy solid fill). */
+  .hb-greenbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sale-soft);
+    width: 120px;
+    flex-shrink: 0;
+    padding: 16px;
+  }
+  .hb-gb-inner { display: flex; flex-direction: column; gap: 5px; text-align: center; align-items: center; width: 100%; }
+  .hb-gb-month { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sale); opacity: 0.75; }
+  .hb-gb-pct { font-family: var(--serif); font-size: 25px; font-weight: 700; line-height: 1; color: var(--sale); }
+  .hb-gb-name { font-family: var(--serif); font-size: 12px; font-weight: 500; color: var(--sale); opacity: 0.9; line-height: 1.2; }
+
+  .hb-body { flex: 1; min-width: 0; padding: 16px 18px 14px; }
+  .hb-sub { font-size: 12px; color: var(--ink-soft); margin-bottom: 30px; }
   .hb-track-wrap { position: relative; padding: 0 2px 22px; }
   .hb-track { height: 8px; border-radius: 100px; background: rgba(26,24,20,0.08); position: relative; }
   .hb-range { position: absolute; top: 0; bottom: 0; border-radius: 100px; background: var(--sage, #6BA883); }
-  .hb-dot { position: absolute; top: 50%; width: 15px; height: 15px; border-radius: 50%; background: var(--sale); border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.25); transform: translate(-50%,-50%); z-index: 2; }
-  .hb-pin { position: absolute; bottom: 15px; transform: translateX(-50%); z-index: 3; }
-  .hb-bubble { background: var(--sale); color: #fff; font-family: var(--serif); font-weight: 600; font-size: 11.5px; padding: 2px 8px; border-radius: 7px; white-space: nowrap; position: relative; }
-  .hb-bubble::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid var(--sale); }
   .hb-edge { position: absolute; top: 13px; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: var(--sale); white-space: nowrap; }
   .hb-legend { font-size: 11px; color: var(--ink-soft); display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
   .hb-legend span { display: flex; align-items: center; gap: 6px; }
   .hb-sw-range { width: 14px; height: 8px; border-radius: 100px; background: var(--sage, #6BA883); display: inline-block; }
-  .hb-sw-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--sale); border: 2.5px solid #fff; box-shadow: 0 0 0 1px var(--rule); display: inline-block; }
   /* non-percentage message */
   .hb-nonpct { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
   .hb-nonpct b { color: var(--ink); font-weight: 600; }
+
+  /* Phones: stack the popup — sage banner on top (full width, content in a row),
+     bar below. Keeps the bar readable instead of cramming it beside the box. */
+  @media (max-width: 470px) {
+    .hb-inner { flex-direction: column; align-items: stretch; }
+    .hb-greenbox { width: auto; padding: 12px 16px; }
+    .hb-gb-inner { flex-direction: row; justify-content: center; align-items: center; gap: 10px; }
+    .hb-gb-month { font-size: 11px; }
+    .hb-gb-pct { font-size: 19px; }
+    .hb-gb-name { font-size: 13px; }
+    .hb-body { padding: 14px 16px 12px; }
+    .hb-sub { margin-bottom: 26px; }
+  }
 
   /* === FOOTER === */
   footer {
@@ -2678,63 +2701,72 @@ function getHoverBarEl() {
 }
 
 function buildHoverBarHTML(saleLabel, monthLabel, parsed) {
-  const head = `
-    <div class="hb-head">
-      <span class="hb-title">${saleLabel || "Sale"}</span>
-      ${monthLabel ? `<span class="hb-month">${monthLabel}</span>` : ""}
+  const name = saleLabel || "Sale";
+  const figure = parsed.isPercent ? `${parsed.likely}%+` : "";
+
+  // Light sage summary box — month / % / sale name. Shown on all devices
+  // (column on desktop, row on phones via CSS).
+  const greenBox = `
+    <div class="hb-greenbox">
+      <div class="hb-gb-inner">
+        ${monthLabel ? `<div class="hb-gb-month">${monthLabel}</div>` : ""}
+        ${figure ? `<div class="hb-gb-pct">${figure}</div>` : ""}
+        <div class="hb-gb-name">${name}</div>
+      </div>
     </div>`;
 
+  let bodyInner;
   if (!parsed.isPercent) {
     // Non-percentage deal — no honest 0–100% band to draw, so explain it briefly.
     let kind = "special";
     const t = (parsed.text || "").toLowerCase();
-    if (/\$/.test(t) || /up to \$/.test(t)) kind = "dollar-value";
+    if (/\$/.test(t)) kind = "dollar-value";
     else if (/free|gift|set/.test(t)) kind = "free-gift";
-    else if (/up to/.test(t)) kind = "capped";
     const blurb = kind === "free-gift"
       ? `This one comes as a <b>free gift or bundle</b> rather than a percentage off.`
       : kind === "dollar-value"
         ? `This is a <b>dollar-amount</b> deal, not a flat percentage.`
         : `This isn't a flat percentage sale.`;
-    return `${head}
+    bodyInner = `
       <div class="hb-sub" style="margin-bottom:12px;">What to expect</div>
       <div class="hb-nonpct">${blurb}<br><b>${parsed.text || "—"}</b></div>`;
-  }
-
-  const { low, high, likely } = parsed;
-  const hasBand = high > low;
-  const rangeDiv = hasBand
-    ? `<div class="hb-range" style="left:${low}%; width:${high - low}%;"></div>`
-    : "";
-
-  // Edge labels: when the band is wide enough, label both ends (~20% … ~50%).
-  // When it's narrow (ends too close — e.g. 20–25%), the two labels would
-  // overlap, so show a single combined label centered under the band instead.
-  let edgeLabels;
-  if (!hasBand) {
-    edgeLabels = `<div class="hb-edge" style="left:${low}%;">~${low}%</div>`;
-  } else if (high - low < 12) {
-    const mid = (low + high) / 2;
-    edgeLabels = `<div class="hb-edge" style="left:${mid}%;">~${low}–${high}%</div>`;
   } else {
-    edgeLabels = `<div class="hb-edge" style="left:${low}%;">~${low}%</div>` +
-                 `<div class="hb-edge" style="left:${high}%;">~${high}%</div>`;
+    const { low, high } = parsed;
+    const hasBand = high > low;
+    // Single-value discounts get a small visible band so the track isn't empty.
+    const rangeDiv = hasBand
+      ? `<div class="hb-range" style="left:${low}%; width:${high - low}%;"></div>`
+      : `<div class="hb-range" style="left:${Math.max(0, low - 1)}%; width:2%;"></div>`;
+
+    // Edge labels: both ends when wide; one combined centered label when narrow
+    // (so ~20% and ~25% don't overlap); single label for single-value discounts.
+    let edgeLabels;
+    if (!hasBand) {
+      edgeLabels = `<div class="hb-edge" style="left:${low}%;">~${low}%</div>`;
+    } else if (high - low < 12) {
+      const mid = (low + high) / 2;
+      edgeLabels = `<div class="hb-edge" style="left:${mid}%;">~${low}–${high}%</div>`;
+    } else {
+      edgeLabels = `<div class="hb-edge" style="left:${low}%;">~${low}%</div>` +
+                   `<div class="hb-edge" style="left:${high}%;">~${high}%</div>`;
+    }
+
+    // No dot / no pin bubble — the likely figure lives in the sage box, which
+    // keeps tight ranges from looking cramped. Single "Typical range" legend.
+    bodyInner = `
+      <div class="hb-sub">Historical discount range</div>
+      <div class="hb-track-wrap">
+        <div class="hb-track">
+          ${rangeDiv}
+          ${edgeLabels}
+        </div>
+      </div>
+      <div class="hb-legend">
+        <span><span class="hb-sw-range"></span>Typical range</span>
+      </div>`;
   }
 
-  return `${head}
-    <div class="hb-sub">Historical discount range</div>
-    <div class="hb-track-wrap">
-      <div class="hb-track">
-        ${rangeDiv}
-        <div class="hb-pin" style="left:${likely}%;"><div class="hb-bubble">~${likely}%</div></div>
-        <div class="hb-dot" style="left:${likely}%;"></div>
-        ${edgeLabels}
-      </div>
-    </div>
-    <div class="hb-legend">
-      <span><span class="hb-sw-range"></span>Typical range</span>
-      <span><span class="hb-sw-dot"></span>Most likely</span>
-    </div>`;
+  return `<div class="hb-inner">${greenBox}<div class="hb-body">${bodyInner}</div></div>`;
 }
 
 function positionHoverBar(anchorEl) {
